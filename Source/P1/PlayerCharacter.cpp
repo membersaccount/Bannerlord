@@ -14,12 +14,12 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->SetRelativeLocationAndRotation(FVector(-15, 0, 140),FRotator(10,0,0));
-	SpringArmComp->TargetArmLength = 100;
-	//SpringArmComp->bUsePawnControlRotation = true;
+	SpringArmComp->SetRelativeLocationAndRotation(FVector(20, 0, 100),FRotator(-35,0,0));
+	SpringArmComp->TargetArmLength = 130;
+
 	Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Cam->SetupAttachment(SpringArmComp);
-	Cam->bUsePawnControlRotation = true;
+	Cam->bUsePawnControlRotation = false;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -62,15 +62,51 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::Turn(const struct FInputActionValue& InputValue)
 {
-	float value = InputValue.Get < float > ();
-	//Z축
-	AddControllerYawInput(value);
+	float TargetYawSpeed = InputValue.Get<float>();
+
+	// 이전 Yaw 속도와 목표 Yaw 속도를 보간하여 부드럽게 변경
+
+	// 보간된 값으로 컨트롤러 회전 적용
+	AddControllerYawInput(FMath::FInterpTo(SpringArmComp->GetRelativeRotation().Yaw, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 20.0f));
+	/*
+	// 컨트롤러의 현재 Yaw 값 가져오기
+	float CurrentYaw = GetControlRotation().Yaw;
+
+	// 캐릭터의 현재 Yaw 값 가져오기
+	float CharacterYaw = GetActorRotation().Yaw;
+
+	// 두 각도의 차이 계산
+	float DeltaYaw = FMath::FindDeltaAngleDegrees(CharacterYaw, CurrentYaw);
+
+	// 특정 각도 이상 차이가 나면 부드럽게 회전
+	if (FMath::Abs(DeltaYaw) > 60.0f)
+	{
+		FRotator NewRotation = FRotator(0.0f, CurrentYaw, 0.0f);
+		FRotator SmoothedRotation = FMath::RInterpTo(GetActorRotation(), NewRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
+		SetActorRotation(SmoothedRotation);
+	}
+	*/
+
 }
 
 void APlayerCharacter::LookUp(const struct FInputActionValue& InputValue)
 {
-	float value = InputValue.Get < float >();
-	//Y축
-	AddControllerPitchInput(value);
+	float Value = InputValue.Get<float>();
+	if (FMath::IsNearlyZero(Value)) return;  // 입력이 미미하면 무시
+
+	// 현재 Pitch 값 가져오기
+	FRotator CurrentRotation = SpringArmComp->GetRelativeRotation();
+
+	// 목표 회전 값 설정
+	float TargetPitch = FMath::Clamp(CurrentRotation.Pitch + Value, -85.0f, 70.0f);
+
+	// 부드러운 보간 적용
+	float InterpPitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, GetWorld()->GetDeltaSeconds(), 20.0f);
+
+	// 새로운 회전 적용
+	CurrentRotation.Pitch = InterpPitch;
+	SpringArmComp->SetRelativeRotation(CurrentRotation);
+
+
 }
 
