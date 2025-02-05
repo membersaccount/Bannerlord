@@ -16,6 +16,7 @@ APlayerCharacter::APlayerCharacter()
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(20, 0, 100),FRotator(-35,0,0));
 	SpringArmComp->TargetArmLength = 130;
+	SpringArmComp->bUsePawnControlRotation = false;
 
 	Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Cam->SetupAttachment(SpringArmComp);
@@ -47,6 +48,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Direction = FTransform(GetControlRotation()).TransformVector(Direction);
+	AddMovementInput(Direction);
+	Direction = FVector::ZeroVector;
+	//MoveForward = 0.0f;
+	//MoveRight = 0.0f;
+
 }
 
 // Called to bind functionality to input
@@ -54,13 +61,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (auto playerInput = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::LookUp);
-		playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::Turn);
+		playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::LookUpHandler);
+		playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::TurnHandler);
+		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveHandler);
+		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Completed, this, &APlayerCharacter::StopHandler);
+		playerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacter::JumpHandler);
 	}
 
 }
 
-void APlayerCharacter::Turn(const struct FInputActionValue& InputValue)
+void APlayerCharacter::TurnHandler(const struct FInputActionValue& InputValue)
 {
 	float TargetYawSpeed = InputValue.Get<float>();
 
@@ -68,45 +78,45 @@ void APlayerCharacter::Turn(const struct FInputActionValue& InputValue)
 
 	// 보간된 값으로 컨트롤러 회전 적용
 	AddControllerYawInput(FMath::FInterpTo(SpringArmComp->GetRelativeRotation().Yaw, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 20.0f));
-	/*
-	// 컨트롤러의 현재 Yaw 값 가져오기
-	float CurrentYaw = GetControlRotation().Yaw;
-
-	// 캐릭터의 현재 Yaw 값 가져오기
-	float CharacterYaw = GetActorRotation().Yaw;
-
-	// 두 각도의 차이 계산
-	float DeltaYaw = FMath::FindDeltaAngleDegrees(CharacterYaw, CurrentYaw);
-
-	// 특정 각도 이상 차이가 나면 부드럽게 회전
-	if (FMath::Abs(DeltaYaw) > 60.0f)
-	{
-		FRotator NewRotation = FRotator(0.0f, CurrentYaw, 0.0f);
-		FRotator SmoothedRotation = FMath::RInterpTo(GetActorRotation(), NewRotation, GetWorld()->GetDeltaSeconds(), 5.0f);
-		SetActorRotation(SmoothedRotation);
-	}
-	*/
 
 }
 
-void APlayerCharacter::LookUp(const struct FInputActionValue& InputValue)
+void APlayerCharacter::LookUpHandler(const struct FInputActionValue& InputValue)
 {
 	float Value = InputValue.Get<float>();
-	if (FMath::IsNearlyZero(Value)) return;  // 입력이 미미하면 무시
+	if (FMath::IsNearlyZero(Value)) return;
 
-	// 현재 Pitch 값 가져오기
 	FRotator CurrentRotation = SpringArmComp->GetRelativeRotation();
 
-	// 목표 회전 값 설정
 	float TargetPitch = FMath::Clamp(CurrentRotation.Pitch + Value, -85.0f, 70.0f);
 
-	// 부드러운 보간 적용
-	float InterpPitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, GetWorld()->GetDeltaSeconds(), 20.0f);
+	// 보간 적용
+	float InterpPitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, GetWorld()->GetDeltaSeconds(), 200.0f);
 
-	// 새로운 회전 적용
 	CurrentRotation.Pitch = InterpPitch;
 	SpringArmComp->SetRelativeRotation(CurrentRotation);
 
 
+}
+
+void APlayerCharacter::MoveHandler(const struct FInputActionValue& InputValue)
+{
+	FVector2D value = InputValue.Get<FVector2D>();
+	Direction.X = value.X;
+	MoveRight = value.X;
+
+	Direction.Y = value.Y;
+	MoveForward = value.Y;
+}
+
+void APlayerCharacter::StopHandler(const struct FInputActionValue& InputValue)
+{
+	MoveRight = 0.0f;
+	MoveForward = 0.0f;
+}
+
+void APlayerCharacter::JumpHandler(const struct FInputActionValue& InputValue)
+{
+	Jump();
 }
 

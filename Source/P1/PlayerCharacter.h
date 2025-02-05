@@ -27,6 +27,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="PlayerSetting")
+	float MoveForward=0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="PlayerSetting")
+	float MoveRight=0.0f;
+
+	FVector Direction;
+
+public:
 	UPROPERTY(EditAnywhere,Category="Camera")
 	class USpringArmComponent* SpringArmComp;
 
@@ -42,10 +50,24 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_Turn;
 
+	UPROPERTY(EditDefaultsOnly,Category="Input")
+	class UInputAction* IA_PlayerMove;
+	UPROPERTY(EditDefaultsOnly,Category="Input")
+	class UInputAction* IA_Jump;
+
+
+
 public:
-	//좌우 회전 입력 처리
-	void Turn(const struct FInputActionValue& InputValue);
-	//상하 회전 입력 처리
-	void LookUp(const struct FInputActionValue& InputValue);
+	//좌우 회전 입력 함수
+	void TurnHandler(const struct FInputActionValue& InputValue);
+	//상하 회전 입력 함수
+	void LookUpHandler(const struct FInputActionValue& InputValue);
+	//이동 함수
+	void MoveHandler(const struct FInputActionValue& InputValue);
+	//이동 취소 함수
+	void StopHandler(const struct FInputActionValue& InputValue);
+	//점프
+	void JumpHandler(const struct FInputActionValue& InputValue);
+
 
 };
