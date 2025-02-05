@@ -1,4 +1,5 @@
 #pragma once
+#include "MBEnums.h"
 
 class AMBAIBaseCharacter;
 
@@ -6,16 +7,21 @@ namespace Structs
 {
 	namespace AI
 	{
-		namespace InfoData
+		struct AIInfoData
 		{
-			struct AIInfoData
-			{
-				AMBAIBaseCharacter* AIInfo;
-				FVector InfoLocation;
-				FRotator InfoRotation;
-				AMBAIBaseCharacter* TargetInfo;
-				int TargetedCount;
-			};
-		}
+			AMBAIBaseCharacter* InfoSelfData;
+			FVector InfoLocation;
+			FRotator InfoRotation;
+			AMBAIBaseCharacter* InfoTargetData;
+			int TargetedCount;
+		};
+
+		struct State
+		{
+			Enums::AI::States::Order OrderData;
+			Enums::AI::States::ActionStateType AttitudeStateData;
+			Enums::AI::States::MoveStateType MoveStateData;
+			Enums::AI::States::ActionStateType ActionStateData;
+		};
 	}
 }

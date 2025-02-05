@@ -14,7 +14,7 @@ class P1_API AMBBattleGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	typedef Structs::AI::InfoData::AIInfoData AIInfoData;
+	typedef Structs::AI::AIInfoData AIInfoData;
 
 public:
 	AMBBattleGameMode();

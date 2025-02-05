@@ -4,23 +4,48 @@
 #include "GameFramework/Character.h"
 #include "MBAIBaseCharacter.generated.h"
 
-namespace Structs { namespace AI { namespace InfoData { struct AIInfoData; } } }
+namespace Structs { namespace AI { 
+	struct AIInfoData;
+	struct State;
+} } 
 
 UCLASS()
 class P1_API AMBAIBaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	typedef Structs::AI::InfoData::AIInfoData AIInfoData;
+	typedef Structs::AI::AIInfoData AIInfoData;
+	typedef Structs::AI::State State;
 
-public:
+public: // Init
 	AMBAIBaseCharacter();
 	void InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo);
-	bool IsDead;
 
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void Tick(float DeltaTime) override;
+
+public: // Get
+	bool GetIsDead();
+
+public:
+	void MoveForward(const FVector& InLocation, const float InSpeed);
+
+protected:
+	AIInfoData* AIInfo;
+	bool IsDead;
+	bool CanAttack;
+
+
+
+
+
+private: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UAnimBlueprint* AnimationBlueprint;
 
-	AIInfoData* AIInfo;
-
+protected: // Cached Data
+	UWorld* CachedWorld;
 };

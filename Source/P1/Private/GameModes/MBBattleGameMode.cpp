@@ -2,6 +2,7 @@
 #include "GameInstances/MBGameInstance.h"
 #include "Characters/MBAIBaseCharacter.h"
 #include "Characters/MBAISpearman.h"
+#include "MBDebug.h"
 
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
@@ -34,7 +35,11 @@ void AMBBattleGameMode::InitGameData()
 	int InitEnemyTroopCount = 0;
 
 	UMBGameInstance* GameInstance = Cast<UMBGameInstance>(GetGameInstance());
-	check(GameInstance);
+
+#ifdef DebugMode
+	if (false == Debug::NullCheck(GameInstance, "GameInstance"))
+		__debugbreak();
+#endif // DebugMode
 
 	GameInstance->LoadBattleData(InitPlayerTroopCount, InitEnemyTroopCount);
 
@@ -49,6 +54,10 @@ void AMBBattleGameMode::InitGameData()
 
 void AMBBattleGameMode::BeginPlay()
 {
+#ifdef DebugMode
+	Debug::Called();
+#endif // DebugMode
+
 	InitGameData();
 
 	UpdateTeamCount();
@@ -62,7 +71,16 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateTeamCount();
+	UpdateAllCharacterInfo();
 
+	if (0 < PlayerTeamCount || 0 < EnemyTeamCount)
+	{
+		UpdateTargets();
+
+		SearchDeadCharacter(PlayerTeamInfo);
+		SearchDeadCharacter(EnemyTeamInfo);
+	}
 }
 
 void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation)
@@ -115,14 +133,14 @@ void AMBBattleGameMode::UpdateAllCharacterInfo()
 {
 	for (auto& InfoData : PlayerTeamInfo)
 	{
-		InfoData.InfoLocation = InfoData.AIInfo->GetActorLocation();
-		InfoData.InfoRotation = InfoData.AIInfo->GetActorRotation();
+		InfoData.InfoLocation = InfoData.InfoSelfData->GetActorLocation();
+		InfoData.InfoRotation = InfoData.InfoSelfData->GetActorRotation();
 	}
 
 	for (auto& InfoData : EnemyTeamInfo)
 	{
-		InfoData.InfoLocation = InfoData.AIInfo->GetActorLocation();
-		InfoData.InfoRotation = InfoData.AIInfo->GetActorRotation();
+		InfoData.InfoLocation = InfoData.InfoSelfData->GetActorLocation();
+		InfoData.InfoRotation = InfoData.InfoSelfData->GetActorRotation();
 	}
 }
 
@@ -136,8 +154,7 @@ void AMBBattleGameMode::UpdateTargets()
 
 	while (ReadPlayerTeamInfo)
 	{
-		PlayerTeamInfoData->TargetInfo = EnemyTeamInfoData->AIInfo;
-		//PlayerTeamInfoData->AIInfo->UpdateTargetInfo(PlayerTeamInfoData->TargetInfo);
+		PlayerTeamInfoData->InfoTargetData = EnemyTeamInfoData->InfoSelfData;
 
 		++PlayerTeamInfoData;
 		if (PlayerTeamInfoData == PlayerTeamInfo.end())
@@ -152,8 +169,7 @@ void AMBBattleGameMode::UpdateTargets()
 
 	while (ReadEnemyTeamInfo)
 	{
-		EnemyTeamInfoData->TargetInfo = PlayerTeamInfoData->AIInfo;
-		//PlayerTeamInfoData->AIInfo->UpdateTargetInfo(PlayerTeamInfoData->TargetInfo);
+		EnemyTeamInfoData->InfoTargetData = PlayerTeamInfoData->InfoSelfData;
 
 		++EnemyTeamInfoData;
 		if (EnemyTeamInfoData == EnemyTeamInfo.end())
@@ -168,7 +184,7 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 {
 	for (auto it = InData.begin(); it != InData.end(); ++it)
 	{
-		if (true == it->AIInfo->IsDead)
+		if (true == it->InfoSelfData->GetIsDead())
 		{
 			DeadCharacters.push(it);
 		}
@@ -178,7 +194,7 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 	{
 		auto it = DeadCharacters.top();
 		InData.erase(it);
-		it->AIInfo->Destroy();
+		it->InfoSelfData->Destroy();
 		DeadCharacters.pop();
 	}
 }
