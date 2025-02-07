@@ -19,9 +19,10 @@ namespace Structs
 		struct State
 		{
 			Enums::AI::States::Order OrderData;
-			Enums::AI::States::ActionStateType AttitudeStateData;
-			Enums::AI::States::MoveStateType MoveStateData;
-			Enums::AI::States::ActionStateType ActionStateData;
+			Enums::AI::States::Attitude AttitudeData;
+			Enums::AI::States::Action ActionData;
+			Enums::AI::States::Move MoveData;
+			Enums::AI::States::Direction DirectionData;
 		};
 	}
 }

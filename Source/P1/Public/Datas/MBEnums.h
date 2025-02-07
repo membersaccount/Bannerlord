@@ -10,33 +10,43 @@ namespace Enums
 			{
 				HoldPosition,
 				MakeFormation,
-				Charge,
+				EngageBattle,
 			};
 
-			enum class AttitudeStateType
+			enum class Attitude
 			{
 				Idle,
 				Aggressive,
 				Defensive,
 			};
 
-			enum class MoveStateType
-			{
-				Stop,
-				Move,
-				Charge,
-				Chase,
-				Lead,
-				Avoid,
-			};
-
-			enum class ActionStateType
+			enum class Action
 			{
 				None,
 				Attacking,
 				Strike,
 				Defending,
 				Block,
+			};
+
+			enum class Move
+			{
+				Stop,
+				Run,
+				Charge,
+				Chase,
+				Lead,
+				Avoid,
+			};
+
+			enum class Direction
+			{
+				None,
+				Up,
+				Down,
+				Left,
+				Right,
+				Shield,
 			};
 		}
 	}
