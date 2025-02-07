@@ -1,15 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
+#include "AI/MBAction.h"
 
-/**
- * 
- */
-class P1_API MBActionNone
+class P1_API MBActionNone : public MBAction
 {
 public:
-	MBActionNone();
-	~MBActionNone();
+
 };

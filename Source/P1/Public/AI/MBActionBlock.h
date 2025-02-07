@@ -2,7 +2,7 @@
 
 #include "AI/MBAction.h"
 
-class P1_API MBActionAttacking : public MBAction
+class P1_API MBActionBlock : public MBAction
 {
 public:
 
