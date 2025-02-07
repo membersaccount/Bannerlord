@@ -13,8 +13,6 @@ Intermediate/
 saved/
 *.sln
 *.htm
-Content/Assets/
-
 # User-specific files
 *.rsuser
 *.suo
