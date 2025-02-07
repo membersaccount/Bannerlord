@@ -38,7 +38,6 @@ void APlayerCharacter::BeginPlay()
 			playerContoller->GetLocalPlayer());
 		if (subSys)subSys->AddMappingContext(IMC_Player, 0);
 
-
 	}
 
 }
