@@ -6,6 +6,16 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+UENUM()
+enum class EMouseState :uint8{
+	None,
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT
+
+};
+
 UCLASS()
 class P1_API APlayerCharacter : public ACharacter
 {
@@ -33,6 +43,11 @@ public:
 	float moveRight=0.0f;
 
 	FVector direction;
+	float mouseY=0.0f;
+	float mouseX=0.0f;
+	FVector2D lastMousePosition;
+	FVector2D currentMousePosition;
+	EMouseState EmouseDirection;
 
 public:
 	UPROPERTY(EditAnywhere,Category="Camera")
@@ -55,16 +70,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_Jump;
+
 		UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_NONE;
+
 		UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_SPEAR;
+
 		UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_BOW;
 
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="WeaponComponent")
 	class UWeaponComponent* WeaponComponent;
+
+	EMouseState GetMouseDirection() const { return EmouseDirection; }
 
 
 
@@ -83,12 +103,12 @@ public:
 	void jumpHandler(const struct FInputActionValue& InputValue);
 
 	//Z키 입력
-	void NoneWeaponHandler(const struct FInputActionValue& InputValue);
+	void noneWeaponHandler(const struct FInputActionValue& InputValue);
 	//X키입력
-	void SpearWeaponHandler(const struct FInputActionValue& InputValue);
+	void spearWeaponHandler(const struct FInputActionValue& InputValue);
 	//C키입력
-	void BowWeaponHandler(const struct FInputActionValue& InputValue);
+	void bowWeaponHandler(const struct FInputActionValue& InputValue);
 
-
+	void updateMouseDirection();
 
 };
