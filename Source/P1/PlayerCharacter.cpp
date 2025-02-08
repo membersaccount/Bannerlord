@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
+#include "WeaponComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -25,6 +26,9 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
+
+	//웨폰 컴포넌트 생성
+	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 
 }
 
@@ -47,9 +51,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Direction = FTransform(GetControlRotation()).TransformVector(Direction);
-	AddMovementInput(Direction);
-	Direction = FVector::ZeroVector;
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction = FVector::ZeroVector;
 	//MoveForward = 0.0f;
 	//MoveRight = 0.0f;
 
@@ -60,27 +64,30 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (auto playerInput = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::LookUpHandler);
-		playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::TurnHandler);
-		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveHandler);
-		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Completed, this, &APlayerCharacter::StopHandler);
-		playerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacter::JumpHandler);
+		playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::lookUpHandler);
+		playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::turnHandler);
+		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Triggered, this, &APlayerCharacter::moveHandler);
+		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Completed, this, &APlayerCharacter::stopHandler);
+		playerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacter::jumpHandler);
+		playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::NoneWeaponHandler);
+		playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::SpearWeaponHandler);
+		playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::BowWeaponHandler);
 	}
 
 }
 
-void APlayerCharacter::TurnHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::turnHandler(const struct FInputActionValue& InputValue)
 {
-	float TargetYawSpeed = InputValue.Get<float>();
+	float targetYawSpeed = InputValue.Get<float>();
 
 	// 이전 Yaw 속도와 목표 Yaw 속도를 보간하여 부드럽게 변경
 
 	// 보간된 값으로 컨트롤러 회전 적용
-	AddControllerYawInput(FMath::FInterpTo(SpringArmComp->GetRelativeRotation().Yaw, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 20.0f));
+	AddControllerYawInput(FMath::FInterpTo(SpringArmComp->GetRelativeRotation().Yaw, targetYawSpeed, GetWorld()->GetDeltaSeconds(), 20.0f));
 
 }
 
-void APlayerCharacter::LookUpHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::lookUpHandler(const struct FInputActionValue& InputValue)
 {
 	float Value = InputValue.Get<float>();
 	if (FMath::IsNearlyZero(Value)) return;
@@ -98,24 +105,39 @@ void APlayerCharacter::LookUpHandler(const struct FInputActionValue& InputValue)
 
 }
 
-void APlayerCharacter::MoveHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::moveHandler(const struct FInputActionValue& InputValue)
 {
 	FVector2D value = InputValue.Get<FVector2D>();
-	Direction.X = value.X;
-	MoveRight = value.X;
+	direction.X = value.X;
+	moveRight = value.X;
 
-	Direction.Y = value.Y;
-	MoveForward = value.Y;
+	direction.Y = value.Y;
+	moveForward = value.Y;
 }
 
-void APlayerCharacter::StopHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::stopHandler(const struct FInputActionValue& InputValue)
 {
-	MoveRight = 0.0f;
-	MoveForward = 0.0f;
+	moveRight = 0.0f;
+	moveForward = 0.0f;
 }
 
-void APlayerCharacter::JumpHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::jumpHandler(const struct FInputActionValue& InputValue)
 {
 	Jump();
+}
+
+void APlayerCharacter::NoneWeaponHandler(const struct FInputActionValue& InputValue)
+{
+	WeaponComponent->changeWeaponState(EWeaponState::NONE);
+}
+
+void APlayerCharacter::SpearWeaponHandler(const struct FInputActionValue& InputValue)
+{
+	WeaponComponent->changeWeaponState(EWeaponState::SPEAR);
+}
+
+void APlayerCharacter::BowWeaponHandler(const struct FInputActionValue& InputValue)
+{
+	WeaponComponent->changeWeaponState(EWeaponState::BOW);
 }
 

@@ -28,11 +28,11 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="PlayerSetting")
-	float MoveForward=0.0f;
+	float moveForward=0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="PlayerSetting")
-	float MoveRight=0.0f;
+	float moveRight=0.0f;
 
-	FVector Direction;
+	FVector direction;
 
 public:
 	UPROPERTY(EditAnywhere,Category="Camera")
@@ -52,22 +52,43 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_PlayerMove;
+
 	UPROPERTY(EditDefaultsOnly,Category="Input")
 	class UInputAction* IA_Jump;
+		UPROPERTY(EditDefaultsOnly,Category="Input")
+	class UInputAction* IA_NONE;
+		UPROPERTY(EditDefaultsOnly,Category="Input")
+	class UInputAction* IA_SPEAR;
+		UPROPERTY(EditDefaultsOnly,Category="Input")
+	class UInputAction* IA_BOW;
+
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="WeaponComponent")
+	class UWeaponComponent* WeaponComponent;
 
 
 
 public:
+
+
 	//좌우 회전 입력 함수
-	void TurnHandler(const struct FInputActionValue& InputValue);
+	void turnHandler(const struct FInputActionValue& InputValue);
 	//상하 회전 입력 함수
-	void LookUpHandler(const struct FInputActionValue& InputValue);
+	void lookUpHandler(const struct FInputActionValue& InputValue);
 	//이동 함수
-	void MoveHandler(const struct FInputActionValue& InputValue);
+	void moveHandler(const struct FInputActionValue& InputValue);
 	//이동 취소 함수
-	void StopHandler(const struct FInputActionValue& InputValue);
+	void stopHandler(const struct FInputActionValue& InputValue);
 	//점프
-	void JumpHandler(const struct FInputActionValue& InputValue);
+	void jumpHandler(const struct FInputActionValue& InputValue);
+
+	//Z키 입력
+	void NoneWeaponHandler(const struct FInputActionValue& InputValue);
+	//X키입력
+	void SpearWeaponHandler(const struct FInputActionValue& InputValue);
+	//C키입력
+	void BowWeaponHandler(const struct FInputActionValue& InputValue);
+
 
 
 };
