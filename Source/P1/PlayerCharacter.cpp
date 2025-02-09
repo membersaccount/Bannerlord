@@ -66,7 +66,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	switch (EmouseDirection)
 	{
-	case EMouseState::None:
+	case EMouseState::NONE:
 		break;
 	case EMouseState::UP:
 		break;

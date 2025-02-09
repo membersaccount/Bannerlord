@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponMontageData.h"
 #include "WeaponActor.generated.h"
 
 UCLASS()
@@ -22,10 +23,29 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Weapon;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Weapon)
+	UDataTable* weaponDataTable;
+
+	UAnimMontage* attackMontage;
+
+	UAnimMontage* hitMontage;
+
+	UAnimMontage* dieMontage;
+
+	TMap<EWeaponState, FWeaponMontageData> weaponMontageDataMap;
+
+public:
+	void playChangeMontage(EWeaponState weaponState);
+	void playAttackMontage();
+	void playHitMontage();
+	void playDieMotage();
+
+
+
+
 
 
 

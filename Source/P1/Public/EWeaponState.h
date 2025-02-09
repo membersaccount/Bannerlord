@@ -13,5 +13,6 @@ enum class EWeaponState:uint8
 	NONE UMETA(DisplayName="NONE"),
 	SPEAR UMETA(DisplayName = "SPEAR"),
 	SWORD UMETA(DisplayName = "SWORD"),
-	BOW UMETA(DisplayName = "BOW")
+	BOW UMETA(DisplayName = "BOW"),
+	MAX
 };

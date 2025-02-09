@@ -32,11 +32,13 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="FMS")
 	EWeaponState weaponState=EWeaponState::NONE;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+    class AWeaponActor* CurrentWeapon;
 
 
 //함수 선언
 public:
-	void changeWeaponState(enum EWeaponState weaponState);
+	void changeWeaponState(EWeaponState weaponState);
 	//기본 애니메이션 변경
 	void changeWeaponAnamation();
 

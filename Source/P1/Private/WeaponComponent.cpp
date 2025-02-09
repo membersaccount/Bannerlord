@@ -2,6 +2,7 @@
 
 
 #include "WeaponComponent.h"
+#include "WeaponActor.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -46,7 +47,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UWeaponComponent::changeWeaponState(enum EWeaponState eweapon)
+void UWeaponComponent::changeWeaponState(EWeaponState eweapon)
 {
 	//캐릭터에서 상태값 가져오기
 	if (weaponState == eweapon)return;
@@ -59,6 +60,7 @@ void UWeaponComponent::changeWeaponAnamation()
 {
 	FString log = UEnum::GetValueAsString(weaponState);
 	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
+	CurrentWeapon->playChangeMontage(weaponState);
 }
 
 void UWeaponComponent::attackUpHandler()

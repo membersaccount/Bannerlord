@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "ECharacterState.h"
 #include "PlayerCharacter.generated.h"
 
 UENUM()
 enum class EMouseState :uint8{
-	None,
+	NONE,
 	UP,
 	DOWN,
 	RIGHT,
-	LEFT
-
+	LEFT,
+	MAX
 };
 
 UCLASS()
@@ -48,6 +49,9 @@ public:
 	FVector2D lastMousePosition;
 	FVector2D currentMousePosition;
 	EMouseState EmouseDirection;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="playerState")
+	ECharacterState eChractoerState= ECharacterState::IDLE;
 
 public:
 	UPROPERTY(EditAnywhere,Category="Camera")
@@ -85,8 +89,6 @@ public:
 	class UWeaponComponent* WeaponComponent;
 
 	EMouseState GetMouseDirection() const { return EmouseDirection; }
-
-
 
 public:
 

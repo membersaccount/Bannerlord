@@ -5,6 +5,10 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
+#include "EWeaponState.h"
+#include "Engine/DataTable.h"
+#include "GameFramework/Character.h"
+#include "WeaponMontageData.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -20,19 +24,38 @@ AWeaponActor::AWeaponActor()
 		Weapon->SetStaticMesh(Spear_Weapon.Object);
 	}
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
 
+}
 // Called when the game starts or when spawned
 void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void AWeaponActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+
+void AWeaponActor::playChangeMontage(EWeaponState weaponState)
+{
+
+}
+
+void AWeaponActor::playAttackMontage()
+{
+
+}
+
+void AWeaponActor::playHitMontage()
+{
+
+}
+
+void AWeaponActor::playDieMotage()
+{
 
 }
 
