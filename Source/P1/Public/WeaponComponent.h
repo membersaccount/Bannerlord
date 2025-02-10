@@ -8,7 +8,7 @@
 #include "WeaponComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class P1_API UWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -27,16 +27,16 @@ public:
 
 
 
-////////////////////////////////////////////////////
-//변수선언
+	////////////////////////////////////////////////////
+	//변수선언
 public:
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="FMS")
-	EWeaponState weaponState=EWeaponState::NONE;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FMS")
+	EWeaponState weaponState = EWeaponState::NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-    class AWeaponActor* CurrentWeapon;
+	class AWeaponActor* CurrentWeapon;
 
 
-//함수 선언
+	//함수 선언
 public:
 	void changeWeaponState(EWeaponState weaponState);
 	//기본 애니메이션 변경

@@ -38,10 +38,23 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	FName WeaponSocket(TEXT("hand_rSocket"));
-	auto CurWeapon = GetWorld()->SpawnActor<AWeaponActor>(FVector::ZeroVector, FRotator::ZeroRotator);
-	if (nullptr != CurWeapon)
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	AWeaponActor* CurWeapon = GetWorld()->SpawnActor<AWeaponActor>(
+		WeaponActorFactory,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		SpawnParams
+	);
+
+	if (nullptr != CurWeapon) {
+		CurWeapon->SetOwner(this);
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+		WeaponComponent->CurrentWeapon = CurWeapon;
+	}
 
 
 	if (auto* playerContoller = Cast<APlayerController>(GetController())) {
@@ -51,6 +64,8 @@ void APlayerCharacter::BeginPlay()
 
 	}
 
+	Anim = GetMesh()->GetAnimInstance();
+	Anim->OnMontageStarted.AddDynamic(this, &APlayerCharacter::OnMyMontageStarted);
 }
 
 // Called every frame
@@ -193,4 +208,9 @@ void APlayerCharacter::updateMouseDirection()
 	}
 	// 이전 마우스 위치 갱신
 	lastMousePosition = currentMousePosition;
+}
+
+void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
+{
+	OnMyPlayMontage(Montage);
 }

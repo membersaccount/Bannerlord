@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponMontageData.h"
+#include "../PlayerCharacter.h"
 #include "WeaponActor.generated.h"
 
 UCLASS()
@@ -26,16 +27,22 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Weapon;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Weapon)
-	TSubclassOf<class UDataTable> MontageDataTable;
 
-	TArray<class UAnimMontage*> attackMontages;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Weapon)
+	TSubclassOf<class UDataAsset> MontageDataTable;
+
+	UPROPERTY()
+	TMap<EWeaponState, FWeaponMontageData> CachedMontages;
+
 
 	UAnimMontage* hitMontage;
 
 	UAnimMontage* dieMontage;
+	UPROPERTY()
+	APlayerCharacter* me;
 
-	TMap<EWeaponState, FWeaponMontageData> weaponMontageDataMap;
+	//TMap<EWeaponState, FWeaponMontageData> weaponMontageDataMap;
+
 
 public:
 	void playChangeMontage(EWeaponState weaponState);

@@ -8,7 +8,7 @@
 #include "PlayerCharacter.generated.h"
 
 UENUM()
-enum class EMouseState :uint8{
+enum class EMouseState :uint8 {
 	NONE,
 	UP,
 	DOWN,
@@ -38,54 +38,54 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category ="PlayerSetting")
-	float moveForward=0.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category ="PlayerSetting")
-	float moveRight=0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
+	float moveForward = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
+	float moveRight = 0.0f;
 
 	FVector direction;
-	float mouseY=0.0f;
-	float mouseX=0.0f;
+	float mouseY = 0.0f;
+	float mouseX = 0.0f;
 	FVector2D lastMousePosition;
 	FVector2D currentMousePosition;
 	EMouseState EmouseDirection;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="playerState")
-	ECharacterState eChractoerState= ECharacterState::IDLE;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
+	ECharacterState eChractoerState = ECharacterState::IDLE;
 
 public:
-	UPROPERTY(EditAnywhere,Category="Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	class USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(EditAnywhere,Category="Camera")
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	class UCameraComponent* Cam;
 
-	UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputMappingContext* IMC_Player;
 
-	UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_LookUp;
 
-	UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Turn;
 
-	UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_PlayerMove;
 
-	UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Jump;
 
-		UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_NONE;
 
-		UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_SPEAR;
 
-		UPROPERTY(EditDefaultsOnly,Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_BOW;
 
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="WeaponComponent")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent;
 
 	EMouseState GetMouseDirection() const { return EmouseDirection; }
@@ -113,4 +113,15 @@ public:
 
 	void updateMouseDirection();
 
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AWeaponActor> WeaponActorFactory;
+
+	UPROPERTY()
+	class UAnimInstance* Anim;
+
+	UFUNCTION()
+	void OnMyMontageStarted(class UAnimMontage* Montage);
+	UFUNCTION(BluePrintCallable, BlueprintImplementableEvent)
+	void OnMyPlayMontage(class UAnimMontage* Montage);
 };
