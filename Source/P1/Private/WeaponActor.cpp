@@ -24,12 +24,18 @@ AWeaponActor::AWeaponActor()
 		Weapon->SetStaticMesh(Spear_Weapon.Object);
 	}
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//MontageDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Script/Engine.DataTable'/Game/LHW/DataTable/T_WeaponTable.T_WeaponTable'"));
+
 
 }
 // Called when the game starts or when spawned
 void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<FWeaponMontageData*> AllRows;
+	//MontageDataTable->GetAllRows<FWeaponMontageData>(TEXT(""), AllRows);
+
 }
 
 // Called every frame

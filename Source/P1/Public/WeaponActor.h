@@ -27,9 +27,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Weapon;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Weapon)
-	UDataTable* weaponDataTable;
+	TSubclassOf<class UDataTable> MontageDataTable;
 
-	UAnimMontage* attackMontage;
+	TArray<class UAnimMontage*> attackMontages;
 
 	UAnimMontage* hitMontage;
 
