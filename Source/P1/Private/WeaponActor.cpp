@@ -12,6 +12,7 @@
 #include "WeaponMontageDataAsset.h"
 #include "../PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "EMouseState.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -80,9 +81,33 @@ void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 	}
 }
 
-void AWeaponActor::playAttackMontage()
+void AWeaponActor::playAttackMontage(EWeaponState weaponState, EMouseState mouseState)
 {
+	if (!me) return;
 
+	if (CachedMontages.Contains(weaponState))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("weaponActor"));
+
+		FWeaponMontageData MontageData = CachedMontages[weaponState];
+			switch (mouseState)
+			{
+			case EMouseState::NONE:
+				break;
+			case EMouseState::UP: { if (MontageData.AttackUpMontage) me->Anim->Montage_Play(MontageData.AttackUpMontage); }
+				break;
+			case EMouseState::DOWN: { if (MontageData.AttackDownMontage) me->Anim->Montage_Play(MontageData.AttackDownMontage); }
+				break;
+			case EMouseState::RIGHT: { if (MontageData.AttackRightMontage) me->Anim->Montage_Play(MontageData.AttackRightMontage); }
+				break;
+			case EMouseState::LEFT: { if (MontageData.AttackLeftMontage) me->Anim->Montage_Play(MontageData.AttackLeftMontage); }
+				break;
+			case EMouseState::MAX:
+				break;
+			default:
+				break;
+			}
+	}
 }
 
 void AWeaponActor::playHitMontage()

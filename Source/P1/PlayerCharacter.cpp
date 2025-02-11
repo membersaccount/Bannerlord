@@ -72,30 +72,11 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	updateMouseDirection();
 	direction = FTransform(GetControlRotation()).TransformVector(direction);
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
-	//MoveForward = 0.0f;
-	//MoveRight = 0.0f;
 
-	switch (EmouseDirection)
-	{
-	case EMouseState::NONE:
-		break;
-	case EMouseState::UP:
-		break;
-	case EMouseState::DOWN:
-		break;
-	case EMouseState::RIGHT:
-		break;
-	case EMouseState::LEFT:
-		break;
-	default:
-		break;
-	}
-	FString log = UEnum::GetValueAsString(EmouseDirection);
-	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
+
 
 }
 
@@ -112,6 +93,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::noneWeaponHandler);
 		playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
 		playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
+		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackPressHandler);
 	}
 
 }
@@ -181,33 +163,11 @@ void APlayerCharacter::bowWeaponHandler(const struct FInputActionValue& InputVal
 	WeaponComponent->changeWeaponState(EWeaponState::BOW);
 }
 
-void APlayerCharacter::updateMouseDirection()
+void APlayerCharacter::AttackPressHandler(const struct FInputActionValue& InputValue)
 {
-	// 현재 마우스 위치 가져오기
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController) return;
 
-	float MouseX, MouseY;
-	PlayerController->GetMousePosition(MouseX, MouseY);
-	currentMousePosition = FVector2D(MouseX, MouseY);
+	WeaponComponent->attackHandler();
 
-	FVector2D MouseDelta = currentMousePosition - lastMousePosition;
-
-	float Threshold = 2.0f;
-
-	if (FMath::Abs(MouseDelta.X) > Threshold || FMath::Abs(MouseDelta.Y) > Threshold)
-	{
-		if (FMath::Abs(MouseDelta.X) > FMath::Abs(MouseDelta.Y))
-		{
-			EmouseDirection = (MouseDelta.X > 0) ? EMouseState::RIGHT : EMouseState::LEFT;
-		}
-		else
-		{
-			EmouseDirection = (MouseDelta.Y > 0) ? EMouseState::DOWN : EMouseState::UP;
-		}
-	}
-	// 이전 마우스 위치 갱신
-	lastMousePosition = currentMousePosition;
 }
 
 void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)

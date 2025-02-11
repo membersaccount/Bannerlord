@@ -3,6 +3,7 @@
 
 #include "WeaponComponent.h"
 #include "WeaponActor.h"
+#include "EMouseState.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -32,19 +33,10 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	switch (weaponState)
-	{
-	case EWeaponState::NONE:
-		break;
-	case EWeaponState::SPEAR:
-		break;
-	case EWeaponState::SWORD:
-		break;
-	case EWeaponState::BOW:
-		break;
-	default:
-		break;
-	}
+	updateMouseDirection();
+	FString log = UEnum::GetValueAsString(EmouseDirection);
+	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
+
 }
 
 void UWeaponComponent::changeWeaponState(EWeaponState eweapon)
@@ -63,24 +55,11 @@ void UWeaponComponent::changeWeaponAnamation()
 	CurrentWeapon->playChangeMontage(weaponState);
 }
 
-void UWeaponComponent::attackUpHandler()
+void UWeaponComponent::attackHandler()
 {
+	UE_LOG(LogTemp, Warning, TEXT("weaponComp"));
 
-}
-
-void UWeaponComponent::attackDownHandler()
-{
-
-}
-
-void UWeaponComponent::attackRightHandler()
-{
-
-}
-
-void UWeaponComponent::attackLeftHandler()
-{
-
+	CurrentWeapon->playAttackMontage(weaponState, EmouseDirection);
 }
 
 void UWeaponComponent::hitActionHandler()
@@ -92,4 +71,33 @@ void UWeaponComponent::dieActionHandler()
 {
 
 }
+void UWeaponComponent::updateMouseDirection()
+{
+	// 현재 마우스 위치 가져오기
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) return;
+
+	float MouseX, MouseY;
+	PlayerController->GetMousePosition(MouseX, MouseY);
+	currentMousePosition = FVector2D(MouseX, MouseY);
+
+	FVector2D MouseDelta = currentMousePosition - lastMousePosition;
+
+	float Threshold = 100.0f;
+
+	if (FMath::Abs(MouseDelta.X) > Threshold || FMath::Abs(MouseDelta.Y) > Threshold)
+	{
+		if (FMath::Abs(MouseDelta.X) > FMath::Abs(MouseDelta.Y))
+		{
+			EmouseDirection = (MouseDelta.X > 0) ? EMouseState::RIGHT : EMouseState::LEFT;
+		}
+		else
+		{
+			EmouseDirection = (MouseDelta.Y > 0) ? EMouseState::DOWN : EMouseState::UP;
+		}
+	}
+	// 이전 마우스 위치 갱신
+	lastMousePosition = currentMousePosition;
+}
+
 

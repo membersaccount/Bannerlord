@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "EWeaponState.h"
+#include "../PlayerCharacter.h"
+#include "EMouseState.h"
 #include "WeaponComponent.generated.h"
+
 
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -35,6 +38,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	class AWeaponActor* CurrentWeapon;
 
+	float mouseY = 0.0f;
+	float mouseX = 0.0f;
+	FVector2D lastMousePosition;
+	FVector2D currentMousePosition;
+	EMouseState EmouseDirection=EMouseState::NONE;
+
+	EMouseState GetMouseDirection() const { return EmouseDirection; }
+
+
 
 	//함수 선언
 public:
@@ -42,16 +54,13 @@ public:
 	//기본 애니메이션 변경
 	void changeWeaponAnamation();
 
-	void attackUpHandler();
-
-	void attackDownHandler();
-
-	void attackRightHandler();
-
-	void attackLeftHandler();
+	void attackHandler();
 
 	void hitActionHandler();
 
 	void dieActionHandler();
+
+	void updateMouseDirection();
+
 
 };

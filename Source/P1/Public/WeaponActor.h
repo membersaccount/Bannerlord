@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "WeaponMontageData.h"
 #include "../PlayerCharacter.h"
+#include "EMouseState.h"
 #include "WeaponActor.generated.h"
 
 UCLASS()
@@ -46,14 +47,7 @@ public:
 
 public:
 	void playChangeMontage(EWeaponState weaponState);
-	void playAttackMontage();
+	void playAttackMontage(EWeaponState weaponState,EMouseState mouseState);
 	void playHitMontage();
 	void playDieMotage();
-
-
-
-
-
-
-
 };

@@ -7,16 +7,6 @@
 #include "ECharacterState.h"
 #include "PlayerCharacter.generated.h"
 
-UENUM()
-enum class EMouseState :uint8 {
-	NONE,
-	UP,
-	DOWN,
-	RIGHT,
-	LEFT,
-	MAX
-};
-
 UCLASS()
 class P1_API APlayerCharacter : public ACharacter
 {
@@ -44,11 +34,7 @@ public:
 	float moveRight = 0.0f;
 
 	FVector direction;
-	float mouseY = 0.0f;
-	float mouseX = 0.0f;
-	FVector2D lastMousePosition;
-	FVector2D currentMousePosition;
-	EMouseState EmouseDirection;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
 	ECharacterState eChractoerState = ECharacterState::IDLE;
@@ -83,12 +69,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_BOW;
+		UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_MouseLeftClick;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent;
 
-	EMouseState GetMouseDirection() const { return EmouseDirection; }
 
 public:
 
@@ -110,8 +97,9 @@ public:
 	void spearWeaponHandler(const struct FInputActionValue& InputValue);
 	//C키입력
 	void bowWeaponHandler(const struct FInputActionValue& InputValue);
+	//마우스 좌클릭
+	void AttackPressHandler(const struct FInputActionValue& InputValue);
 
-	void updateMouseDirection();
 
 
 	UPROPERTY(EditDefaultsOnly)
