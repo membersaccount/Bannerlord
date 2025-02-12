@@ -75,7 +75,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 	direction = FTransform(GetControlRotation()).TransformVector(direction);
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
-
+	ForwardSpeed = FVector::DotProduct(this->GetVelocity(), GetActorForwardVector());
+	RightSpeed = FVector::DotProduct(this->GetVelocity(), GetActorRightVector());
 
 
 }
@@ -93,9 +94,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::noneWeaponHandler);
 		playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
 		playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
-		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackPressHandler);
-	}
+		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackLPressHandler);
 
+		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackLReleaseHandler);
+
+		playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
+		playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
+	}
 }
 
 void APlayerCharacter::turnHandler(const struct FInputActionValue& InputValue)
@@ -163,11 +168,28 @@ void APlayerCharacter::bowWeaponHandler(const struct FInputActionValue& InputVal
 	WeaponComponent->changeWeaponState(EWeaponState::BOW);
 }
 
-void APlayerCharacter::AttackPressHandler(const struct FInputActionValue& InputValue)
+void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
-
+	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent->attackHandler();
 
+}
+
+void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& InputValue)
+{
+	eChractoerState = ECharacterState::IDLE;
+}
+
+void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& InputValue)
+{
+	eChractoerState = ECharacterState::ATTACKING;
+	WeaponComponent->guardHandler();
+
+}
+
+void APlayerCharacter::AttackRReleaseHandler(const struct FInputActionValue& InputValue)
+{
+	eChractoerState = ECharacterState::IDLE;
 }
 
 void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)

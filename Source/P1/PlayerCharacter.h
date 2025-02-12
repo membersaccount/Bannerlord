@@ -33,6 +33,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	float moveRight = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
+	float ForwardSpeed= 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
+	float RightSpeed = 0.0f;
+
 	FVector direction;
 
 
@@ -69,12 +74,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_BOW;
-		UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_MouseLeftClick;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_MouseRightClick;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AWeaponActor> WeaponActorFactory;
+
+	UPROPERTY()
+	class UAnimInstance* Anim;
 
 
 public:
@@ -98,15 +112,14 @@ public:
 	//C키입력
 	void bowWeaponHandler(const struct FInputActionValue& InputValue);
 	//마우스 좌클릭
-	void AttackPressHandler(const struct FInputActionValue& InputValue);
+	void AttackLPressHandler(const struct FInputActionValue& InputValue);
 
+	void AttackLReleaseHandler(const struct FInputActionValue& InputValue);
 
+	//마우스 우클릭
+	void AttackRPressHandler(const struct FInputActionValue& InputValue);
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AWeaponActor> WeaponActorFactory;
-
-	UPROPERTY()
-	class UAnimInstance* Anim;
+	void AttackRReleaseHandler(const struct FInputActionValue& InputValue);
 
 	UFUNCTION()
 	void OnMyMontageStarted(class UAnimMontage* Montage);

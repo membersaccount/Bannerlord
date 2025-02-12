@@ -56,11 +56,14 @@ public:
 
 	void attackHandler();
 
+	void guardHandler();
+
 	void hitActionHandler();
 
 	void dieActionHandler();
 
 	void updateMouseDirection();
+
 
 
 };

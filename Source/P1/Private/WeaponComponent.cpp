@@ -62,6 +62,12 @@ void UWeaponComponent::attackHandler()
 	CurrentWeapon->playAttackMontage(weaponState, EmouseDirection);
 }
 
+void UWeaponComponent::guardHandler()
+{
+	CurrentWeapon->playGuardMontage(weaponState, EmouseDirection);
+
+}
+
 void UWeaponComponent::hitActionHandler()
 {
 

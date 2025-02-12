@@ -110,6 +110,35 @@ void AWeaponActor::playAttackMontage(EWeaponState weaponState, EMouseState mouse
 	}
 }
 
+void AWeaponActor::playGuardMontage(EWeaponState weaponState, EMouseState mouseState)
+{
+	if (!me) return;
+
+	if (CachedMontages.Contains(weaponState))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("weaponActor"));
+
+		FWeaponMontageData MontageData = CachedMontages[weaponState];
+		switch (mouseState)
+		{
+		case EMouseState::NONE:
+			break;
+		case EMouseState::UP: { if (MontageData.GuardUpMontage) me->Anim->Montage_Play(MontageData.GuardUpMontage); }
+							break;
+		case EMouseState::DOWN: { if (MontageData.GuardDownMontage) me->Anim->Montage_Play(MontageData.GuardDownMontage); }
+							  break;
+		case EMouseState::RIGHT: { if (MontageData.GuardRightMontage) me->Anim->Montage_Play(MontageData.GuardRightMontage); }
+							   break;
+		case EMouseState::LEFT: { if (MontageData.GuardLeftMontage) me->Anim->Montage_Play(MontageData.GuardLeftMontage); }
+							  break;
+		case EMouseState::MAX:
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 void AWeaponActor::playHitMontage()
 {
 

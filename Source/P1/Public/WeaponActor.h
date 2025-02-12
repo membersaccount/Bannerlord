@@ -48,6 +48,7 @@ public:
 public:
 	void playChangeMontage(EWeaponState weaponState);
 	void playAttackMontage(EWeaponState weaponState,EMouseState mouseState);
+	void playGuardMontage(EWeaponState weaponState,EMouseState mouseState);
 	void playHitMontage();
 	void playDieMotage();
 };
