@@ -12,11 +12,11 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
-	SpringArmComp->SetRelativeLocationAndRotation(FVector(20, 0, 100),FRotator(-35,0,0));
+	SpringArmComp->SetRelativeLocationAndRotation(FVector(20, 0, 100), FRotator(-35, 0, 0));
 	SpringArmComp->TargetArmLength = 130;
 	SpringArmComp->bUsePawnControlRotation = false;
 
@@ -29,8 +29,7 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationRoll = false;
 
 	//웨폰 컴포넌트 생성
-	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
-
+	WeaponComponent1 = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent1"));
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +52,7 @@ void APlayerCharacter::BeginPlay()
 	if (nullptr != CurWeapon) {
 		CurWeapon->SetOwner(this);
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
-		WeaponComponent->CurrentWeapon = CurWeapon;
+		WeaponComponent1->CurrentWeapon = CurWeapon;
 	}
 
 
@@ -78,7 +77,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	ForwardSpeed = FVector::DotProduct(this->GetVelocity(), GetActorForwardVector());
 	RightSpeed = FVector::DotProduct(this->GetVelocity(), GetActorRightVector());
 
-
 }
 
 // Called to bind functionality to input
@@ -94,6 +92,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::noneWeaponHandler);
 		playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
 		playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
+		playerInput->BindAction(IA_Sword, ETriggerEvent::Started, this, &APlayerCharacter::swordWeaponHandler);
+
+
 		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackLPressHandler);
 
 		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackLReleaseHandler);
@@ -155,23 +156,29 @@ void APlayerCharacter::jumpHandler(const struct FInputActionValue& InputValue)
 
 void APlayerCharacter::noneWeaponHandler(const struct FInputActionValue& InputValue)
 {
-	WeaponComponent->changeWeaponState(EWeaponState::NONE);
+	WeaponComponent1->changeWeaponState(EWeaponState::NONE);
 }
 
 void APlayerCharacter::spearWeaponHandler(const struct FInputActionValue& InputValue)
 {
-	WeaponComponent->changeWeaponState(EWeaponState::SPEAR);
+	WeaponComponent1->changeWeaponState(EWeaponState::SPEAR);
 }
 
 void APlayerCharacter::bowWeaponHandler(const struct FInputActionValue& InputValue)
 {
-	WeaponComponent->changeWeaponState(EWeaponState::BOW);
+	WeaponComponent1->changeWeaponState(EWeaponState::BOW);
+}
+
+void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputValue)
+{
+	WeaponComponent1->changeWeaponState(EWeaponState::SWORD);
+
 }
 
 void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
 	eChractoerState = ECharacterState::ATTACKING;
-	WeaponComponent->attackHandler();
+	WeaponComponent1->attackHandler();
 
 }
 
@@ -183,7 +190,7 @@ void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& Inp
 void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& InputValue)
 {
 	eChractoerState = ECharacterState::ATTACKING;
-	WeaponComponent->guardHandler();
+	WeaponComponent1->guardHandler();
 
 }
 

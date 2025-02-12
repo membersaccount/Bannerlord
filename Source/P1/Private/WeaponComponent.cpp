@@ -4,6 +4,8 @@
 #include "WeaponComponent.h"
 #include "WeaponActor.h"
 #include "EMouseState.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -23,7 +25,14 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	widget = CreateWidget<UUserWidget>(GetWorld(), widgetFactory);
+	widget->AddToViewport();
 
+	if (widget==nullptr)return;
+	ArrowT = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowT")));
+	ArrowB = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowB")));
+	ArrowR = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowR")));
+	ArrowL = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowL")));
 }
 
 
@@ -36,6 +45,26 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	updateMouseDirection();
 	FString log = UEnum::GetValueAsString(EmouseDirection);
 	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
+	switch (EmouseDirection)
+	{
+	case EMouseState::UP: { ArrowT->SetOpacity(1);ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0);}
+		break;
+	case EMouseState::DOWN: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(1); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0); }
+		break;
+	case EMouseState::RIGHT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(1); ArrowL->SetOpacity(0); }
+		break;
+	case EMouseState::LEFT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(1); }
+		break;
+	default:
+		break;
+	}
+
+
+
+
+
+
+
 
 }
 

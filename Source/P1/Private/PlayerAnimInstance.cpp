@@ -10,13 +10,13 @@
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {
 
-	player = Cast<APlayerCharacter>(TryGetPawnOwner());
-	weaponComp = player->WeaponComponent;
 }
 
 void UPlayerAnimInstance::NativeBeginPlay()
 {
 	OnPlayMontageNotifyBegin.AddDynamic(this,&UPlayerAnimInstance::OnMontageNotifyBegin);
+	player = Cast<APlayerCharacter>(TryGetPawnOwner());
+	weaponComp = player->WeaponComponent1;
 }
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

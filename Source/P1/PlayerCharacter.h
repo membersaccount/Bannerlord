@@ -38,7 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	float RightSpeed = 0.0f;
 
+
+
 	FVector direction;
+
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
@@ -79,10 +82,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_MouseRightClick;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Sword;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponComponent")
-	class UWeaponComponent* WeaponComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
+	class UWeaponComponent* WeaponComponent1;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AWeaponActor> WeaponActorFactory;
@@ -111,6 +116,9 @@ public:
 	void spearWeaponHandler(const struct FInputActionValue& InputValue);
 	//C키입력
 	void bowWeaponHandler(const struct FInputActionValue& InputValue);
+	//V키입력
+	void swordWeaponHandler(const struct FInputActionValue& InputValue);
+
 	//마우스 좌클릭
 	void AttackLPressHandler(const struct FInputActionValue& InputValue);
 

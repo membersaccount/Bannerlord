@@ -7,6 +7,7 @@
 #include "EWeaponState.h"
 #include "../PlayerCharacter.h"
 #include "EMouseState.h"
+#include "Blueprint/UserWidget.h"
 #include "WeaponComponent.generated.h"
 
 
@@ -37,6 +38,17 @@ public:
 	EWeaponState weaponState = EWeaponState::NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	class AWeaponActor* CurrentWeapon;
+
+	class UImage* ArrowT;
+	class UImage* ArrowB;
+	class UImage* ArrowR;
+	class UImage* ArrowL;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UUserWidget* widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widge")
+	TSubclassOf<class UUserWidget>widgetFactory;
 
 	float mouseY = 0.0f;
 	float mouseX = 0.0f;
