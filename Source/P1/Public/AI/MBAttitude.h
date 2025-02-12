@@ -1,8 +1,17 @@
 #pragma once
 
+class AMBAIBaseCharacter;
+
 class P1_API MBAttitude
 {
 public:
-	MBAttitude();
-	~MBAttitude();
+	virtual ~MBAttitude() = default;
+
+	virtual void DecideAttitude(AMBAIBaseCharacter* InAICharacter) = 0;
+
+public: // Move -> Attitude
+	virtual void PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharacter) = 0;
+
+public: 
+
 };

@@ -2,12 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Datas/MBStructs.h"
+#include "Datas/MBEnums.h"
 #include "MBAIBaseCharacter.generated.h"
 
-namespace Structs { namespace AI { 
-	struct AIInfoData;
-	struct State;
-} } 
+class MBStateManager;
 
 UCLASS()
 class P1_API AMBAIBaseCharacter : public ACharacter
@@ -16,10 +15,13 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 	typedef Structs::AI::AIInfoData AIInfoData;
 	typedef Structs::AI::State State;
+	typedef Structs::AI::StateType StateType;
+	typedef Enums::AI::States::Distance Distance;
+	typedef Enums::AI::States::Direction Direction;
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo);
+	void InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,20 +29,58 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-public: // Get
+public: // Called Outside
 	bool GetIsDead();
+	void SetOrder(MBOrder* InOrder);
+	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-public:
+public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
+	void MoveControl(const FVector& InLocation, const float InSpeed);
+	void MoveForceLocation(const float InSpeed);
+	void MoveTargetLocation(const float InSpeed);
+	void MoveSideways(const float InSpeed);
+	void TurnToTarget();
+
+public: // Target
+	void CheckTargetExist();
+	void CalculateDistance(const FVector& InTargetLocation);
+	void DecideTargetDistance();
+
+public: // Timer
+	bool IsTimerActive(FTimerHandle* InTimer);
+	void SetLeadTimer(const float InTime);
+
+public: // Default Data
+	AIInfoData* AIInfo;
+	State AIState;
+	MBStateManager* StateManager;
+
+	int HP = 100;
+	float CalculatedTargetDistance = 0.f;
+
+public: // AI
+	Distance TargetDistance = Distance::None;
+	Direction AttackDirection = Direction::None;
+
+	bool IsTargetExist = true;
+	bool IsNearForceLocation = false;
+	bool IsArrivedForceLocation = false;
+
+public: // Timer
+	FTimerHandle ActionTimer;
+	FTimerHandle AttackRateTimer;
+	FTimerHandle RandomLeadTimer;
+	FTimerHandle SwitchTargetTimer;
+	FTimerHandle FormationTimer;
+	FTimerHandle DebugTimer;
 
 protected:
-	AIInfoData* AIInfo;
 	bool IsDead;
 	bool CanAttack;
 
-
-
-
+private:
+	FVector ForceMoveLocation;
 
 private: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;

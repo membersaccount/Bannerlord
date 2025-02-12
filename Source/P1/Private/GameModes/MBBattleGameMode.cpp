@@ -65,6 +65,13 @@ void AMBBattleGameMode::BeginPlay()
 	UpdateTargets();
 
 	CachedWorld = GetWorld();
+
+	CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+		{
+			this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+			this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+			Debug::Print("Order to EngageBattle");
+		}, 3.f, false);
 }
 
 void AMBBattleGameMode::Tick(float DeltaTime)
@@ -113,14 +120,17 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	AMBAISpearman* SpawnedAI = GetWorld()->SpawnActor<AMBAISpearman>(AMBAISpearman::StaticClass(), InLocation, InRotation);
 	SpawnedAI->PrimaryActorTick.AddPrerequisite(this, this->PrimaryActorTick);
 
+	AIInfoData Info;
+	Info.InfoSelfData = SpawnedAI;
+
 	if (InIsPlayerTeam)
 	{
-		PlayerTeamInfo.emplace_back(SpawnedAI);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back());
+		PlayerTeamInfo.push_back(Info);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
 		return;
 	}
-	EnemyTeamInfo.emplace_back(SpawnedAI);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back());
+	EnemyTeamInfo.push_back(Info);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
 }
 
 void AMBBattleGameMode::UpdateTeamCount()
@@ -196,5 +206,21 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 		InData.erase(it);
 		it->InfoSelfData->Destroy();
 		DeadCharacters.pop();
+	}
+}
+
+void AMBBattleGameMode::OrderPlayerTeam(MBOrder* InOrder)
+{
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetOrder(InOrder);
+	}
+}
+
+void AMBBattleGameMode::OrderEnemyTeam(MBOrder* InOrder)
+{
+	for (auto& Data : EnemyTeamInfo)
+	{
+		Data.InfoSelfData->SetOrder(InOrder);
 	}
 }
