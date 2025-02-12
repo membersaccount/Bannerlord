@@ -13,8 +13,8 @@ namespace Data
 
 		namespace Testing
 		{
-			constexpr const int PlayerTroopTestCount = 300;
-			constexpr const int EnemyTroopTestCount = 300;
+			constexpr const int PlayerTroopTestCount = 200;
+			constexpr const int EnemyTroopTestCount = 200;
 		}
 	}
 }

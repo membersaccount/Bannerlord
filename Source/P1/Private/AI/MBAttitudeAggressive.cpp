@@ -39,29 +39,41 @@ void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharac
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveCharge;
 		break;
 	case Distance::Short:
+		if (InAICharacter->AIInfo->InfoTargetData->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
+		{
+			InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+		}
+
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveCharge;
 		break;
 	case Distance::Combat:
 		if (InAICharacter->AIInfo->InfoTargetData->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
 		{
+			InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
 			InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveChase;
 			break;
 		}
 
-		if (Distance::Combat == InAICharacter->AIInfo->InfoTargetData->TargetDistance)
+		if (InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::Combat)
 		{
 			if (false == InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
 			{
 				InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveLead;
-				InAICharacter->SetLeadTimer(FMath::RandRange(3.f, 8.f));
-				break;
+				InAICharacter->SetLeadTimer(FMath::RandRange(2.5f, 7.5f));
 			}
+			break;
 		}
 
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveChase;
 		break;
+
 	case Distance::TooClose:
-		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
+		//if (InAICharacter->AIInfo->InfoTargetData->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
+		//{
+		//	InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+		//}
+
+		//InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveAvoid;
 		break;
 	}
 }

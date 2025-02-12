@@ -49,6 +49,7 @@ public: // Target
 
 public: // Timer
 	bool IsTimerActive(FTimerHandle* InTimer);
+	void ClearTimer(FTimerHandle* InTimer);
 	void SetLeadTimer(const float InTime);
 
 public: // Default Data

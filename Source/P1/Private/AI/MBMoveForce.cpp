@@ -7,5 +7,5 @@ void MBMoveForce::DecideMove(AMBAIBaseCharacter* InAICharacter)
 
 void MBMoveForce::ExecuteMove(AMBAIBaseCharacter* InAICharacter)
 {
-	InAICharacter->MoveForceLocation(0.5f);
+	InAICharacter->MoveForceLocation(0.45f);
 }

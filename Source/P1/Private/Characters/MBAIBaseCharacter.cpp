@@ -3,6 +3,7 @@
 #include "Datas/MBStructs.h"
 #include <cmath>
 #include "MBDebug.h"
+#include <typeinfo>
 
 AMBAIBaseCharacter::AMBAIBaseCharacter()
 {
@@ -174,18 +175,24 @@ bool AMBAIBaseCharacter::IsTimerActive(FTimerHandle* InTimer)
 	return CachedWorld->GetTimerManager().IsTimerActive(*InTimer);
 }
 
+void AMBAIBaseCharacter::ClearTimer(FTimerHandle* InTimer)
+{
+	CachedWorld->GetTimerManager().ClearTimer(*InTimer);
+}
+
 void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 {
 	CachedWorld->GetTimerManager().SetTimer(RandomLeadTimer, [this]()
 		{
-			bool SwitchLead = (AIState.AttitudeData == &StateManager->ManagerAttitudeAggressive) &&
-				(AIInfo->InfoTargetData->AIState.AttitudeData == &StateManager->ManagerAttitudeAggressive);
+			bool SwitchLead = (this->AIState.AttitudeData == &this->StateManager->ManagerAttitudeAggressive) &&
+				(this->AIInfo->InfoTargetData->AIState.AttitudeData == &this->StateManager->ManagerAttitudeAggressive);
 			
 			if (SwitchLead)
 			{
-				AIInfo->InfoTargetData->AIState.MoveData = &StateManager->ManagerMoveLead;
-				AIState.MoveData = &StateManager->ManagerMoveChase;
-				AIInfo->InfoTargetData->SetLeadTimer(FMath::RandRange(3.f, 8.f));
+				this->AIInfo->InfoTargetData->AIState.MoveData = &StateManager->ManagerMoveLead;
+				this->AIState.MoveData = &StateManager->ManagerMoveChase;
+				this->AIInfo->InfoTargetData->SetLeadTimer(FMath::RandRange(3.f, 8.f));
+				this->ClearTimer(&RandomLeadTimer);
 			}
 		}, InTime, false);
 }

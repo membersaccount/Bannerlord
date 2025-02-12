@@ -29,6 +29,9 @@ void MBAttitudeDefensive::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharact
 {
 	typedef Enums::AI::States::Distance Distance;
 
+	if (InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
+		InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+
 	switch (InAICharacter->TargetDistance)
 	{
 	case Distance::None:
