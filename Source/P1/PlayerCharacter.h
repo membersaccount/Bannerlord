@@ -38,16 +38,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	float RightSpeed = 0.0f;
 
-
-
 	FVector direction;
-
-
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
 	ECharacterState eChractoerState = ECharacterState::IDLE;
 
 public:
+
+	class AWeaponActor* CurWeapon;
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	class USpringArmComponent* SpringArmComp;
 
@@ -128,6 +126,9 @@ public:
 	void AttackRPressHandler(const struct FInputActionValue& InputValue);
 
 	void AttackRReleaseHandler(const struct FInputActionValue& InputValue);
+
+	//무기 소켓 위치 변경
+	void weaponSoketChange(bool isChange);
 
 	UFUNCTION()
 	void OnMyMontageStarted(class UAnimMontage* Montage);

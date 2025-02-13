@@ -25,25 +25,25 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	UStaticMeshComponent* Weapon;
-
+	USceneComponent* SceneComp;
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* SpearMesh;
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* SwordMesh;
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	USkeletalMeshComponent* BowMesh;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class UDataAsset> MontageDataTable;
-
 	UPROPERTY()
 	TMap<EWeaponState, FWeaponMontageData> CachedMontages;
-
-
 	UAnimMontage* hitMontage;
-
 	UAnimMontage* dieMontage;
 	UPROPERTY()
 	APlayerCharacter* me;
-
-	//TMap<EWeaponState, FWeaponMontageData> weaponMontageDataMap;
-
 
 public:
 	void playChangeMontage(EWeaponState weaponState);
@@ -51,4 +51,7 @@ public:
 	void playGuardMontage(EWeaponState weaponState,EMouseState mouseState);
 	void playHitMontage();
 	void playDieMotage();
+	void loadWeapon();
+	void selectWeapon(EWeaponState weaponState);
+
 };

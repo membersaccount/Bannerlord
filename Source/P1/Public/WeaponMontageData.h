@@ -16,6 +16,18 @@ struct FWeaponMontageData : public FTableRowBase
     GENERATED_BODY()
 
 public:
+    //무기 데미지
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float damage;
+
+    //무기 위치
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector weaponPosition;
+
+    //무기 회전 값
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FRotator weaponRotation;
+
     // 무기 타입 (창, 검, 주먹, 활)
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EWeaponState WeaponType;
@@ -56,5 +68,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAnimMontage* GuardLeftMontage;
+
+    //활 애니메이션
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAnimMontage* BowAim;
 
 };

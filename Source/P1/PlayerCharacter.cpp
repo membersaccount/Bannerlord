@@ -42,7 +42,7 @@ void APlayerCharacter::BeginPlay()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 
-	AWeaponActor* CurWeapon = GetWorld()->SpawnActor<AWeaponActor>(
+	CurWeapon = GetWorld()->SpawnActor<AWeaponActor>(
 		WeaponActorFactory,
 		FVector::ZeroVector,
 		FRotator::ZeroRotator,
@@ -161,16 +161,20 @@ void APlayerCharacter::noneWeaponHandler(const struct FInputActionValue& InputVa
 
 void APlayerCharacter::spearWeaponHandler(const struct FInputActionValue& InputValue)
 {
+	weaponSoketChange(false);
 	WeaponComponent1->changeWeaponState(EWeaponState::SPEAR);
 }
 
 void APlayerCharacter::bowWeaponHandler(const struct FInputActionValue& InputValue)
 {
+	weaponSoketChange(true);
 	WeaponComponent1->changeWeaponState(EWeaponState::BOW);
+
 }
 
 void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputValue)
 {
+	weaponSoketChange(false);
 	WeaponComponent1->changeWeaponState(EWeaponState::SWORD);
 
 }
@@ -197,6 +201,24 @@ void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& Input
 void APlayerCharacter::AttackRReleaseHandler(const struct FInputActionValue& InputValue)
 {
 	eChractoerState = ECharacterState::IDLE;
+}
+
+void APlayerCharacter::weaponSoketChange(bool isChange)
+{
+	if(isChange){
+	if (nullptr != CurWeapon) {
+		CurWeapon->SetOwner(this);
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("hand_lSocket")));
+		WeaponComponent1->CurrentWeapon = CurWeapon;
+	}
+	}
+	else {
+		if (nullptr != CurWeapon) {
+			CurWeapon->SetOwner(this);
+			CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(TEXT("hand_RSocket")));
+			WeaponComponent1->CurrentWeapon = CurWeapon;
+		}
+	}
 }
 
 void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
