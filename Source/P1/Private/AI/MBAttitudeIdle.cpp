@@ -2,7 +2,7 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 
-void MBAttitudeIdle::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeIdle::DecideAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	if (false == InAICharacter->IsTargetExist)
 	{
@@ -25,7 +25,7 @@ void MBAttitudeIdle::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeAggressive;
 }
 
-void MBAttitudeIdle::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeIdle::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	return;
 }

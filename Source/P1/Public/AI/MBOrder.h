@@ -7,6 +7,6 @@ class P1_API MBOrder
 public:
 	virtual ~MBOrder() = default;
 
-	virtual void InItOrder(AMBAIBaseCharacter* InAICharacter) = 0;
-	virtual void HandleOrder(AMBAIBaseCharacter* InAICharacter) = 0;
+	virtual void InItOrder(AMBAIBaseCharacter* const InAICharacter) const = 0;
+	virtual void HandleOrder(AMBAIBaseCharacter* const InAICharacter) const = 0;
 };

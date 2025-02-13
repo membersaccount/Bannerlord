@@ -6,6 +6,6 @@ class P1_API MBActionStrike : public MBAction
 public:
 	virtual ~MBActionStrike() {}
 
-	virtual void DecideAction(AMBAIBaseCharacter* InAICharacter) override;
-	virtual void ExecuteAction(AMBAIBaseCharacter* InAICharacter) override;
+	virtual void DecideAction(AMBAIBaseCharacter* const InAICharacter) const override;
+	virtual void ExecuteAction(AMBAIBaseCharacter* const InAICharacter) const override;
 };

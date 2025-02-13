@@ -2,14 +2,14 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 
-void MBOrderMakeFormation::InItOrder(AMBAIBaseCharacter* InAICharacter)
+void MBOrderMakeFormation::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->IsArrivedForceLocation = false;
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
 	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveForce;
 }
 
-void MBOrderMakeFormation::HandleOrder(AMBAIBaseCharacter* InAICharacter)
+void MBOrderMakeFormation::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	if (true == InAICharacter->IsArrivedForceLocation)
 	{

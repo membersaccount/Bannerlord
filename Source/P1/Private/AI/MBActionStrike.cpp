@@ -1,9 +1,9 @@
 #include "AI/MBActionStrike.h"
 
-void MBActionStrike::DecideAction(AMBAIBaseCharacter* InAICharacter)
+void MBActionStrike::DecideAction(AMBAIBaseCharacter* const InAICharacter) const
 {
 }
 
-void MBActionStrike::ExecuteAction(AMBAIBaseCharacter* InAICharacter)
+void MBActionStrike::ExecuteAction(AMBAIBaseCharacter* const InAICharacter) const
 {
 }

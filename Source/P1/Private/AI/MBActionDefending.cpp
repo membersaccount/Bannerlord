@@ -1,9 +1,9 @@
 #include "AI/MBActionDefending.h"
 
-void MBActionDefending::DecideAction(AMBAIBaseCharacter* InAICharacter)
+void MBActionDefending::DecideAction(AMBAIBaseCharacter* const InAICharacter) const
 {
 }
 
-void MBActionDefending::ExecuteAction(AMBAIBaseCharacter* InAICharacter)
+void MBActionDefending::ExecuteAction(AMBAIBaseCharacter* const InAICharacter) const
 {
 }

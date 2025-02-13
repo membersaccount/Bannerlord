@@ -6,6 +6,6 @@ class P1_API MBMoveAvoid : public MBMove
 public:
 	virtual ~MBMoveAvoid() {}
 
-	virtual void DecideMove(AMBAIBaseCharacter* InAICharacter) override;
-	virtual void ExecuteMove(AMBAIBaseCharacter* InAICharacter) override;
+	virtual void DecideMove(AMBAIBaseCharacter* const InAICharacter) const override;
+	virtual void ExecuteMove(AMBAIBaseCharacter* const InAICharacter) const override;
 };

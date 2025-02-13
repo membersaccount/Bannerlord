@@ -51,6 +51,7 @@ public: // Timer
 	bool IsTimerActive(FTimerHandle* InTimer);
 	void ClearTimer(FTimerHandle* InTimer);
 	void SetLeadTimer(const float InTime);
+	void SetTimer(FTimerHandle* const InTimer, const float InTime);
 
 public: // Default Data
 	AIInfoData* AIInfo;
@@ -67,6 +68,9 @@ public: // AI
 	bool IsTargetExist = true;
 	bool IsNearForceLocation = false;
 	bool IsArrivedForceLocation = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsAttacking = false;
 
 public: // Timer
 	FTimerHandle ActionTimer;
@@ -89,4 +93,7 @@ private: // Default Data
 
 protected: // Cached Data
 	UWorld* CachedWorld;
+
+private: // Debug
+	float CurrentTime = 0.f;
 };

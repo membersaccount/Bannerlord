@@ -2,7 +2,7 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 
-void MBAttitudeDefensive::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeDefensive::DecideAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	if (false == InAICharacter->IsTargetExist)
 	{
@@ -25,7 +25,7 @@ void MBAttitudeDefensive::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeAggressive;
 }
 
-void MBAttitudeDefensive::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeDefensive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	typedef Enums::AI::States::Distance Distance;
 

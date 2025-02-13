@@ -1,11 +1,11 @@
 #include "AI/MBOrderEngageBattle.h"
 #include "Characters/MBAIBaseCharacter.h"
 
-void MBOrderEngageBattle::InItOrder(AMBAIBaseCharacter* InAICharacter)
+void MBOrderEngageBattle::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 }
 
-void MBOrderEngageBattle::HandleOrder(AMBAIBaseCharacter* InAICharacter)
+void MBOrderEngageBattle::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->CheckTargetExist();
 	if (false == InAICharacter->IsTargetExist)

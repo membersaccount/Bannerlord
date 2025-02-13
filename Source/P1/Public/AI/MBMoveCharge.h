@@ -8,6 +8,6 @@ class P1_API MBMoveCharge : public MBMove
 public:
 	virtual ~MBMoveCharge() {}
 
-	virtual void DecideMove(AMBAIBaseCharacter* InAICharacter) override;
-	virtual void ExecuteMove(AMBAIBaseCharacter* InAICharacter) override;
+	virtual void DecideMove(AMBAIBaseCharacter* const InAICharacter) const override;
+	virtual void ExecuteMove(AMBAIBaseCharacter* const InAICharacter) const override;
 };

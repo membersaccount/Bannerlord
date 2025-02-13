@@ -7,6 +7,6 @@ class P1_API MBMove
 public:
 	virtual ~MBMove() = default;
 
-	virtual void DecideMove(AMBAIBaseCharacter* InAICharacter) = 0;
-	virtual void ExecuteMove(AMBAIBaseCharacter* InAICharacter) = 0;
+	virtual void DecideMove(AMBAIBaseCharacter* const InAICharacter) const = 0;
+	virtual void ExecuteMove(AMBAIBaseCharacter* const InAICharacter) const = 0;
 };

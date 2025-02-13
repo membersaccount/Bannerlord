@@ -41,6 +41,8 @@ void AMBAIBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedWorld = GetWorld();
+
+
 }
 
 void AMBAIBaseCharacter::Tick(float DeltaTime)
@@ -51,6 +53,21 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
+
+	
+	if (CurrentTime > FMath::RandRange(5.f, 8.f))
+	{
+		CurrentTime = 0.f;
+		IsAttacking = true;
+		CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+			{
+				this->IsAttacking = false;
+			}, 2.3f, false);
+	}
+	else
+	{
+		CurrentTime += DeltaTime;
+	}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -160,7 +177,7 @@ void AMBAIBaseCharacter::DecideTargetDistance()
 	{
 		TargetDistance = Distance::Short;
 	}
-	else if (120.f < CalculatedTargetDistance)
+	else if (200.f < CalculatedTargetDistance)
 	{
 		TargetDistance = Distance::Combat;
 	}
@@ -195,4 +212,8 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 				this->ClearTimer(&RandomLeadTimer);
 			}
 		}, InTime, false);
+}
+
+void AMBAIBaseCharacter::SetTimer(FTimerHandle* const InTimer, const float InTime)
+{
 }

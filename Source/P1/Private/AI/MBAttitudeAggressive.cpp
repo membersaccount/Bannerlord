@@ -3,7 +3,7 @@
 #include "AI/MBStateManager.h"
 #include "Datas/MBEnums.h"
 
-void MBAttitudeAggressive::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeAggressive::DecideAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	if (false == InAICharacter->IsTargetExist)
 	{
@@ -26,7 +26,7 @@ void MBAttitudeAggressive::DecideAttitude(AMBAIBaseCharacter* InAICharacter)
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeAggressive;
 }
 
-void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharacter)
+void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAICharacter) const
 {
 	typedef Enums::AI::States::Distance Distance;
 
@@ -68,12 +68,17 @@ void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* InAICharac
 		break;
 
 	case Distance::TooClose:
-		//if (InAICharacter->AIInfo->InfoTargetData->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
-		//{
-		//	InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
-		//}
+		if (InAICharacter->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
+		{
+			break;
+		}
 
-		//InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveAvoid;
+		if (InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
+		{
+			InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+		}
+
+		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveWalk;
 		break;
 	}
 }

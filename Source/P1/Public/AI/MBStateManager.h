@@ -19,6 +19,7 @@
 #include "AI/MBMoveCharge.h"
 #include "AI/MBMoveChase.h"
 #include "AI/MBMoveLead.h"
+#include "AI/MBMoveWalk.h"
 #include "AI/MBMoveAvoid.h"
 
 class P1_API MBStateManager
@@ -44,6 +45,7 @@ public:
 	MBMoveCharge ManagerMoveCharge;
 	MBMoveChase ManagerMoveChase;
 	MBMoveLead ManagerMoveLead;
+	MBMoveWalk ManagerMoveWalk;
 	MBMoveAvoid ManagerMoveAvoid;
 };
 	
