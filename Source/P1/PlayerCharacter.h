@@ -43,8 +43,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
 	ECharacterState eChractoerState = ECharacterState::IDLE;
 
-public:
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* SpearMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	TSubclassOf<class ADefaultActor> QuiverClass;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	USkeletalMeshComponent* BowMesh;
+
+public:
 	class AWeaponActor* CurWeapon;
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	class USpringArmComponent* SpringArmComp;
@@ -80,9 +88,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_MouseRightClick;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Sword;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent1;
@@ -90,13 +98,16 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AWeaponActor> WeaponActorFactory;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AArrowActor> arrowActor;
+
+	AArrowActor* arrow;
+
 	UPROPERTY()
 	class UAnimInstance* Anim;
 
 
 public:
-
-
 	//좌우 회전 입력 함수
 	void turnHandler(const struct FInputActionValue& InputValue);
 	//상하 회전 입력 함수
@@ -129,6 +140,8 @@ public:
 
 	//무기 소켓 위치 변경
 	void weaponSoketChange(bool isChange);
+
+	void setArrowVisible();
 
 	UFUNCTION()
 	void OnMyMontageStarted(class UAnimMontage* Montage);

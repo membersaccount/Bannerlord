@@ -8,6 +8,14 @@
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h"
 #include "WeaponComponent.h"
 #include "WeaponActor.h"
+#include "ArrowActor.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Engine/SkeletalMesh.h"
+#include "GameFramework/Actor.h"
+#include "UObject/ConstructorHelpers.h"
+#include "DefaultActor.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -28,8 +36,22 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
-	//웨폰 컴포넌트 생성
-	WeaponComponent1 = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent1"));
+	SpearMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON1"));
+	BowMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON2"));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> Spear_Weapon(TEXT("/Script/Engine.StaticMesh'/Game/LHW/Assets/Models/Mesh/Spear_Spear_LOD0.Spear_Spear_LOD0'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> Bow_Weapon(TEXT("/ Script / Engine.SkeletalMesh'/Game/LHW/ArcherAnimsetPro/Meshes/Bow/SK_Bow.SK_Bow'"));
+
+	if (Spear_Weapon.Succeeded() && Bow_Weapon.Succeeded()) {
+
+		SpearMesh->SetStaticMesh(Spear_Weapon.Object);
+		BowMesh->SetSkeletalMesh(Bow_Weapon.Object);
+
+		SpearMesh->SetupAttachment(GetMesh(), TEXT("spear"));
+		BowMesh->SetupAttachment(GetMesh(), TEXT("bow"));
+	}
+
+WeaponComponent1 = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent1"));
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +70,8 @@ void APlayerCharacter::BeginPlay()
 		FRotator::ZeroRotator,
 		SpawnParams
 	);
-
+	arrow = Cast<AArrowActor>(GetWorld()->SpawnActor(arrowActor));
+	arrow->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
 	if (nullptr != CurWeapon) {
 		CurWeapon->SetOwner(this);
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
@@ -65,6 +88,10 @@ void APlayerCharacter::BeginPlay()
 
 	Anim = GetMesh()->GetAnimInstance();
 	Anim->OnMontageStarted.AddDynamic(this, &APlayerCharacter::OnMyMontageStarted);
+
+	ADefaultActor* A =Cast<ADefaultActor>(GetWorld()->SpawnActor(QuiverClass));
+	A->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("quiver"));
+	A->SetActorEnableCollision(false);
 }
 
 // Called every frame
@@ -220,7 +247,6 @@ void APlayerCharacter::weaponSoketChange(bool isChange)
 		}
 	}
 }
-
 void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
 {
 	OnMyPlayMontage(Montage);

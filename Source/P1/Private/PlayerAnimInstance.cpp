@@ -5,6 +5,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "WeaponComponent.h"
 #include "ECharacterState.h"
+#include "ArrowActor.h"
+#include "WeaponActor.h"
 
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -15,6 +17,7 @@ void UPlayerAnimInstance::NativeInitializeAnimation()
 void UPlayerAnimInstance::NativeBeginPlay()
 {
 	OnPlayMontageNotifyBegin.AddDynamic(this,&UPlayerAnimInstance::OnMontageNotifyBegin);
+	OnPlayMontageNotifyEnd.AddDynamic(this,&UPlayerAnimInstance::OnMontageNotifyEnd);
 	player = Cast<APlayerCharacter>(TryGetPawnOwner());
 	weaponComp = player->WeaponComponent1;
 }
@@ -32,19 +35,50 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-		if (NotifyName == FName(TEXT("None")))
+	if (NotifyName == FName(TEXT("None")))
+	{
+		// 몽타주 일시 정지
+		CurrentMontage = this->GetCurrentActiveMontage();
+		if (CurrentMontage)
 		{
-			// 몽타주 일시 정지
-			CurrentMontage = this->GetCurrentActiveMontage();
-			if (CurrentMontage)
-			{
-				if (characterState == ECharacterState::ATTACKING) {
-					Montage_Pause(CurrentMontage);
-				}
-
+			if (characterState == ECharacterState::ATTACKING) {
+				Montage_Pause(CurrentMontage);
 			}
-		}
 
+		}
+	}
+	if (NotifyName == FName(TEXT("ArrowSpawn"))) {
+		if (CurrentMontage)
+		{
+			player->arrow->setVisibility(true);
+		}
+	}
+	if (NotifyName == FName(TEXT("RemoveArrow"))) {
+		if (CurrentMontage)
+		{
+			player->arrow->setVisibility(false);
+		}
+	}
+	if (NotifyName == FName(TEXT("changeWeapon"))) {
+		if (CurrentMontage)
+		{
+			player->WeaponComponent1->CurrentWeapon->selectWeapon();
+		}
+	}
+	if (NotifyName == FName(TEXT("swordRemove"))) {
+		if (CurrentMontage)
+		{
+			player->WeaponComponent1->CurrentWeapon->SwordMesh->SetVisibility(false);
+		}
+	}
+
+
+
+
+}
+
+void UPlayerAnimInstance::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
+{
 
 }
 

@@ -44,6 +44,7 @@ public:
 	UAnimMontage* dieMontage;
 	UPROPERTY()
 	APlayerCharacter* me;
+	EWeaponState weaponStateIn;
 
 public:
 	void playChangeMontage(EWeaponState weaponState);
@@ -52,6 +53,6 @@ public:
 	void playHitMontage();
 	void playDieMotage();
 	void loadWeapon();
-	void selectWeapon(EWeaponState weaponState);
+	void selectWeapon();
 
 };

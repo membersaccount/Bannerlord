@@ -61,6 +61,7 @@ void AWeaponActor::Tick(float DeltaTime)
 void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 {
 	if (!me) return;
+	weaponStateIn = weaponState;
 
 	if (CachedMontages.Contains(weaponState))
 	{
@@ -69,7 +70,8 @@ void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 		if (MontageData.ChangeWeaponMontage)
 		{
 			// 무기 변경 애니메이션 실행
-			selectWeapon(weaponState);
+			//selectWeapon(weaponState);
+
 			me->Anim->Montage_Play(MontageData.ChangeWeaponMontage);
 		}
 	}
@@ -182,32 +184,42 @@ void AWeaponActor::loadWeapon()
 
 }
 
-void AWeaponActor::selectWeapon(EWeaponState weaponState)
+void AWeaponActor::selectWeapon()
 {
-	switch (weaponState)
+	switch (weaponStateIn)
 	{
 	case EWeaponState::NONE:{
 		SpearMesh->SetVisibility(false);
 		BowMesh->SetVisibility(false);
 		SwordMesh->SetVisibility(false);
+		me->BowMesh->SetVisibility(true);
+		me->SpearMesh->SetVisibility(true);
 	}
 		break;
 	case EWeaponState::SPEAR:{
 		SpearMesh->SetVisibility(true);
 		BowMesh->SetVisibility(false);
 		SwordMesh->SetVisibility(false);
+		me->SpearMesh->SetVisibility(false);
+		me->BowMesh->SetVisibility(true);
+
 	}
 		break;
 	case EWeaponState::SWORD: {
 		SpearMesh->SetVisibility(false);
 		BowMesh->SetVisibility(false);
 		SwordMesh->SetVisibility(true);
+		me->BowMesh->SetVisibility(true);
+		me->SpearMesh->SetVisibility(true);
+
 	}
 		break;
 	case EWeaponState::BOW: {
 		SpearMesh->SetVisibility(false);
 		BowMesh->SetVisibility(true);
 		SwordMesh->SetVisibility(false);
+		me->BowMesh->SetVisibility(false);
+		me->SpearMesh->SetVisibility(true);
 	}
 		break;
 	default:

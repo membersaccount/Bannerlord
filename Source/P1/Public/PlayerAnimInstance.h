@@ -7,6 +7,7 @@
 #include "EWeaponState.h"
 #include "WeaponComponent.h"
 #include "ECharacterState.h"
+#include "ArrowActor.h"
 #include "PlayerAnimInstance.generated.h"
 
 /**
@@ -36,6 +37,8 @@ public:
 	bool IsMove;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	ECharacterState characterState;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AArrowActor>arrow;
 
 	APlayerCharacter* player;
 	UWeaponComponent* weaponComp;
@@ -43,6 +46,10 @@ public:
 
 UFUNCTION()
 void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
+UFUNCTION()
+void OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload);
+
 
 void setCharacterMovement();
 

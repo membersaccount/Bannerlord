@@ -15,3 +15,6 @@ Inside package you can find few animations for shooting forward - for more angle
 
 Riko,
 rikoanim@gmail.com
+(X=-1.867894,Y=-63.768404,Z=-2.285775)
+(Pitch=-29.662469,Yaw=5.346927,Roll=56.482824)
+scale 1.3
