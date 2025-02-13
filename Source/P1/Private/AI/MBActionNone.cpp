@@ -14,13 +14,10 @@ void MBActionNone::DecideAction(AMBAIBaseCharacter* const InAICharacter) const
 	case Distance::Short:
 		break;
 	case Distance::Combat:
-		if (nullptr == InAICharacter->AIInfo->InfoTargetData &&
-			true == InAICharacter->AIInfo->InfoTargetData->GetIsDead())
-		{
-
-		}
+		WideDecideAction(InAICharacter);
 		break;
 	case Distance::TooClose:
+		WideDecideAction(InAICharacter);
 		break;
 	}
 }

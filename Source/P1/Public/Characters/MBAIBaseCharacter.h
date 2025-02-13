@@ -51,7 +51,10 @@ public: // Timer
 	bool IsTimerActive(FTimerHandle* InTimer);
 	void ClearTimer(FTimerHandle* InTimer);
 	void SetLeadTimer(const float InTime);
-	void SetTimer(FTimerHandle* const InTimer, const float InTime);
+	void SetActionAttackTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime);
+	void SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime);
+
+	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
 
 public: // Default Data
 	AIInfoData* AIInfo;
@@ -59,6 +62,7 @@ public: // Default Data
 	MBStateManager* StateManager;
 
 	int HP = 100;
+	int Damage = 0;
 	float CalculatedTargetDistance = 0.f;
 
 public: // AI
@@ -69,12 +73,19 @@ public: // AI
 	bool IsNearForceLocation = false;
 	bool IsArrivedForceLocation = false;
 
+	bool EnableActionDelay = false;
+	bool EnableAttackDelay = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool IsAttacking = false;
+	bool IsAttacking = false;	// 0.65 ~ 1.3, 2.3
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsDefending = false;	// 0.2 ~ 1.1 -> 1.5
 
 public: // Timer
-	FTimerHandle ActionTimer;
-	FTimerHandle AttackRateTimer;
+	FTimerHandle ActionAnimTimer;
+	FTimerHandle ActionEventTimer;
+	FTimerHandle ActionDelayTimer;
+	FTimerHandle AttackDelayTimer;
 	FTimerHandle RandomLeadTimer;
 	FTimerHandle SwitchTargetTimer;
 	FTimerHandle FormationTimer;
@@ -82,7 +93,7 @@ public: // Timer
 
 protected:
 	bool IsDead;
-	bool CanAttack;
+
 
 private:
 	FVector ForceMoveLocation;
@@ -95,5 +106,5 @@ protected: // Cached Data
 	UWorld* CachedWorld;
 
 private: // Debug
-	float CurrentTime = 0.f;
+
 };

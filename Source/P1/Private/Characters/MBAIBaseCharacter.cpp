@@ -41,8 +41,6 @@ void AMBAIBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedWorld = GetWorld();
-
-
 }
 
 void AMBAIBaseCharacter::Tick(float DeltaTime)
@@ -53,21 +51,6 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
-
-	
-	if (CurrentTime > FMath::RandRange(5.f, 8.f))
-	{
-		CurrentTime = 0.f;
-		IsAttacking = true;
-		CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-			{
-				this->IsAttacking = false;
-			}, 2.3f, false);
-	}
-	else
-	{
-		CurrentTime += DeltaTime;
-	}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -214,6 +197,62 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 		}, InTime, false);
 }
 
-void AMBAIBaseCharacter::SetTimer(FTimerHandle* const InTimer, const float InTime)
+void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
+{
+	EnableActionDelay = true;
+	EnableAttackDelay = true;
+	IsAttacking = true;
+
+	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+		{
+			this->EnableActionDelay = false;
+		}, 3.f, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+		{
+			this->EnableAttackDelay = false;
+		}, 7.f, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
+		{
+			this->IsAttacking = false;
+			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+		}, InAnimTime, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+		{
+			this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
+			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+				{
+					this->AIState.ActionData = &this->StateManager->ManagerActionAttacking;
+				}, InEffectTime, false);
+
+		}, InEffectStartTime, false);
+}
+
+void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
+{
+	EnableActionDelay = true;
+	EnableAttackDelay = true;
+	IsDefending = true;
+
+	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+		{
+			this->EnableActionDelay = false;
+		}, 3.f, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
+		{
+			this->IsDefending = false;
+			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+		}, InAnimTime, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+		{
+			this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
+			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+				{
+					this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
+				}, InEffectTime, false);
+
+		}, InEffectStartTime, false);
+}
+
+void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)
 {
 }

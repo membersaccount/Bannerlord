@@ -16,5 +16,5 @@ public:
 	virtual void DecideAction(AMBAIBaseCharacter* const InAICharacter) const = 0;
 	virtual void ExecuteAction(AMBAIBaseCharacter* const InAICharacter) const = 0;
 
-
+	void WideDecideAction(AMBAIBaseCharacter* const InAICharacter) const;
 };

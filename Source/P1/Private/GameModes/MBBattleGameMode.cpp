@@ -45,7 +45,7 @@ void AMBBattleGameMode::InitGameData()
 
 	FVector PlayerTeamLocation(0.f, 100.f, 100.f);
 	FRotator PlayerTeamRotation(0.f, 180.f, 0.f);
-	FVector EnemyTeamLocation(-5000.f, 5000.f, 100.f);
+	FVector EnemyTeamLocation(-1000.f, 100.f, 100.f);
 	FRotator EnemyTeamRotation(0.f, 0.f, 0.f);
 
 	BattleInitSpawn(true, InitPlayerTroopCount, PlayerTeamLocation, PlayerTeamRotation);
