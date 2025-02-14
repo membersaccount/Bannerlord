@@ -1,5 +1,9 @@
 #pragma once
 #include "MBEnums.h"
+#include "AI/MBOrder.h"
+#include "AI/MBAttitude.h"
+#include "AI/MBAction.h"
+#include "AI/MBMove.h"
 
 class AMBAIBaseCharacter;
 
@@ -18,11 +22,19 @@ namespace Structs
 
 		struct State
 		{
-			Enums::AI::States::Order OrderData;
-			Enums::AI::States::Attitude AttitudeData;
-			Enums::AI::States::Action ActionData;
-			Enums::AI::States::Move MoveData;
-			Enums::AI::States::Direction DirectionData;
+			MBOrder* OrderData;
+			MBAttitude* AttitudeData;
+			MBAction* ActionData;
+			MBMove* MoveData;
+		};
+
+		struct StateType
+		{
+			Enums::AI::States::Order OrderType;
+			Enums::AI::States::Attitude AttitudeType;
+			Enums::AI::States::Action ActionType;
+			Enums::AI::States::Move MoveType;
+			Enums::AI::States::Direction DirectionType;
 		};
 	}
 }
