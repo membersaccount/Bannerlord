@@ -3,6 +3,7 @@
 
 void MBOrderEngageBattle::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
+	InAICharacter->IsIdle = false;
 }
 
 void MBOrderEngageBattle::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const

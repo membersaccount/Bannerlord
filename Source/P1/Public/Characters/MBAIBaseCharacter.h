@@ -77,6 +77,8 @@ public: // AI
 	bool EnableAttackDelay = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsIdle = true;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsAttacking = false;	// 0.65 ~ 1.3, 2.3
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsDefending = false;	// 0.2 ~ 1.1 -> 1.5

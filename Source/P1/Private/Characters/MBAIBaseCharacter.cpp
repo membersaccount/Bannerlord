@@ -28,7 +28,8 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBluep
 
 	AIInfo = InSelfInfo;
 	StateManager = InStateManager;
-	AIState.OrderData = &StateManager->ManagerOrderHoldPosition;
+	//AIState.OrderData = &StateManager->ManagerOrderHoldPosition;
+	AIState.OrderData = &StateManager->ManagerOrderMakeFormation;
 	AIState.AttitudeData = &StateManager->ManagerAttitudeIdle;
 	AIState.ActionData = &StateManager->ManagerActionNone;
 	AIState.MoveData = &StateManager->ManagerMoveStop;
@@ -191,7 +192,7 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 			{
 				this->AIInfo->InfoTargetData->AIState.MoveData = &StateManager->ManagerMoveLead;
 				this->AIState.MoveData = &StateManager->ManagerMoveChase;
-				this->AIInfo->InfoTargetData->SetLeadTimer(FMath::RandRange(3.f, 8.f));
+				this->AIInfo->InfoTargetData->SetLeadTimer(FMath::RandRange(1.5f, 2.5f));
 				this->ClearTimer(&RandomLeadTimer);
 			}
 		}, InTime, false);

@@ -4,22 +4,32 @@
 
 void MBOrderMakeFormation::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
-	InAICharacter->IsArrivedForceLocation = false;
+	//InAICharacter->IsIdle = false;
+	//InAICharacter->IsArrivedForceLocation = false;
+	//InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
+	//InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveForce;
+
+	//-0
+	InAICharacter->IsIdle = true;
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
-	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveForce;
+	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
 }
 
 void MBOrderMakeFormation::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
-	if (true == InAICharacter->IsArrivedForceLocation)
-	{
-		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
-		InAICharacter->AIState.ActionData->DecideAction(InAICharacter);
-		InAICharacter->AIState.ActionData->ExecuteAction(InAICharacter);
-		return;
-	}
+	//if (true == InAICharacter->IsArrivedForceLocation)
+	//{
+	//	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
+	//	InAICharacter->AIState.ActionData->DecideAction(InAICharacter);
+	//	InAICharacter->AIState.ActionData->ExecuteAction(InAICharacter);
+	//	return;
+	//}
 
+	//InAICharacter->AIState.ActionData->DecideAction(InAICharacter);
+	//InAICharacter->AIState.ActionData->ExecuteAction(InAICharacter);
+	//InAICharacter->AIState.MoveData->ExecuteMove(InAICharacter);
+
+	//-0
 	InAICharacter->AIState.ActionData->DecideAction(InAICharacter);
 	InAICharacter->AIState.ActionData->ExecuteAction(InAICharacter);
-	InAICharacter->AIState.MoveData->ExecuteMove(InAICharacter);
 }

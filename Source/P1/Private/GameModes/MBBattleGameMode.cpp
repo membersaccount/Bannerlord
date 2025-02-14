@@ -45,7 +45,7 @@ void AMBBattleGameMode::InitGameData()
 
 	FVector PlayerTeamLocation(0.f, 100.f, 100.f);
 	FRotator PlayerTeamRotation(0.f, 180.f, 0.f);
-	FVector EnemyTeamLocation(-1000.f, 100.f, 100.f);
+	FVector EnemyTeamLocation(-4000.f, 1000.f, 100.f);
 	FRotator EnemyTeamRotation(0.f, 0.f, 0.f);
 
 	BattleInitSpawn(true, InitPlayerTroopCount, PlayerTeamLocation, PlayerTeamRotation);
@@ -66,12 +66,34 @@ void AMBBattleGameMode::BeginPlay()
 
 	CachedWorld = GetWorld();
 
+	// Debug
 	CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 		{
-			this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-			this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-			Debug::Print("Order to EngageBattle");
-		}, 3.f, false);
+			this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+			this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+			Debug::Print("Order: HoldPosition");
+
+			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+				{
+					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+					Debug::Print("Order: EngageBattle");
+
+					CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+						{
+							this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+							//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+							Debug::Print("Order: HoldPosition");
+
+							CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+								{
+									this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+									//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+									Debug::Print("Order: EngageBattle");
+								}, 3.f, false);
+						}, 3.f, false);
+				}, 5.f, false);
+		}, 5.f, false);
 }
 
 void AMBBattleGameMode::Tick(float DeltaTime)
@@ -110,7 +132,7 @@ void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVecto
 		}
 
 		++lineY;
-		FVector SpawnLocation = InLocation + FVector(lineX * 500.0f, lineY * 500.f, 0.f);
+		FVector SpawnLocation = InLocation + FVector(lineX * 300.0f, lineY * 200.f, 0.f);
 		SpawnCharacter(InIsPlayerTeam, SpawnLocation, InRotation);
 	}
 }
