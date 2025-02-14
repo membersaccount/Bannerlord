@@ -32,11 +32,21 @@ namespace Enums
 			enum class Move
 			{
 				Stop,
+				Force,
 				Run,
 				Charge,
 				Chase,
 				Lead,
 				Avoid,
+			};
+
+			enum class Distance
+			{
+				None,
+				Long,
+				Short,
+				Combat,
+				TooClose,
 			};
 
 			enum class Direction

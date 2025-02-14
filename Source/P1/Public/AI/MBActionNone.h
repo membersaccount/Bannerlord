@@ -1,15 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
+#include "AI/MBAction.h"
 
-#include "CoreMinimal.h"
-
-/**
- * 
- */
-class P1_API MBActionNone
+class P1_API MBActionNone : public MBAction
 {
 public:
-	MBActionNone();
-	~MBActionNone();
+	virtual ~MBActionNone() {}
+
+	virtual void DecideAction(AMBAIBaseCharacter* const InAICharacter) const override;
+	virtual void ExecuteAction(AMBAIBaseCharacter* const InAICharacter) const override;
 };

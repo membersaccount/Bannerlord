@@ -6,6 +6,7 @@
 #include <utility>
 #include <stack>
 #include "MBSettings.h"
+#include "AI/MBStateManager.h"
 #include "Datas/MBStructs.h"
 #include "MBBattleGameMode.generated.h"
 
@@ -19,6 +20,10 @@ class P1_API AMBBattleGameMode : public AGameModeBase
 public:
 	AMBBattleGameMode();
 	void InitGameData();
+
+public:
+	void OrderPlayerTeam(MBOrder* InOrder);
+	void OrderEnemyTeam(MBOrder* InOrder);
 
 protected: // Default
 	virtual void BeginPlay() override;
@@ -46,9 +51,13 @@ private: // Character Data
 	int EnemyTeamCount;
 	std::list<AIInfoData> PlayerTeamInfo;
 	std::list<AIInfoData> EnemyTeamInfo;
+	MBStateManager CharacterStateManager;
 
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
 
 private: // Cached Data
 	UWorld* CachedWorld;
+
+private: // Debug
+	FTimerHandle DebugTimer;
 };
