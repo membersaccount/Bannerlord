@@ -11,7 +11,6 @@ void UBowAnimInstance::NativeBeginPlay()
 	Super::NativeBeginPlay();
 	OnPlayMontageNotifyBegin.AddDynamic(this, &UBowAnimInstance::OnMontageNotifyBegin);
 	player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter1"));
 }
 
 	void UBowAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -22,7 +21,6 @@ void UBowAnimInstance::NativeBeginPlay()
 		if (player->eChractoerState == ECharacterState::IDLE) {
 			Montage_Resume(CurrentMontage);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter2"));
 
 	}
 
@@ -36,7 +34,6 @@ void UBowAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchingPo
 		{
 			if(player->eChractoerState == ECharacterState::ATTACKING)
 				Montage_Pause(CurrentMontage);
-			UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter3"));
 
 		}
 	}

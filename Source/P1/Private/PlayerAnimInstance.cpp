@@ -69,6 +69,7 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 		if (CurrentMontage)
 		{
 			player->WeaponComponent1->CurrentWeapon->SwordMesh->SetVisibility(false);
+			player->WeaponComponent1->CurrentWeapon->SpearMesh->SetVisibility(false);
 		}
 	}
 

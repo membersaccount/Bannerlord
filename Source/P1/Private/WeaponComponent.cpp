@@ -118,7 +118,7 @@ void UWeaponComponent::updateMouseDirection()
 
 	FVector2D MouseDelta = currentMousePosition - lastMousePosition;
 
-	float Threshold = 100.0f;
+	float Threshold = 50.0f;
 
 	if (FMath::Abs(MouseDelta.X) > Threshold || FMath::Abs(MouseDelta.Y) > Threshold)
 	{

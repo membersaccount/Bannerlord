@@ -114,7 +114,6 @@ void AWeaponActor::playGuardMontage(EWeaponState weaponState, EMouseState mouseS
 
 	if (CachedMontages.Contains(weaponState))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("weaponActor"));
 
 		FWeaponMontageData MontageData = CachedMontages[weaponState];
 
@@ -157,7 +156,7 @@ void AWeaponActor::loadWeapon()
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Spear_Weapon(TEXT("/Script/Engine.StaticMesh'/Game/LHW/Assets/Models/Mesh/Spear_Spear_LOD0.Spear_Spear_LOD0'"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> Bow_Weapon(TEXT("/ Script / Engine.SkeletalMesh'/Game/LHW/ArcherAnimsetPro/Meshes/Bow/SK_Bow.SK_Bow'"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> Sword_Weapon(TEXT("/Script/Engine.StaticMesh'/Game/Golden_bird/Weapons/Sword/SM_Sword.SM_Sword'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> Sword_Weapon(TEXT("/Script/Engine.StaticMesh'/Game/LHW/Assets/sword/Weapons/Sword/SM_Sword.SM_Sword'"));
 	if (Spear_Weapon.Succeeded()&&Bow_Weapon.Succeeded()&&Sword_Weapon.Succeeded()) {
 
 		SpearMesh->SetStaticMesh(Spear_Weapon.Object);
