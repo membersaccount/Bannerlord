@@ -39,13 +39,13 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 	{
 		// 몽타주 일시 정지
 		CurrentMontage = this->GetCurrentActiveMontage();
-		if (CurrentMontage)
-		{
-			if (characterState == ECharacterState::ATTACKING) {
-				Montage_Pause(CurrentMontage);
-			}
+			if (CurrentMontage)
+			{
+				if (characterState == ECharacterState::ATTACKING) {
+					Montage_Pause(CurrentMontage);
+				}
 
-		}
+			}
 	}
 	if (NotifyName == FName(TEXT("ArrowSpawn"))) {
 		if (CurrentMontage)
@@ -72,6 +72,12 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 			player->WeaponComponent1->CurrentWeapon->SpearMesh->SetVisibility(false);
 		}
 	}
+	if (NotifyName == FName(TEXT("OnCollision"))) {
+		player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	if (NotifyName == FName(TEXT("OffCollision"))) {
+		player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 
 
@@ -93,6 +99,7 @@ void UPlayerAnimInstance::setCharacterMovement()
 	weaponState = weaponComp->weaponState;
 	IsMove = player->GetCharacterMovement()->IsMovingOnGround();
 	characterState = player->eChractoerState;
+
 
 }
 

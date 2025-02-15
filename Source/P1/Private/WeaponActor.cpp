@@ -172,11 +172,14 @@ void AWeaponActor::loadWeapon()
 		SwordMesh->SetVisibility(false);
 
 
-		SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		BowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpearMesh->SetCollisionProfileName(TEXT("spear"));
+		this->SetActorEnableCollision(true);
 
 		BowMesh->SetAnimInstanceClass(UBowAnimInstance::StaticClass());
+		SpearMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::overlapEvent);
 
 	}
 
@@ -226,3 +229,25 @@ void AWeaponActor::selectWeapon()
 	}
 }
 
+void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherComp) return;
+	if (me->Anim)
+	{
+		SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// 현재 애니메이션이 재생 중인지 확인
+		if (me->Anim->Montage_IsPlaying(me->Anim->GetCurrentActiveMontage()))
+		{
+			// 애니메이션을 일시 정지 (현재 위치에서 멈추기)
+			me->Anim->Montage_Pause(me->Anim->GetCurrentActiveMontage());
+
+			// 현재 재생 위치 얻기
+			float CurrentPosition = me->Anim->Montage_GetPosition(me->Anim->GetCurrentActiveMontage());
+
+			// 역방향으로 애니메이션 재생 (현재 위치에서 역재생)
+			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
+			me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
+
+		}
+	}
+}
