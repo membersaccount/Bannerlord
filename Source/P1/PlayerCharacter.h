@@ -40,6 +40,8 @@ public:
 
 	FVector direction;
 
+	bool isAttack = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "playerState")
 	ECharacterState eChractoerState = ECharacterState::IDLE;
 

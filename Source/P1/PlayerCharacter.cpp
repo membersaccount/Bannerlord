@@ -208,9 +208,11 @@ void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputV
 
 void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
-	eChractoerState = ECharacterState::ATTACKING;
-	WeaponComponent1->attackHandler();
+	if (isAttack) return;
 
+	eChractoerState = ECharacterState::ATTACKING;
+	isAttack = true;
+	WeaponComponent1->attackHandler();
 }
 
 void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& InputValue)

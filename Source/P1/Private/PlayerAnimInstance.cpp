@@ -30,11 +30,15 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (characterState == ECharacterState::IDLE) {
 		Montage_Resume(CurrentMontage);
 	}
-
 }
 
 void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
+	if (NotifyName == FName(TEXT("endAttack"))) {
+		player->isAttack = false;
+	}
+
+
 	if (NotifyName == FName(TEXT("None")))
 	{
 		// 몽타주 일시 정지
@@ -78,15 +82,15 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 	if (NotifyName == FName(TEXT("OffCollision"))) {
 		player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
-
-
-
 }
 
 void UPlayerAnimInstance::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
 {
+	player->isAttack = false;
 
+	if (NotifyName == FName(TEXT("endAttack"))) {
+		player->isAttack = false;
+	}
 }
 
 void UPlayerAnimInstance::setCharacterMovement()

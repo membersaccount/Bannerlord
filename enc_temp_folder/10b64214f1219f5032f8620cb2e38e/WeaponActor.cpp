@@ -17,7 +17,6 @@
 #include "Engine/SkeletalMesh.h"
 #include "Components/SceneComponent.h"
 #include "BowAnimInstance.h"
-#include "PlayerAnimInstance.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -82,9 +81,10 @@ void AWeaponActor::playAttackMontage(EWeaponState weaponState, EMouseState mouse
 {
 	if (!me) return;
 
-
 	if (CachedMontages.Contains(weaponState))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("weaponActor"));
+
 		FWeaponMontageData MontageData = CachedMontages[weaponState];
 		if (weaponState == EWeaponState::BOW) { BowMesh->GetAnimInstance()->Montage_Play(MontageData.BowAim); }
 
@@ -232,12 +232,9 @@ void AWeaponActor::selectWeapon()
 void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherComp) return;
-	UPlayerAnimInstance* a = Cast<UPlayerAnimInstance>(me->Anim);
 	if (me->Anim)
 	{
-		me->isAttack = false;
-
-		//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
+		UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
 		// 현재 애니메이션이 재생 중인지 확인
 		if (me->Anim->Montage_IsPlaying(me->Anim->GetCurrentActiveMontage()))
 		{
