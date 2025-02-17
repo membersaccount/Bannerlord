@@ -63,7 +63,7 @@ void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 {
 	if (!me) return;
 	weaponStateIn = weaponState;
-
+	me->isAttack = false;
 	if (CachedMontages.Contains(weaponState))
 	{
 		FWeaponMontageData MontageData = CachedMontages[weaponState];

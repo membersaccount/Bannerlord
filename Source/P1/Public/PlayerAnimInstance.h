@@ -40,6 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AArrowActor>arrow;
 
+
 	APlayerCharacter* player;
 	UWeaponComponent* weaponComp;
 	UAnimMontage* CurrentMontage;

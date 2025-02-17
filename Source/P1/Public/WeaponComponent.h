@@ -38,6 +38,9 @@ public:
 	EWeaponState weaponState = EWeaponState::NONE;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	class AWeaponActor* CurrentWeapon;
+	//위젯 애니메이션 저장
+	UPROPERTY()
+    UWidgetAnimation* AimAnimation;
 
 	class UImage* ArrowT;
 	class UImage* ArrowB;
@@ -45,10 +48,10 @@ public:
 	class UImage* ArrowL;
 
 	UPROPERTY(EditDefaultsOnly)
-	class UUserWidget* widget;
+	class UplayerWidget* widget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widge")
-	TSubclassOf<class UUserWidget>widgetFactory;
+	TSubclassOf<class UplayerWidget>widgetFactory;
 
 	float mouseY = 0.0f;
 	float mouseX = 0.0f;
@@ -75,7 +78,4 @@ public:
 	void dieActionHandler();
 
 	void updateMouseDirection();
-
-
-
 };

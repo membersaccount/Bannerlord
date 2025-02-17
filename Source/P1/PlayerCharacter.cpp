@@ -16,6 +16,8 @@
 #include "GameFramework/Actor.h"
 #include "UObject/ConstructorHelpers.h"
 #include "DefaultActor.h"
+#include "playerWidget.h"
+#include "Animation/WidgetAnimation.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -157,7 +159,6 @@ void APlayerCharacter::lookUpHandler(const struct FInputActionValue& InputValue)
 	CurrentRotation.Pitch = InterpPitch;
 	SpringArmComp->SetRelativeRotation(CurrentRotation);
 
-
 }
 
 void APlayerCharacter::moveHandler(const struct FInputActionValue& InputValue)
@@ -209,15 +210,21 @@ void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputV
 void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
 	if (isAttack) return;
-
-	eChractoerState = ECharacterState::ATTACKING;
 	isAttack = true;
+	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent1->attackHandler();
+	if (WeaponComponent1->widget->AimAnimation) {
+		WeaponComponent1->widget->AimPlayAnimation(true);
+	}
+
 }
 
 void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& InputValue)
 {
 	eChractoerState = ECharacterState::IDLE;
+	if (WeaponComponent1->widget->AimAnimation) {
+		WeaponComponent1->widget->AimPlayAnimation(false);
+	}
 }
 
 void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& InputValue)

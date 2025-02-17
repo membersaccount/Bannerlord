@@ -6,6 +6,8 @@
 #include "EMouseState.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Animation/WidgetAnimation.h"
+#include "playerWidget.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -25,7 +27,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	widget = CreateWidget<UUserWidget>(GetWorld(), widgetFactory);
+	widget = CreateWidget<UplayerWidget>(GetWorld(), widgetFactory);
 	widget->AddToViewport();
 
 	if (widget==nullptr)return;
@@ -89,6 +91,7 @@ void UWeaponComponent::attackHandler()
 	UE_LOG(LogTemp, Warning, TEXT("weaponComp"));
 
 	CurrentWeapon->playAttackMontage(weaponState, EmouseDirection);
+
 }
 
 void UWeaponComponent::guardHandler()
@@ -134,5 +137,3 @@ void UWeaponComponent::updateMouseDirection()
 	// 이전 마우스 위치 갱신
 	lastMousePosition = currentMousePosition;
 }
-
-
