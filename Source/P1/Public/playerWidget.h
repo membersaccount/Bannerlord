@@ -27,8 +27,10 @@ public:
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
     UWidgetAnimation* AimAnimation;
+	UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
+    UWidgetAnimation* AimAnimationReturn;
 
-		UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
     UWidgetAnimation* AimOut;
 
 	//에임 애니메이션 재생 함수

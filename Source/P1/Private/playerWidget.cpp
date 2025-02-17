@@ -18,8 +18,8 @@ void UplayerWidget::NativeConstruct()
 void UplayerWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 {
 	Super::NativeTick(MyGeometry, DeltaTime);
-	//if(AimAnimation)
-	//CurrentAnimationTime = this->GetAnimationCurrentTime(AimAnimation);
+	if(AimAnimation)
+		CurrentAnimationTime = this->GetAnimationCurrentTime(AimAnimation);
 }
 
 void UplayerWidget::AimPlayAnimation(bool isClick)
@@ -32,7 +32,7 @@ void UplayerWidget::AimPlayAnimation(bool isClick)
 	else
 	{
 
-		PlayAnimation(AimAnimation, 0.0f, 1.0f, EUMGSequencePlayMode::Reverse, 1.0f);  // 开规氢
+		PlayAnimation(AimAnimationReturn, 0.0f, 1.0f, EUMGSequencePlayMode::Forward, 1.0f);  // 开规氢
 	}
 
 }
@@ -41,7 +41,8 @@ void UplayerWidget::PlayAnimReverse()
 {
 	if (!bFinished)
 	{
-		PlayAnimation(AimOut, 0.0f, 1.0f, EUMGSequencePlayMode::Reverse, 1.0f); // 开规氢
+		if (!isArrowClick) return;
+		PlayAnimation(AimOut, 0.0f, 1.0f, EUMGSequencePlayMode::Forward, 1.0f);
 		bFinished = true;
 	}
 }

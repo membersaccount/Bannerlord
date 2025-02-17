@@ -47,6 +47,11 @@ public:
 	class UImage* ArrowR;
 	class UImage* ArrowL;
 
+	class UImage* AimT;
+	class UImage* AimB;
+	class UImage* AimR;
+	class UImage* AimL;
+
 	UPROPERTY(EditDefaultsOnly)
 	class UplayerWidget* widget;
 
@@ -78,4 +83,7 @@ public:
 	void dieActionHandler();
 
 	void updateMouseDirection();
+
+	void showAim(bool isAim);
+	void showArrow();
 };

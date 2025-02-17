@@ -37,6 +37,8 @@ public:
 	float ForwardSpeed= 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	float RightSpeed = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
+	class UArrowComponent* ArrowComp;
 
 	FVector direction;
 
@@ -149,4 +151,5 @@ public:
 	void OnMyMontageStarted(class UAnimMontage* Montage);
 	UFUNCTION(BluePrintCallable, BlueprintImplementableEvent)
 	void OnMyPlayMontage(class UAnimMontage* Montage);
+	void spawnArrow();
 };

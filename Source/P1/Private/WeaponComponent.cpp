@@ -35,6 +35,14 @@ void UWeaponComponent::BeginPlay()
 	ArrowB = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowB")));
 	ArrowR = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowR")));
 	ArrowL = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowL")));
+	AimT= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimT")));
+	AimB= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimB")));
+	AimR= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimR")));
+	AimL= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimL")));
+	AimT->SetOpacity(0);
+	AimB->SetOpacity(0);
+	AimR->SetOpacity(0);
+	AimL->SetOpacity(0);
 }
 
 
@@ -47,27 +55,21 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	updateMouseDirection();
 	FString log = UEnum::GetValueAsString(EmouseDirection);
 	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
-	switch (EmouseDirection)
+
+	showArrow();
+	switch (weaponState)
 	{
-	case EMouseState::UP: { ArrowT->SetOpacity(1);ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0);}
+	case EWeaponState::NONE: { showAim(false); }
 		break;
-	case EMouseState::DOWN: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(1); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0); }
+	case EWeaponState::SPEAR: { showAim(false); }
 		break;
-	case EMouseState::RIGHT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(1); ArrowL->SetOpacity(0); }
+	case EWeaponState::SWORD: { showAim(false); }
 		break;
-	case EMouseState::LEFT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(1); }
+	case EWeaponState::BOW: { showAim(true); }
 		break;
 	default:
 		break;
 	}
-
-
-
-
-
-
-
-
 }
 
 void UWeaponComponent::changeWeaponState(EWeaponState eweapon)
@@ -75,6 +77,7 @@ void UWeaponComponent::changeWeaponState(EWeaponState eweapon)
 	//캐릭터에서 상태값 가져오기
 	if (weaponState == eweapon)return;
 	weaponState = eweapon;
+
 	//기본 애니메이션 변경
 	changeWeaponAnamation();
 }
@@ -88,7 +91,6 @@ void UWeaponComponent::changeWeaponAnamation()
 
 void UWeaponComponent::attackHandler()
 {
-	UE_LOG(LogTemp, Warning, TEXT("weaponComp"));
 
 	CurrentWeapon->playAttackMontage(weaponState, EmouseDirection);
 
@@ -136,4 +138,40 @@ void UWeaponComponent::updateMouseDirection()
 	}
 	// 이전 마우스 위치 갱신
 	lastMousePosition = currentMousePosition;
+}
+
+void UWeaponComponent::showAim(bool isAim)
+{
+
+	if(isAim){
+		AimT->SetOpacity(1); AimB->SetOpacity(1); AimR->SetOpacity(1); AimL->SetOpacity(1);
+	}
+	else{
+		AimT->SetOpacity(0); AimB->SetOpacity(0); AimR->SetOpacity(0); AimL->SetOpacity(0);
+	}
+
+
+
+
+}
+
+void UWeaponComponent::showArrow()
+{
+	if (weaponState == EWeaponState::BOW) { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0); return; }
+	switch (EmouseDirection)
+	{
+	case EMouseState::UP: { ArrowT->SetOpacity(1); ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0); }
+						break;
+	case EMouseState::DOWN: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(1); ArrowR->SetOpacity(0); ArrowL->SetOpacity(0); }
+						  break;
+	case EMouseState::RIGHT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(1); ArrowL->SetOpacity(0); }
+						   break;
+	case EMouseState::LEFT: { ArrowT->SetOpacity(0); ArrowB->SetOpacity(0); ArrowR->SetOpacity(0); ArrowL->SetOpacity(1); }
+						  break;
+	default:
+		break;
+	}
+
+
+
 }

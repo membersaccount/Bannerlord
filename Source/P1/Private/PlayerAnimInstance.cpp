@@ -7,6 +7,7 @@
 #include "ECharacterState.h"
 #include "ArrowActor.h"
 #include "WeaponActor.h"
+#include "CollisionQueryParams.h"
 
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -54,14 +55,13 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 	if (NotifyName == FName(TEXT("ArrowSpawn"))) {
 		if (CurrentMontage)
 		{
-			player->arrow->setVisibility(true);
+			player->spawnArrow();
+
 		}
 	}
 	if (NotifyName == FName(TEXT("RemoveArrow"))) {
-		if (CurrentMontage)
-		{
-			player->arrow->setVisibility(false);
-		}
+
+
 	}
 	if (NotifyName == FName(TEXT("changeWeapon"))) {
 		if (CurrentMontage)

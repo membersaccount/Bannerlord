@@ -18,6 +18,7 @@
 #include "DefaultActor.h"
 #include "playerWidget.h"
 #include "Animation/WidgetAnimation.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -29,6 +30,9 @@ APlayerCharacter::APlayerCharacter()
 	SpringArmComp->SetRelativeLocationAndRotation(FVector(20, 0, 100), FRotator(-35, 0, 0));
 	SpringArmComp->TargetArmLength = 130;
 	SpringArmComp->bUsePawnControlRotation = false;
+
+	ArrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComp"));
+	ArrowComp->SetupAttachment(SpringArmComp);
 
 	Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Cam->SetupAttachment(SpringArmComp);
@@ -72,8 +76,7 @@ void APlayerCharacter::BeginPlay()
 		FRotator::ZeroRotator,
 		SpawnParams
 	);
-	arrow = Cast<AArrowActor>(GetWorld()->SpawnActor(arrowActor));
-	arrow->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+
 	if (nullptr != CurWeapon) {
 		CurWeapon->SetOwner(this);
 		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
@@ -259,4 +262,14 @@ void APlayerCharacter::weaponSoketChange(bool isChange)
 void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
 {
 	OnMyPlayMontage(Montage);
+}
+
+void APlayerCharacter::spawnArrow()
+{
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	FTransform arrowPos = GetMesh()->GetSocketTransform(TEXT("hand_rSocket"));
+
+	GetWorld()->SpawnActor<AArrowActor>(arrowActor, ArrowComp->GetComponentTransform(), spawnParams);
 }
