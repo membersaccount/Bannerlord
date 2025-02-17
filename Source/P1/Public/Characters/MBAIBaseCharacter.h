@@ -46,6 +46,7 @@ public: // Target
 	void CheckTargetExist();
 	void CalculateDistance(const FVector& InTargetLocation);
 	void DecideTargetDistance();
+	void CheckForceLocationArrive();
 
 public: // Timer
 	bool IsTimerActive(FTimerHandle* InTimer);
