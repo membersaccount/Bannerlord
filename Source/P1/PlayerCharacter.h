@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "ECharacterState.h"
+#include "ArrowProjectileMovementComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -151,5 +152,13 @@ public:
 	void OnMyMontageStarted(class UAnimMontage* Montage);
 	UFUNCTION(BluePrintCallable, BlueprintImplementableEvent)
 	void OnMyPlayMontage(class UAnimMontage* Montage);
+
 	void spawnArrow();
+
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
+
+	void arrowShotHandler();
+
+	AArrowActor* spawnedArrow;
 };

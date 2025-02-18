@@ -19,6 +19,7 @@
 #include "playerWidget.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/ArrowComponent.h"
+#include "ArrowProjectileMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -64,6 +65,7 @@ WeaponComponent1 = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponen
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	arrow=Cast<AArrowActor>(arrowActor);
 
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
@@ -267,9 +269,58 @@ void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
 void APlayerCharacter::spawnArrow()
 {
 	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-	FTransform arrowPos = GetMesh()->GetSocketTransform(TEXT("hand_rSocket"));
+	FTransform arrowPos = GetMesh()->GetSocketTransform(TEXT("arrow"));
 
-	GetWorld()->SpawnActor<AArrowActor>(arrowActor, ArrowComp->GetComponentTransform(), spawnParams);
+	spawnedArrow = GetWorld()->SpawnActor<AArrowActor>(arrowActor, arrowPos, spawnParams);
+
+
+	// 스폰된 화살 객체가 유효한지 확인
+	if (spawnedArrow)
+	{
+		spawnedArrow->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("arrow"));
+
+		arrowProjectileMovementComponent = spawnedArrow->FindComponentByClass<UArrowProjectileMovementComponent>();
+	}
+}
+
+void APlayerCharacter::arrowShotHandler()
+{
+	if (arrowProjectileMovementComponent)
+	{
+		spawnedArrow->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		FVector Start, End;
+		FRotator CameraRotation;
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(this);
+
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+		{
+			PlayerController->GetPlayerViewPoint(Start, CameraRotation);
+			FVector ForwardVector = CameraRotation.Vector();
+			End = Start + (ForwardVector * 5000.f); // 50m = 5000cm
+
+			bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
+
+			FVector TargetLocation;
+			if (bHit)
+			{
+				TargetLocation = HitResult.Location;
+			}
+			else
+			{
+				TargetLocation = End;
+			}
+
+			FVector LaunchDirection = (TargetLocation - GetActorLocation()).GetSafeNormal();
+			arrowProjectileMovementComponent->shotHandler(LaunchDirection);
+
+			// 디버그 라인 표시
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
+			DrawDebugPoint(GetWorld(), TargetLocation, 10.0f, FColor::Red, false, 1.0f);
+		}
+	}
 }

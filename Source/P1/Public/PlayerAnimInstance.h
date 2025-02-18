@@ -38,7 +38,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	ECharacterState characterState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AArrowActor>arrow;
+	AArrowActor* arrow;
 
 
 	APlayerCharacter* player;

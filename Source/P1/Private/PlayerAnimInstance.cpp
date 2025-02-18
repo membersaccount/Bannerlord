@@ -56,11 +56,10 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 		if (CurrentMontage)
 		{
 			player->spawnArrow();
-
 		}
 	}
 	if (NotifyName == FName(TEXT("RemoveArrow"))) {
-
+		player->arrowShotHandler();
 
 	}
 	if (NotifyName == FName(TEXT("changeWeapon"))) {

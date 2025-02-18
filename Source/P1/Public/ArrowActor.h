@@ -26,23 +26,18 @@ public:
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	class UStaticMeshComponent* ArrowMesh;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-
-	class UBoxComponent* BoxComp;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USceneComponent* SceneComp;
 
-	void targetSetLocation(FVector TargetLocation);
+	//void targetSetLocation(FVector TargetLocation);
 
 	APlayerController* PC;
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	class UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
 
-	FVector ATargetLocation;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	class UArrowComponent* ArrowComp;
+	FVector ATargetLocation;
 
 
 };

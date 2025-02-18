@@ -7,11 +7,18 @@
 #include "ArrowProjectileMovementComponent.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class P1_API UArrowProjectileMovementComponent : public UProjectileMovementComponent
 {
 	GENERATED_BODY()
-	
+
+public:
+	UArrowProjectileMovementComponent();
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void shotHandler(const FVector& Direction);
+
+
 };
