@@ -37,7 +37,7 @@ public:
 	class UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
 
 
-	FVector ATargetLocation;
+	FVector PreviousLocation;
 
 
 };

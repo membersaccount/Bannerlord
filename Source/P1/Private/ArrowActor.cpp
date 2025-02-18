@@ -30,11 +30,24 @@ AArrowActor::AArrowActor()
 void AArrowActor::BeginPlay()
 {
 	Super::BeginPlay();
+	PreviousLocation = arrowProjectileMovementComponent->UpdatedComponent->GetComponentLocation();
 }
 
 // Called every frame
 void AArrowActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector CurrentLocation = arrowProjectileMovementComponent->UpdatedComponent->GetComponentLocation();
 
+	// Draw a debug line between the previous location and the current location
+	DrawDebugLine(
+		GetWorld(),
+		PreviousLocation,
+		CurrentLocation,
+		FColor::Green,
+		false, // Persistent (never goes away)
+		-1.f,  // Lifetime (negative value = infinite)
+		0,     // Depth priority
+		1.f    // Thickness
+	);
 }

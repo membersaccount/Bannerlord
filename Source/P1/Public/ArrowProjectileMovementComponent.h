@@ -18,7 +18,10 @@ public:
 	UArrowProjectileMovementComponent();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    void shotHandler(const FVector& Direction);
+	void shotHandler(const FVector& TargetLocation);
 
-
+private:
+	bool calculateLaunchVelocity(FVector& OutLaunchVelocity, const FVector& StartLocation, const FVector& TargetLocation) const;
 };
+
+

@@ -25,6 +25,7 @@ void UPlayerAnimInstance::NativeBeginPlay()
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+
 	Super::NativeUpdateAnimation(DeltaSeconds);
 	setCharacterMovement();
 	CurrentMontage = this->GetCurrentActiveMontage();
@@ -49,7 +50,6 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 				if (characterState == ECharacterState::ATTACKING) {
 					Montage_Pause(CurrentMontage);
 				}
-
 			}
 	}
 	if (NotifyName == FName(TEXT("ArrowSpawn"))) {
@@ -59,8 +59,8 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 		}
 	}
 	if (NotifyName == FName(TEXT("RemoveArrow"))) {
+		player->spawnedArrow->ArrowMesh->SetRelativeRotation(FRotator(0,-90,0));
 		player->arrowShotHandler();
-
 	}
 	if (NotifyName == FName(TEXT("changeWeapon"))) {
 		if (CurrentMontage)

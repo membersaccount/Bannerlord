@@ -8,6 +8,7 @@
 #include "Components/Image.h"
 #include "Animation/WidgetAnimation.h"
 #include "playerWidget.h"
+#include "Components/CanvasPanelSlot.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -50,6 +51,7 @@ void UWeaponComponent::BeginPlay()
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	getWidgetPosition();
 
 	// ...
 	updateMouseDirection();
@@ -149,10 +151,6 @@ void UWeaponComponent::showAim(bool isAim)
 	else{
 		AimT->SetOpacity(0); AimB->SetOpacity(0); AimR->SetOpacity(0); AimL->SetOpacity(0);
 	}
-
-
-
-
 }
 
 void UWeaponComponent::showArrow()
@@ -174,4 +172,18 @@ void UWeaponComponent::showArrow()
 
 
 
+}
+
+void UWeaponComponent::getWidgetPosition()
+{
+	if (AimT&& AimL)
+	{
+		UCanvasPanelSlot* CanvasSlot1 = Cast<UCanvasPanelSlot>(AimT->Slot);
+		UCanvasPanelSlot* CanvasSlot2 = Cast<UCanvasPanelSlot>(AimL->Slot);
+		if (CanvasSlot1&& CanvasSlot2)
+		{
+	;
+			UE_LOG(LogTemp, Warning, TEXT("Image Coordinates: X: %f, Y: %f"), CanvasSlot2->GetPosition().X, CanvasSlot1->GetPosition().Y);
+		}
+	}
 }

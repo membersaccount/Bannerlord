@@ -86,4 +86,6 @@ public:
 
 	void showAim(bool isAim);
 	void showArrow();
+
+	void getWidgetPosition();
 };

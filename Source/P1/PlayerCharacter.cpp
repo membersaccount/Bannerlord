@@ -316,9 +316,8 @@ void APlayerCharacter::arrowShotHandler()
 			}
 
 			FVector LaunchDirection = (TargetLocation - GetActorLocation()).GetSafeNormal();
-			arrowProjectileMovementComponent->shotHandler(LaunchDirection);
+			arrowProjectileMovementComponent->shotHandler(TargetLocation);
 
-			// 디버그 라인 표시
 			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
 			DrawDebugPoint(GetWorld(), TargetLocation, 10.0f, FColor::Red, false, 1.0f);
 		}
