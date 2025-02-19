@@ -50,6 +50,7 @@ private: // Formation
 private: // Shared Data
 	static USkeletalMesh* SharedMeshSpearmanPlayerTroop;
 	static USkeletalMesh* SharedMeshSpearmanEnemyTroop;
+	static UStaticMesh* SharedMeshSpear;
 	static UAnimBlueprint* SharedSpearmanAnimBlueprint;
 
 private: // Character Data

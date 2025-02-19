@@ -21,7 +21,7 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
+	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -103,6 +103,7 @@ private:
 
 private: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
+	UStaticMeshComponent* StaticMeshSpearComponent;
 	UAnimBlueprint* AnimationBlueprint;
 
 protected: // Cached Data

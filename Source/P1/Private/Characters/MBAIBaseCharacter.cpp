@@ -15,7 +15,7 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
+void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
 {
 	SkeletalMeshComponent->SetSkeletalMesh(InSkeletalMesh);
 	SkeletalMeshComponent->SetAnimInstanceClass(InAnimBlueprint->GeneratedClass);
@@ -34,6 +34,14 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UAnimBluep
 	AIState.MoveData = &StateManager->ManagerMoveStop;
 
 	AIState.OrderData->InItOrder(this);
+
+	StaticMeshSpearComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass());
+	check(StaticMeshSpearComponent);
+
+	StaticMeshSpearComponent->SetStaticMesh(InSpearMesh);
+	StaticMeshSpearComponent->RegisterComponent();
+	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
+	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AMBAIBaseCharacter::BeginPlay()

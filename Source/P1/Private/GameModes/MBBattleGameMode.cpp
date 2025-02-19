@@ -6,26 +6,31 @@
 
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
+UStaticMesh* AMBBattleGameMode::SharedMeshSpear = nullptr;
 UAnimBlueprint* AMBBattleGameMode::SharedSpearmanAnimBlueprint = nullptr;
 
 AMBBattleGameMode::AMBBattleGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Blue"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/MFS_vA"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Red"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObj(TEXT("/Game/YSH/Assets/Anim/ABP_SpearMan"));
 
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
+	check(MeshAsset.Succeeded());
 	check(AnimBlueprintObj.Succeeded());
 
 	SharedMeshSpearmanPlayerTroop = BlueTeamMeshObject.Object;
 	SharedMeshSpearmanEnemyTroop = RedTeamMeshObject.Object;
+	SharedMeshSpear = MeshAsset.Object;
 	SharedSpearmanAnimBlueprint = AnimBlueprintObj.Object;
 
 	check(SharedMeshSpearmanPlayerTroop);
 	check(SharedMeshSpearmanEnemyTroop);
+	check(SharedMeshSpear);
 	check(SharedSpearmanAnimBlueprint);
 }
 
@@ -111,8 +116,8 @@ void AMBBattleGameMode::BeginPlay()
 														}, 3.f, false);
 												}, 3.f, false);
 										}, 5.f, false);
-								}, 15.f, false);
-						}, 15.f, false);
+								}, 5.f, false);
+						}, 5.f, false);
 				}, 5.f, false);
 		}, 5.f, false);
 }
@@ -175,11 +180,11 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	if (InIsPlayerTeam)
 	{
 		PlayerTeamInfo.push_back(Info);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
 }
 
 void AMBBattleGameMode::UpdateTeamCount()
