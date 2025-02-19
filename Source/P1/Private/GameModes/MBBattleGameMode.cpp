@@ -6,26 +6,31 @@
 
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
+UStaticMesh* AMBBattleGameMode::SharedMeshSpear = nullptr;
 UAnimBlueprint* AMBBattleGameMode::SharedSpearmanAnimBlueprint = nullptr;
 
 AMBBattleGameMode::AMBBattleGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Blue"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/MFS_vA"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Red"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObj(TEXT("/Game/YSH/Assets/Anim/ABP_SpearMan"));
 
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
+	check(MeshAsset.Succeeded());
 	check(AnimBlueprintObj.Succeeded());
 
 	SharedMeshSpearmanPlayerTroop = BlueTeamMeshObject.Object;
 	SharedMeshSpearmanEnemyTroop = RedTeamMeshObject.Object;
+	SharedMeshSpear = MeshAsset.Object;
 	SharedSpearmanAnimBlueprint = AnimBlueprintObj.Object;
 
 	check(SharedMeshSpearmanPlayerTroop);
 	check(SharedMeshSpearmanEnemyTroop);
+	check(SharedMeshSpear);
 	check(SharedSpearmanAnimBlueprint);
 }
 
@@ -75,23 +80,44 @@ void AMBBattleGameMode::BeginPlay()
 
 			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 				{
-					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-					Debug::Print("Order: EngageBattle");
+					this->DefaultFormation(200.f);
+					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
+					Debug::Print("Order: MakeFormation - 200");
 
 					CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 						{
-							this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
-							//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
-							Debug::Print("Order: HoldPosition");
+							this->DefaultFormation(500.f);
+							this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
+							Debug::Print("Order: MakeFormation - 500");
 
 							CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 								{
-									this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-									//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-									Debug::Print("Order: EngageBattle");
-								}, 3.f, false);
-						}, 3.f, false);
+									this->DefaultFormation(300.f);
+									this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
+									Debug::Print("Order: MakeFormation - 300");
+
+									CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+										{
+											this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+											this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+											Debug::Print("Order: EngageBattle");
+
+											CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+												{
+													this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+													//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+													Debug::Print("Order: HoldPosition");
+
+													CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+														{
+															this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+															//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+															Debug::Print("Order: EngageBattle");
+														}, 3.f, false);
+												}, 3.f, false);
+										}, 5.f, false);
+								}, 5.f, false);
+						}, 5.f, false);
 				}, 5.f, false);
 		}, 5.f, false);
 }
@@ -114,11 +140,11 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 
 void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation)
 {
-	int32 lineX = 0;
-	int32 lineY = 0;
+	int lineX = 0;
+	int lineY = 0;
 	for (int32 i = 0; i < InNum; ++i)
 	{
-		if (i % 50 == 0)
+		if (i % 3 == 0)
 		{
 			if (InIsPlayerTeam)
 			{
@@ -135,6 +161,12 @@ void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVecto
 		FVector SpawnLocation = InLocation + FVector(lineX * 300.0f, lineY * 200.f, 0.f);
 		SpawnCharacter(InIsPlayerTeam, SpawnLocation, InRotation);
 	}
+
+	Row = lineX;
+	Column = 3;
+
+	FString Str = FString::Printf(TEXT("Row = %d, Colum = %d"), Row, Column);
+	Debug::Print(*Str);
 }
 
 void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, FRotator InRotation)
@@ -148,11 +180,11 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	if (InIsPlayerTeam)
 	{
 		PlayerTeamInfo.push_back(Info);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
 }
 
 void AMBBattleGameMode::UpdateTeamCount()
@@ -212,6 +244,11 @@ void AMBBattleGameMode::UpdateTargets()
 	}
 }
 
+void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation)
+{
+	InCharacter->SetForceMoveLocation(InLocation);
+}
+
 void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 {
 	for (auto it = InData.begin(); it != InData.end(); ++it)
@@ -229,6 +266,52 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 		it->InfoSelfData->Destroy();
 		DeadCharacters.pop();
 	}
+}
+
+void AMBBattleGameMode::DefaultFormation(float InSpace)
+{
+	FVector StartLocation;
+	int ForamtionColumn = 0;
+	int FormationRow = 0;
+	int Count = 1;
+
+	//if (1 == Row % 2)
+	//{
+	//	int FormationCenter = (Column * 2 - 1) * Row + (Row / 2 + 1);
+
+	//	auto it = std::next(PlayerTeamInfo.begin(), FormationCenter);
+	//	FVector CenterLocation = it->InfoLocation;
+	//	
+	//	StartLocation = CenterLocation + FVector(-InSpace * (Row / 2), -InSpace * (Column / 2), 0.f);
+
+	//}
+
+	int FormationCenter = (Column * 2 - 1) * Row + (Row / 2 + 1);
+
+	auto it = std::next(PlayerTeamInfo.begin(), FormationCenter);
+	FVector CenterLocation = it->InfoLocation;
+
+	StartLocation = CenterLocation + FVector(-InSpace * (Row / 2), -InSpace * (Column / 2), 0.f);
+
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(FormationRow * InSpace, ForamtionColumn * InSpace, 0.f));
+
+		if (Count % 3 == 0)
+		{
+			++FormationRow;
+			ForamtionColumn = 0;
+		}
+		else
+		{
+			++ForamtionColumn;
+		}
+		++Count;
+	}
+}
+
+void AMBBattleGameMode::SetFormation()
+{
 }
 
 void AMBBattleGameMode::OrderPlayerTeam(MBOrder* InOrder)
