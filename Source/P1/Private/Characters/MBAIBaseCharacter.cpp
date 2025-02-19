@@ -59,6 +59,33 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
+
+	if (CurrentTime > 1.f)
+	{
+		CurrentTime = 0.f;
+
+		if (true == EnableActionDelay)
+		{
+			Debug::Print("EnableActionDelay is true", FColor::Blue);
+		}
+		else
+		{
+			Debug::Print("EnableActionDelay is false", FColor::Red);
+		}
+
+		if (true == EnableAttackDelay)
+		{
+			Debug::Print("EnableAttackDelay is true", FColor::Blue);
+		}
+		else
+		{
+			Debug::Print("EnableAttackDelay is false", FColor::Red);
+		}
+	}
+	else
+	{
+		CurrentTime += DeltaTime;
+	}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -75,6 +102,15 @@ void AMBAIBaseCharacter::SetOrder(MBOrder* InOrder)
 void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation)
 {
 	ForceMoveLocation = InForceMoveLocation;
+}
+
+void AMBAIBaseCharacter::OnHit(int InDamage)
+{
+	Debug::Print("AI hit", FColor::Black);
+
+	HP -= InDamage;
+	if (0 >= HP)
+		Dead();
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
@@ -229,7 +265,7 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 		{
 			this->EnableActionDelay = false;
 		}, 3.f, false);
-	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
 		{
 			this->EnableAttackDelay = false;
 		}, 7.f, false);
@@ -252,7 +288,6 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
 {
 	EnableActionDelay = true;
-	EnableAttackDelay = true;
 	IsDefending = true;
 
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
@@ -277,4 +312,10 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 
 void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)
 {
+}
+
+void AMBAIBaseCharacter::Dead()
+{
+	Debug::Print("AI is killed", FColor::Black);
+	IsDead = true;
 }

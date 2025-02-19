@@ -58,9 +58,10 @@ namespace DebugUtils
 
 namespace Debug
 {
-	inline static void Print(const FString& InMessage, const float InDisplayTime = 15.f)
+	inline static void Print(const FString& InMessage, FColor InColor = FColor::Cyan, const float InDisplayTime = 15.f)
 	{
-		DebugUtils::PrintDebugMessage(InMessage, DebugType::Normal, InDisplayTime);
+		UE_LOG(MB, Warning, TEXT("%s"), *InMessage);
+		GEngine->AddOnScreenDebugMessage(-1, InDisplayTime, InColor, InMessage);
 	}
 
 	inline static void Error(const float InDisplayTime = 15.f, const std::source_location InLocation = std::source_location::current())
