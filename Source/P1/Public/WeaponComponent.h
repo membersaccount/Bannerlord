@@ -10,7 +10,8 @@
 #include "Blueprint/UserWidget.h"
 #include "WeaponComponent.generated.h"
 
-
+/** foward declarations */
+class UImage;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class P1_API UWeaponComponent : public UActorComponent
@@ -29,8 +30,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
-
 	////////////////////////////////////////////////////
 	//변수선언
 public:
@@ -42,15 +41,15 @@ public:
 	UPROPERTY()
     UWidgetAnimation* AimAnimation;
 
-	class UImage* ArrowT;
-	class UImage* ArrowB;
-	class UImage* ArrowR;
-	class UImage* ArrowL;
+	UImage* ArrowT;
+	UImage* ArrowB;
+	UImage* ArrowR;
+	UImage* ArrowL;
 
-	class UImage* AimT;
-	class UImage* AimB;
-	class UImage* AimR;
-	class UImage* AimL;
+	UImage* AimT;
+	UImage* AimB;
+	UImage* AimR;
+	UImage* AimL;
 
 	UPROPERTY(EditDefaultsOnly)
 	class UplayerWidget* widget;
@@ -65,6 +64,7 @@ public:
 	EMouseState EmouseDirection=EMouseState::NONE;
 
 	EMouseState GetMouseDirection() const { return EmouseDirection; }
+	float AimWidgetPosition;
 
 
 
