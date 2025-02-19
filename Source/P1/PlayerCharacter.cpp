@@ -20,6 +20,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/ArrowComponent.h"
 #include "ArrowProjectileMovementComponent.h"
+#include "Components/Image.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -229,6 +230,7 @@ void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& Inp
 	eChractoerState = ECharacterState::IDLE;
 	if (WeaponComponent1->widget->AimAnimation) {
 		WeaponComponent1->widget->AimPlayAnimation(false);
+		arrowShotHandler();
 	}
 }
 
@@ -288,6 +290,7 @@ void APlayerCharacter::arrowShotHandler()
 {
 	if (arrowProjectileMovementComponent)
 	{
+		spawnedArrow->ArrowMesh->SetRelativeRotation(FRotator(0, -90, 0));
 		spawnedArrow->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		FVector Start, End;
 		FRotator CameraRotation;
@@ -300,7 +303,13 @@ void APlayerCharacter::arrowShotHandler()
 		{
 			PlayerController->GetPlayerViewPoint(Start, CameraRotation);
 			FVector ForwardVector = CameraRotation.Vector();
+			//
+			Start += FVector(0.0f,
+				FMath::RandRange(-WeaponComponent1->AimWidgetPosition, WeaponComponent1->AimWidgetPosition),
+				FMath::RandRange(-WeaponComponent1->AimWidgetPosition, WeaponComponent1->AimWidgetPosition));
+			//
 			End = Start + (ForwardVector * 3000.f); // 50m = 5000cm
+
 
 			bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 

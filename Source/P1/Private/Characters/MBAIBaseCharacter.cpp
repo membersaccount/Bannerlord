@@ -41,13 +41,14 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->SetStaticMesh(InSpearMesh);
 	StaticMeshSpearComponent->RegisterComponent();
 	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
-	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
+	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AMBAIBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	CachedWorld = GetWorld();
 }
 
@@ -244,7 +245,7 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 		{
 			bool SwitchLead = (this->AIState.AttitudeData == &this->StateManager->ManagerAttitudeAggressive) &&
 				(this->AIInfo->InfoTargetData->AIState.AttitudeData == &this->StateManager->ManagerAttitudeAggressive);
-			
+
 			if (SwitchLead)
 			{
 				this->AIInfo->InfoTargetData->AIState.MoveData = &StateManager->ManagerMoveLead;
