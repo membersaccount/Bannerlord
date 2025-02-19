@@ -161,4 +161,5 @@ public:
 	void arrowShotHandler();
 
 	AArrowActor* spawnedArrow;
+
 };

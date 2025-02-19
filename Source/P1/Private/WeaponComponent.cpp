@@ -9,6 +9,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "playerWidget.h"
 #include "Components/CanvasPanelSlot.h"
+#include "../PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -180,10 +181,9 @@ void UWeaponComponent::getWidgetPosition()
 	{
 		UCanvasPanelSlot* CanvasSlot1 = Cast<UCanvasPanelSlot>(AimT->Slot);
 		UCanvasPanelSlot* CanvasSlot2 = Cast<UCanvasPanelSlot>(AimL->Slot);
-		if (CanvasSlot1&& CanvasSlot2)
+		if (CanvasSlot1 && CanvasSlot2)
 		{
-	;
-			UE_LOG(LogTemp, Warning, TEXT("Image Coordinates: X: %f, Y: %f"), CanvasSlot2->GetPosition().X, CanvasSlot1->GetPosition().Y);
+			AimWidgetPosition = CanvasSlot2->GetPosition().X;
 		}
 	}
 }
