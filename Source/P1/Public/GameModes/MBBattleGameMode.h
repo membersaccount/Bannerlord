@@ -24,6 +24,7 @@ public:
 public:
 	void OrderPlayerTeam(MBOrder* InOrder);
 	void OrderEnemyTeam(MBOrder* InOrder);
+	void DefaultFormation(float InSpace);
 
 protected: // Default
 	virtual void BeginPlay() override;
@@ -37,13 +38,19 @@ private: // Update
 	void UpdateTeamCount();
 	void UpdateAllCharacterInfo();
 	void UpdateTargets();
+	void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation);
 
 private: // Character Manage
 	void SearchDeadCharacter(std::list<AIInfoData>& InData);
 
+private: // Formation
+
+	void SetFormation();
+
 private: // Shared Data
 	static USkeletalMesh* SharedMeshSpearmanPlayerTroop;
 	static USkeletalMesh* SharedMeshSpearmanEnemyTroop;
+	static UStaticMesh* SharedMeshSpear;
 	static UAnimBlueprint* SharedSpearmanAnimBlueprint;
 
 private: // Character Data
@@ -54,6 +61,10 @@ private: // Character Data
 	MBStateManager CharacterStateManager;
 
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
+
+private: // Formation
+	int Row = 0;
+	int Column = 0;
 
 private: // Cached Data
 	UWorld* CachedWorld;
