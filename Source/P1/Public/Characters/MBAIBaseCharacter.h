@@ -34,6 +34,8 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
+	void OnHit(int InDamage);
+
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
 	void MoveControl(const FVector& InLocation, const float InSpeed);
@@ -57,13 +59,16 @@ public: // Timer
 
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
 
+private: // Data Handle
+	void Dead();
+
 public: // Default Data
 	AIInfoData* AIInfo;
 	State AIState;
 	MBStateManager* StateManager;
 
 	int HP = 100;
-	int Damage = 0;
+	int Damage = 25;
 	float CalculatedTargetDistance = 0.f;
 
 public: // AI
@@ -110,5 +115,5 @@ protected: // Cached Data
 	UWorld* CachedWorld;
 
 private: // Debug
-
+	float CurrentTime = 0.f;
 };
