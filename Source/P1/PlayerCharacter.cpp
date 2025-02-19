@@ -276,7 +276,6 @@ void APlayerCharacter::spawnArrow()
 	spawnedArrow = GetWorld()->SpawnActor<AArrowActor>(arrowActor, arrowPos, spawnParams);
 
 
-	// 스폰된 화살 객체가 유효한지 확인
 	if (spawnedArrow)
 	{
 		spawnedArrow->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("arrow"));
@@ -301,7 +300,7 @@ void APlayerCharacter::arrowShotHandler()
 		{
 			PlayerController->GetPlayerViewPoint(Start, CameraRotation);
 			FVector ForwardVector = CameraRotation.Vector();
-			End = Start + (ForwardVector * 5000.f); // 50m = 5000cm
+			End = Start + (ForwardVector * 3000.f); // 50m = 5000cm
 
 			bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 
