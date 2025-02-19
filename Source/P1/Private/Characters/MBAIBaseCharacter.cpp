@@ -61,32 +61,32 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 
 	AIState.OrderData->HandleOrder(this);
 
-	if (CurrentTime > 1.f)
-	{
-		CurrentTime = 0.f;
+	//if (CurrentTime > 1.f)
+	//{
+	//	CurrentTime = 0.f;
 
-		if (true == EnableActionDelay)
-		{
-			Debug::Print("EnableActionDelay is true", FColor::Blue);
-		}
-		else
-		{
-			Debug::Print("EnableActionDelay is false", FColor::Red);
-		}
+	//	if (true == EnableActionDelay)
+	//	{
+	//		Debug::Print("EnableActionDelay is true", FColor::Blue);
+	//	}
+	//	else
+	//	{
+	//		Debug::Print("EnableActionDelay is false", FColor::Red);
+	//	}
 
-		if (true == EnableAttackDelay)
-		{
-			Debug::Print("EnableAttackDelay is true", FColor::Blue);
-		}
-		else
-		{
-			Debug::Print("EnableAttackDelay is false", FColor::Red);
-		}
-	}
-	else
-	{
-		CurrentTime += DeltaTime;
-	}
+	//	if (true == EnableAttackDelay)
+	//	{
+	//		Debug::Print("EnableAttackDelay is true", FColor::Blue);
+	//	}
+	//	else
+	//	{
+	//		Debug::Print("EnableAttackDelay is false", FColor::Red);
+	//	}
+	//}
+	//else
+	//{
+	//	CurrentTime += DeltaTime;
+	//}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()

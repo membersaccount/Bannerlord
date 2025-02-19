@@ -73,4 +73,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAnimMontage* BowAim;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAnimMontage* BowIdle;
+
 };

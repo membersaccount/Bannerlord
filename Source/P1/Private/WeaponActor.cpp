@@ -18,6 +18,7 @@
 #include "Components/SceneComponent.h"
 #include "BowAnimInstance.h"
 #include "PlayerAnimInstance.h"
+#include "Characters/MBAISpearman.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -66,7 +67,7 @@ void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 	me->isAttack = false;
 	if (CachedMontages.Contains(weaponState))
 	{
-		FWeaponMontageData MontageData = CachedMontages[weaponState];
+		MontageData = CachedMontages[weaponState];
 
 		if (MontageData.ChangeWeaponMontage)
 		{
@@ -85,7 +86,7 @@ void AWeaponActor::playAttackMontage(EWeaponState weaponState, EMouseState mouse
 
 	if (CachedMontages.Contains(weaponState))
 	{
-		FWeaponMontageData MontageData = CachedMontages[weaponState];
+		MontageData = CachedMontages[weaponState];
 		if (weaponState == EWeaponState::BOW) { BowMesh->GetAnimInstance()->Montage_Play(MontageData.BowAim); }
 
 			switch (mouseState)
@@ -115,7 +116,7 @@ void AWeaponActor::playGuardMontage(EWeaponState weaponState, EMouseState mouseS
 	if (CachedMontages.Contains(weaponState))
 	{
 
-		FWeaponMontageData MontageData = CachedMontages[weaponState];
+		 MontageData = CachedMontages[weaponState];
 
 		switch (mouseState)
 		{
@@ -174,13 +175,17 @@ void AWeaponActor::loadWeapon()
 
 		//SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		BowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpearMesh->SetCollisionProfileName(TEXT("spear"));
+		SwordMesh->SetCollisionProfileName(TEXT("spear"));
 		this->SetActorEnableCollision(true);
 
 		BowMesh->SetAnimInstanceClass(UBowAnimInstance::StaticClass());
 		SpearMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::overlapEvent);
 		SpearMesh->OnComponentEndOverlap.AddDynamic(this, &AWeaponActor::OnEndOverlap);
+
+		SwordMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::overlapEvent);
+		SwordMesh->OnComponentEndOverlap.AddDynamic(this, &AWeaponActor::OnEndOverlap);
 	}
 
 
@@ -233,8 +238,15 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if (!OtherComp) return;
 	UPlayerAnimInstance* a = Cast<UPlayerAnimInstance>(me->Anim);
-	if (me->Anim)
+
+	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
+	if (Enemy) {
+		Enemy->OnHit(50);
+	}
+
+	if (me->Anim&&Enemy==nullptr)
 	{
+		UE_LOG(LogTemp, Log, TEXT("tq"));
 		me->isAttack = false;
 
 		//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
@@ -250,7 +262,6 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 			// 역방향으로 애니메이션 재생 (현재 위치에서 역재생)
 			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
 			me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
-
 		}
 	}
 }
@@ -258,4 +269,5 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 void AWeaponActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

@@ -21,6 +21,7 @@
 #include "Components/ArrowComponent.h"
 #include "ArrowProjectileMovementComponent.h"
 #include "Components/Image.h"
+#include "EWeaponState.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -230,7 +231,11 @@ void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& Inp
 	eChractoerState = ECharacterState::IDLE;
 	if (WeaponComponent1->widget->AimAnimation) {
 		WeaponComponent1->widget->AimPlayAnimation(false);
-		arrowShotHandler();
+		if (WeaponComponent1->weaponState == EWeaponState::BOW) {
+			isAttack = false;
+			Anim->Montage_Play(CurWeapon->MontageData.BowIdle);
+			arrowShotHandler();
+		}
 	}
 }
 

@@ -7,6 +7,7 @@
 #include "ArrowProjectileMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Characters/MBAISpearman.h"
 
 // Sets default values
 AArrowActor::AArrowActor()
@@ -20,9 +21,11 @@ AArrowActor::AArrowActor()
 	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
 	ArrowMesh->SetupAttachment(SceneComp);
 
-	ArrowMesh->SetRelativeScale3D(FVector(1.3));
+	ArrowMesh->SetRelativeScale3D(FVector(1.5));
 	arrowProjectileMovementComponent = CreateDefaultSubobject<UArrowProjectileMovementComponent>(TEXT("arrowProjectileMovementComponent"));
 	arrowProjectileMovementComponent->SetUpdatedComponent(RootComponent);
+	ArrowMesh->SetCollisionProfileName(TEXT("arrow"));
+	ArrowMesh->OnComponentBeginOverlap.AddDynamic(this, &AArrowActor::overlapEvent);
 
 }
 
@@ -50,4 +53,23 @@ void AArrowActor::Tick(float DeltaTime)
 		0,     // Depth priority
 		1.f    // Thickness
 	);
+}
+
+void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
+	if (Enemy) {
+		Enemy->OnHit(50);
+
+		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
+
+		// Optionally, stop the projectile movement
+		if (arrowProjectileMovementComponent)
+		{
+			arrowProjectileMovementComponent->StopMovementImmediately();
+
+			arrowProjectileMovementComponent->bSimulationEnabled = false;
+			ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
 }

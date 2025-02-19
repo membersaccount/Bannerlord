@@ -45,6 +45,7 @@ public:
 	UPROPERTY()
 	APlayerCharacter* me;
 	EWeaponState weaponStateIn;
+	FWeaponMontageData MontageData;
 
 public:
 	void playChangeMontage(EWeaponState weaponState);

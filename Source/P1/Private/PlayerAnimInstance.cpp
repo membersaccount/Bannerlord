@@ -76,10 +76,20 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 	}
 	if (NotifyName == FName(TEXT("OnCollision"))) {
 		if (!player->isAttack) return;
-		player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		if(weaponState==EWeaponState::SPEAR)
+			player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		else if (weaponState == EWeaponState::SWORD)
+		{
+			player->CurWeapon->SwordMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
 	}
 	if (NotifyName == FName(TEXT("OffCollision"))) {
-		player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (weaponState == EWeaponState::SPEAR)
+			player->CurWeapon->SpearMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		else if (weaponState == EWeaponState::SWORD)
+		{
+			player->CurWeapon->SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 }
 
