@@ -241,7 +241,7 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 
 	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
 	if (Enemy) {
-		Enemy->OnHit(50);
+		Enemy->OnHit(MontageData.damage);
 	}
 
 	if (me->Anim&&Enemy==nullptr)

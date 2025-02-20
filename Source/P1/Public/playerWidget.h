@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
     UWidgetAnimation* AimOut;
 
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HPUI;
+
 	//에임 애니메이션 재생 함수
 	void AimPlayAnimation(bool isClick);
 

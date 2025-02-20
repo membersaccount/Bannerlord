@@ -41,6 +41,11 @@ void UWeaponComponent::BeginPlay()
 	AimB= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimB")));
 	AimR= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimR")));
 	AimL= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimL")));
+
+	CrossHair= Cast<UImage>(widget->GetWidgetFromName(TEXT("Crosshair")));
+
+
+
 	AimT->SetOpacity(0);
 	AimB->SetOpacity(0);
 	AimR->SetOpacity(0);

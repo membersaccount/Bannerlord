@@ -44,6 +44,8 @@ public:
 	APlayerCharacter* player;
 	UWeaponComponent* weaponComp;
 	UAnimMontage* CurrentMontage;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	float pitch;
 
 UFUNCTION()
 void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);

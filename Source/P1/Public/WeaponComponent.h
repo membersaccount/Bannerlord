@@ -51,6 +51,15 @@ public:
 	UImage* AimR;
 	UImage* AimL;
 
+	UImage* CrossHair;
+	UImage* HPui;
+	UImage* spearImg;
+	UImage* sowrdImg;
+	UImage* bowImg;
+
+
+
+
 	UPROPERTY(EditDefaultsOnly)
 	class UplayerWidget* widget;
 

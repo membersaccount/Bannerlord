@@ -22,6 +22,9 @@
 #include "ArrowProjectileMovementComponent.h"
 #include "Components/Image.h"
 #include "EWeaponState.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "TimerManager.h"
+#include "Components/ProgressBar.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -69,6 +72,14 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	arrow=Cast<AArrowActor>(arrowActor);
 
+	for (int32 i= 0; i < MaxArrowCnt; ++i) {
+		FActorSpawnParameters params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AArrowActor* arrows = GetWorld()->SpawnActor<AArrowActor>(arrowActor, params);
+		arrows->SetActive(false);
+		Magazine.Add(arrows);
+	}
+
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	FActorSpawnParameters SpawnParams;
@@ -107,11 +118,29 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	direction = FTransform(GetControlRotation()).TransformVector(direction);
 	AddMovementInput(direction);
 	direction = FVector::ZeroVector;
 	ForwardSpeed = FVector::DotProduct(this->GetVelocity(), GetActorForwardVector());
 	RightSpeed = FVector::DotProduct(this->GetVelocity(), GetActorRightVector());
+	switch (eChractoerState)
+	{
+	case ECharacterState::IDLE:
+		break;
+	case ECharacterState::ATTACK:
+		break;
+	case ECharacterState::HIT:
+		break;
+	case ECharacterState::DIE:
+		break;
+	case ECharacterState::ATTACKING:
+		break;
+	case ECharacterState::GAURD:
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -140,8 +169,20 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 }
 
+int APlayerCharacter::getHP() const
+{
+	return HP;
+}
+
+void APlayerCharacter::setHP(int InValue)
+{
+	HP = InValue;
+}
+
 void APlayerCharacter::turnHandler(const struct FInputActionValue& InputValue)
 {
+	if (isHit) return;
+
 	float targetYawSpeed = InputValue.Get<float>();
 
 	// 이전 Yaw 속도와 목표 Yaw 속도를 보간하여 부드럽게 변경
@@ -153,6 +194,8 @@ void APlayerCharacter::turnHandler(const struct FInputActionValue& InputValue)
 
 void APlayerCharacter::lookUpHandler(const struct FInputActionValue& InputValue)
 {
+	if (isHit) return;
+
 	float Value = InputValue.Get<float>();
 	if (FMath::IsNearlyZero(Value)) return;
 
@@ -186,7 +229,8 @@ void APlayerCharacter::stopHandler(const struct FInputActionValue& InputValue)
 
 void APlayerCharacter::jumpHandler(const struct FInputActionValue& InputValue)
 {
-	Jump();
+	//Jump();
+	hitHandler();
 }
 
 void APlayerCharacter::noneWeaponHandler(const struct FInputActionValue& InputValue)
@@ -216,7 +260,7 @@ void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputV
 
 void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
-	if (isAttack) return;
+	if (isAttack) return; if (isHit)return;
 	isAttack = true;
 	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent1->attackHandler();
@@ -228,19 +272,27 @@ void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& Input
 
 void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& InputValue)
 {
-	eChractoerState = ECharacterState::IDLE;
-	if (WeaponComponent1->widget->AimAnimation) {
-		WeaponComponent1->widget->AimPlayAnimation(false);
-		if (WeaponComponent1->weaponState == EWeaponState::BOW) {
-			isAttack = false;
-			Anim->Montage_Play(CurWeapon->MontageData.BowIdle);
-			arrowShotHandler();
+	if (isHit) {
+		arrowShotHandler();
+	}
+	else {
+		eChractoerState = ECharacterState::IDLE;
+		if (WeaponComponent1->widget->AimAnimation) {
+			WeaponComponent1->widget->AimPlayAnimation(false);
+			if (WeaponComponent1->weaponState == EWeaponState::BOW) {
+				isAttack = false;
+				Anim->Montage_Play(CurWeapon->MontageData.BowIdle);
+				arrowShotHandler();
+			}
 		}
 	}
+
 }
 
 void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& InputValue)
 {
+	if (isHit) return;
+
 	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent1->guardHandler();
 
@@ -248,6 +300,8 @@ void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& Input
 
 void APlayerCharacter::AttackRReleaseHandler(const struct FInputActionValue& InputValue)
 {
+	if (isHit) return;
+
 	eChractoerState = ECharacterState::IDLE;
 }
 
@@ -275,24 +329,42 @@ void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
 
 void APlayerCharacter::spawnArrow()
 {
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	if (isHit) return;
 
-	FTransform arrowPos = GetMesh()->GetSocketTransform(TEXT("arrow"));
+	MakeBullet();
 
-	spawnedArrow = GetWorld()->SpawnActor<AArrowActor>(arrowActor, arrowPos, spawnParams);
+}
+
+void APlayerCharacter::MakeBullet()
+{
+	bool FindResult = false;
+	for (int32 i = 0; i < Magazine.Num(); ++i) {
+		if (!Magazine[i]->ArrowMesh->GetVisibleFlag()) {
+			FTransform arrowPos = GetMesh()->GetSocketTransform(TEXT("arrow"));
+			FindResult = true;
+			spawnedArrow = Magazine[i];
+
+			Magazine[i]->SetActive(true);
+			Magazine[i]->SetActorTransform(arrowPos);
 
 
-	if (spawnedArrow)
-	{
-		spawnedArrow->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("arrow"));
+			Magazine[i]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("arrow"));
 
-		arrowProjectileMovementComponent = spawnedArrow->FindComponentByClass<UArrowProjectileMovementComponent>();
+			arrowProjectileMovementComponent = Magazine[i]->FindComponentByClass<UArrowProjectileMovementComponent>();
+			break;
+		}
 	}
+
 }
 
 void APlayerCharacter::arrowShotHandler()
 {
+	FVector TargetLocation = GetActorLocation();
+	if (isHit) {
+		spawnedArrow->SetActive(false);
+		arrowProjectileMovementComponent->bSimulationEnabled = true;
+		return;
+	}
 	if (arrowProjectileMovementComponent)
 	{
 		spawnedArrow->ArrowMesh->SetRelativeRotation(FRotator(0, -90, 0));
@@ -318,7 +390,6 @@ void APlayerCharacter::arrowShotHandler()
 
 			bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 
-			FVector TargetLocation;
 			if (bHit)
 			{
 				TargetLocation = HitResult.Location;
@@ -335,4 +406,20 @@ void APlayerCharacter::arrowShotHandler()
 			DrawDebugPoint(GetWorld(), TargetLocation, 10.0f, FColor::Red, false, 1.0f);
 		}
 	}
+}
+
+void APlayerCharacter::hitHandler()
+{
+	isHit = true;
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
+	setHP(getHP() - 10);
+	WeaponComponent1->widget->HPUI->SetPercent(getHP() / 100);
+	eChractoerState = ECharacterState::HIT;
+	Anim->Montage_Play(CurWeapon->MontageData.HitMontage);
+
+	FTimerHandle visibleTime;
+
+	FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() {  isAttack = false; 	GetCharacterMovement()->SetMovementMode(MOVE_Walking); isHit = false; eChractoerState =ECharacterState::IDLE; });
+	GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 2.0f, false);
+
 }

@@ -28,6 +28,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	int HP = 100;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	float moveForward = 0.0f;
@@ -40,6 +43,10 @@ public:
 	float RightSpeed = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	class UArrowComponent* ArrowComp;
+
+	int32 MaxArrowCnt = 20;
+
+	TArray<class AArrowActor*> Magazine;
 
 	FVector direction;
 
@@ -56,6 +63,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* BowMesh;
+
+	AArrowActor* spawnedArrow;
+
+	AArrowActor* arrow;
+
+	bool isHit = false;
+
 
 public:
 	class AWeaponActor* CurWeapon;
@@ -106,13 +120,18 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AArrowActor> arrowActor;
 
-	AArrowActor* arrow;
-
 	UPROPERTY()
 	class UAnimInstance* Anim;
 
+		UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
+
 
 public:
+
+	int getHP() const;
+
+	void setHP(int InValue);
 	//좌우 회전 입력 함수
 	void turnHandler(const struct FInputActionValue& InputValue);
 	//상하 회전 입력 함수
@@ -155,11 +174,11 @@ public:
 
 	void spawnArrow();
 
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
-	UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
+	void MakeBullet();
 
 	void arrowShotHandler();
 
-	AArrowActor* spawnedArrow;
+	void hitHandler();
+
 
 };

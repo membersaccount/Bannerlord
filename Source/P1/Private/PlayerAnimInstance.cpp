@@ -34,6 +34,8 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (characterState == ECharacterState::IDLE) {
 			Montage_Resume(CurrentMontage);
 	}
+
+
 }
 
 void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
@@ -107,7 +109,7 @@ void UPlayerAnimInstance::setCharacterMovement()
 	if (!player || !weaponComp) return;
 	MoveForward = FVector::DotProduct(player->GetVelocity(), player->GetActorForwardVector());
 	MoveRight = FVector::DotProduct(player->GetVelocity(), player->GetActorRightVector());
-
+	pitch = player->GetBaseAimRotation().Pitch;
 	isInAir = player->GetCharacterMovement()->IsFalling();
 	weaponState = weaponComp->weaponState;
 	IsMove = player->GetCharacterMovement()->IsMovingOnGround();

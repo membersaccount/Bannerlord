@@ -8,6 +8,9 @@
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Characters/MBAISpearman.h"
+#include "TimerManager.h"
+#include "WeaponComponent.h"
+#include "Components/Image.h"
 
 // Sets default values
 AArrowActor::AArrowActor()
@@ -66,10 +69,27 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 		// Optionally, stop the projectile movement
 		if (arrowProjectileMovementComponent)
 		{
+			APlayerCharacter* player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+			player->WeaponComponent1->CrossHair->SetOpacity(1);
 			arrowProjectileMovementComponent->StopMovementImmediately();
 
 			arrowProjectileMovementComponent->bSimulationEnabled = false;
 			ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			FTimerHandle visibleTime;
+			ArrowMesh->SetRelativeRotation(FRotator(0, 0, 0));
+
+			FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this](){SetActive(false);});
+			GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 10.0f, false);
 		}
 	}
+}
+
+void AArrowActor::SetActive(bool bValue)
+{
+	ArrowMesh->SetVisibility(bValue);
+
+	if (bValue)
+		ArrowMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	else
+		ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

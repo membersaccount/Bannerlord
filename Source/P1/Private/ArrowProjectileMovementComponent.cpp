@@ -7,7 +7,7 @@
 
 UArrowProjectileMovementComponent::UArrowProjectileMovementComponent()
 {
-	InitialSpeed = 5000.0f;
+	InitialSpeed = 0.0f;
 	MaxSpeed = 5000.0f;
 	ProjectileGravityScale = 0;
 	bRotationFollowsVelocity = true;
@@ -21,6 +21,7 @@ UArrowProjectileMovementComponent::UArrowProjectileMovementComponent()
 
 void UArrowProjectileMovementComponent::shotHandler(const FVector& TargetLocation)
 {
+
 	FVector StartLocation = this->UpdatedComponent->GetComponentLocation();
 	FVector LaunchVelocity;
 
