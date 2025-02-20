@@ -21,7 +21,7 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
+	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,6 +35,7 @@ public: // Called Outside
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
 	void OnHit(int InDamage);
+	void PlaySpearAttackMontage(int InSection);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
@@ -61,6 +62,12 @@ public: // Timer
 
 private: // Data Handle
 	void Dead();
+
+private: // Animation
+	//UFUNCTION()
+	//void SpearAttackMontageStarted(UAnimMontage* InMontage);
+	//UFUNCTION()
+	//void SpearAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
 
 public: // Default Data
 	AIInfoData* AIInfo;
@@ -102,7 +109,6 @@ public: // Timer
 protected:
 	bool IsDead;
 
-
 private:
 	FVector ForceMoveLocation;
 
@@ -110,9 +116,12 @@ private: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UStaticMeshComponent* StaticMeshSpearComponent;
 	UAnimBlueprint* AnimationBlueprint;
+	UAnimMontage* MontageSpearAttack;
 
 protected: // Cached Data
 	UWorld* CachedWorld;
+	UAnimInstance* CachedAnimInstance;
+	//FTransform AnimOriginTransform;
 
 private: // Debug
 	float CurrentTime = 0.f;

@@ -9,6 +9,4 @@ class P1_API AMBAISpearman : public AMBAIBaseCharacter
 {
 	GENERATED_BODY()
 
-public:
-
 };

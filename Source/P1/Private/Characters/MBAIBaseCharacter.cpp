@@ -4,6 +4,7 @@
 #include <cmath>
 #include "MBDebug.h"
 #include <typeinfo>
+#include "Animation/AnimInstance.h"
 
 AMBAIBaseCharacter::AMBAIBaseCharacter()
 {
@@ -15,7 +16,7 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
+void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
 {
 	SkeletalMeshComponent->SetSkeletalMesh(InSkeletalMesh);
 	SkeletalMeshComponent->SetAnimInstanceClass(InAnimBlueprint->GeneratedClass);
@@ -42,6 +43,9 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->RegisterComponent();
 	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
 	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
+	MontageSpearAttack = InMontage;
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -49,6 +53,10 @@ void AMBAIBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedWorld = GetWorld();
+	//CachedAnimInstance->OnMontageStarted.AddDynamic(this, &ThisClass::SpearAttackMontageStarted);
+	//CachedAnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::SpearAttackMontageEnded);
+
+	//AnimOriginTransform = SkeletalMeshComponent->GetBoneTransform("Spear");
 }
 
 void AMBAIBaseCharacter::Tick(float DeltaTime)
@@ -60,32 +68,32 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 
 	AIState.OrderData->HandleOrder(this);
 
-	if (CurrentTime > 1.f)
-	{
-		CurrentTime = 0.f;
+	//if (CurrentTime > 1.f)
+	//{
+	//	CurrentTime = 0.f;
 
-		if (true == EnableActionDelay)
-		{
-			Debug::Print("EnableActionDelay is true", FColor::Blue);
-		}
-		else
-		{
-			Debug::Print("EnableActionDelay is false", FColor::Red);
-		}
+	//	if (true == EnableActionDelay)
+	//	{
+	//		Debug::Print("EnableActionDelay is true", FColor::Blue);
+	//	}
+	//	else
+	//	{
+	//		Debug::Print("EnableActionDelay is false", FColor::Red);
+	//	}
 
-		if (true == EnableAttackDelay)
-		{
-			Debug::Print("EnableAttackDelay is true", FColor::Blue);
-		}
-		else
-		{
-			Debug::Print("EnableAttackDelay is false", FColor::Red);
-		}
-	}
-	else
-	{
-		CurrentTime += DeltaTime;
-	}
+	//	if (true == EnableAttackDelay)
+	//	{
+	//		Debug::Print("EnableAttackDelay is true", FColor::Blue);
+	//	}
+	//	else
+	//	{
+	//		Debug::Print("EnableAttackDelay is false", FColor::Red);
+	//	}
+	//}
+	//else
+	//{
+	//	CurrentTime += DeltaTime;
+	//}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -111,6 +119,26 @@ void AMBAIBaseCharacter::OnHit(int InDamage)
 	HP -= InDamage;
 	if (0 >= HP)
 		Dead();
+}
+
+void AMBAIBaseCharacter::PlaySpearAttackMontage(int InSection)
+{
+	Debug::Print("Montage Played");
+	
+	CachedAnimInstance->Montage_Play(MontageSpearAttack);
+
+	switch (InSection)
+	{
+	case 1:
+		CachedAnimInstance->Montage_JumpToSection("Attack", MontageSpearAttack);
+		break;
+	case 2:
+		CachedAnimInstance->Montage_JumpToSection("Defend", MontageSpearAttack);
+		break;
+	default:
+		check(nullptr);
+		break;
+	}
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
@@ -319,3 +347,21 @@ void AMBAIBaseCharacter::Dead()
 	Debug::Print("AI is killed", FColor::Black);
 	IsDead = true;
 }
+
+//void AMBAIBaseCharacter::SpearAttackMontageStarted(UAnimMontage* InMontage)
+//{
+//	//FRotator NewRotation = AnimOriginTransform.GetRotation().Rotator();
+//	//NewRotation.Pitch += -10.0f;
+//	//FTransform NewTransform(NewRotation, AnimOriginTransform.GetLocation(), AnimOriginTransform.GetScale3D());
+//
+//	//FTransform BoneTransform = SkeletalMeshComponent->GetBoneTransformByName("Spear", EBoneSpaces::ComponentSpace);
+//
+//	//FRotator NewRotation = BoneTransform.GetRotation().Rotator();
+//	//NewRotation.Pitch += PitchAdjustment;
+//	//BoneTransform.SetRotation(FQuat(NewRotation));
+//}
+//
+//void AMBAIBaseCharacter::SpearAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+//{
+//
+//}
