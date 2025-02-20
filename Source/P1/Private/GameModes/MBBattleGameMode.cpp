@@ -157,7 +157,7 @@ void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVecto
 	int lineY = 0;
 	for (int32 i = 0; i < InNum; ++i)
 	{
-		if (i % 3 == 0)
+		if (i % 50 == 0)
 		{
 			if (InIsPlayerTeam)
 			{
@@ -294,7 +294,7 @@ void AMBBattleGameMode::DefaultFormation(float InSpace)
 
 	//	auto it = std::next(PlayerTeamInfo.begin(), FormationCenter);
 	//	FVector CenterLocation = it->InfoLocation;
-	//	
+	//
 	//	StartLocation = CenterLocation + FVector(-InSpace * (Row / 2), -InSpace * (Column / 2), 0.f);
 
 	//}
@@ -310,7 +310,7 @@ void AMBBattleGameMode::DefaultFormation(float InSpace)
 	{
 		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(FormationRow * InSpace, ForamtionColumn * InSpace, 0.f));
 
-		if (Count % 3 == 0)
+		if (Count % 50 == 0)
 		{
 			++FormationRow;
 			ForamtionColumn = 0;
