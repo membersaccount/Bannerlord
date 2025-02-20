@@ -3,6 +3,8 @@
 
 class P1_API MBActionStrike : public MBAction
 {
+	typedef Enums::AI::States::Distance Distance;
+
 public:
 	virtual ~MBActionStrike() {}
 

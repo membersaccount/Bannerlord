@@ -18,8 +18,7 @@ AMBBattleGameMode::AMBBattleGameMode()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Red"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObj(TEXT("/Game/YSH/Assets/Anim/ABP_AI"));
-	//static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageSpearAttackObject(TEXT("/Game/YSH/Assets/Anim/AM_AI"));
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageSpearAttackObject(TEXT("/Game/LHW/ReTargeting/SpearMontage/Spear_RP_AttackFwd_Swing_topHeavy_Montage1"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> MontageSpearAttackObject(TEXT("/Game/YSH/Assets/Anim/AM_AI"));
 
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
@@ -87,7 +86,7 @@ void AMBBattleGameMode::BeginPlay()
 			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 				{
 					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-					//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
 					Debug::Print("Order: EngageBattle");
 				}, 1.f, false);
 

@@ -42,7 +42,6 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->SetStaticMesh(InSpearMesh);
 	StaticMeshSpearComponent->RegisterComponent();
 	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
-	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
 	MontageSpearAttack = InMontage;
@@ -53,10 +52,6 @@ void AMBAIBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	CachedWorld = GetWorld();
-	//CachedAnimInstance->OnMontageStarted.AddDynamic(this, &ThisClass::SpearAttackMontageStarted);
-	//CachedAnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::SpearAttackMontageEnded);
-
-	//AnimOriginTransform = SkeletalMeshComponent->GetBoneTransform("Spear");
 }
 
 void AMBAIBaseCharacter::Tick(float DeltaTime)
@@ -67,33 +62,6 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
-
-	//if (CurrentTime > 1.f)
-	//{
-	//	CurrentTime = 0.f;
-
-	//	if (true == EnableActionDelay)
-	//	{
-	//		Debug::Print("EnableActionDelay is true", FColor::Blue);
-	//	}
-	//	else
-	//	{
-	//		Debug::Print("EnableActionDelay is false", FColor::Red);
-	//	}
-
-	//	if (true == EnableAttackDelay)
-	//	{
-	//		Debug::Print("EnableAttackDelay is true", FColor::Blue);
-	//	}
-	//	else
-	//	{
-	//		Debug::Print("EnableAttackDelay is false", FColor::Red);
-	//	}
-	//}
-	//else
-	//{
-	//	CurrentTime += DeltaTime;
-	//}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -340,6 +308,11 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 
 void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)
 {
+}
+
+UStaticMeshComponent* AMBAIBaseCharacter::GetSpearMesh()
+{
+	return StaticMeshSpearComponent;
 }
 
 void AMBAIBaseCharacter::Dead()

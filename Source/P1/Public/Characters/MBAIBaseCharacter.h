@@ -21,7 +21,7 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
+	virtual void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -60,14 +60,13 @@ public: // Timer
 
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
 
+protected: // Child Class Data Access
+	UStaticMeshComponent* GetSpearMesh();
+
 private: // Data Handle
 	void Dead();
 
 private: // Animation
-	//UFUNCTION()
-	//void SpearAttackMontageStarted(UAnimMontage* InMontage);
-	//UFUNCTION()
-	//void SpearAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
 
 public: // Default Data
 	AIInfoData* AIInfo;
@@ -75,7 +74,7 @@ public: // Default Data
 	MBStateManager* StateManager;
 
 	int HP = 100;
-	int Damage = 25;
+	int Damage = 100;
 	float CalculatedTargetDistance = 0.f;
 
 public: // AI
