@@ -19,6 +19,7 @@
 #include "BowAnimInstance.h"
 #include "PlayerAnimInstance.h"
 #include "Characters/MBAISpearman.h"
+#include "Components/Image.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -234,6 +235,16 @@ void AWeaponActor::selectWeapon()
 	}
 }
 
+void AWeaponActor::showCrossHair(bool isHit)
+{
+	if(isHit)
+		me->WeaponComponent1->CrossHair->SetOpacity(1);
+	else
+		me->WeaponComponent1->CrossHair->SetOpacity(0);
+
+
+}
+
 void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherComp) return;
@@ -242,6 +253,12 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
 	if (Enemy) {
 		Enemy->OnHit(MontageData.damage);
+		showCrossHair(true);
+		FTimerHandle visibleTime;
+		FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { showCrossHair(false); });
+		GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 0.5f, false);
+
+
 	}
 
 	if (me->Anim&&Enemy==nullptr)
@@ -260,7 +277,7 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 			float CurrentPosition = me->Anim->Montage_GetPosition(me->Anim->GetCurrentActiveMontage());
 
 			// 역방향으로 애니메이션 재생 (현재 위치에서 역재생)
-			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
+			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -0.5f);
 			me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
 		}
 	}

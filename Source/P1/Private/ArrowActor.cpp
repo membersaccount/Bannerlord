@@ -37,6 +37,8 @@ void AArrowActor::BeginPlay()
 {
 	Super::BeginPlay();
 	PreviousLocation = arrowProjectileMovementComponent->UpdatedComponent->GetComponentLocation();
+	player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+
 }
 
 // Called every frame
@@ -68,17 +70,20 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 
 		if (arrowProjectileMovementComponent)
 		{
-			APlayerCharacter* player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 			player->WeaponComponent1->CrossHair->SetOpacity(1);
+			FTimerHandle visibleTime1;
+
+			FTimerDelegate showLamda = FTimerDelegate::CreateLambda([this]() {	showCrossHair(); });
+			GetWorld()->GetTimerManager().SetTimer(visibleTime1, showLamda,0.5f, false);
 			arrowProjectileMovementComponent->StopMovementImmediately();
 
 			arrowProjectileMovementComponent->bSimulationEnabled = false;
 			ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			FTimerHandle visibleTime;
 			ArrowMesh->SetRelativeRotation(FRotator(0, 0, 0));
+			FTimerHandle visibleTime2;
 
 			FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this](){SetActive(false);});
-			GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 10.0f, false);
+			GetWorld()->GetTimerManager().SetTimer(visibleTime2, TimerLambda, 10.0f, false);
 		}
 	}
 }
@@ -91,4 +96,9 @@ void AArrowActor::SetActive(bool bValue)
 		ArrowMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	else
 		ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AArrowActor::showCrossHair()
+{
+	player->WeaponComponent1->CrossHair->SetOpacity(0);
 }

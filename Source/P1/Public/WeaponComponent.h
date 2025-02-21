@@ -54,8 +54,11 @@ public:
 	UImage* CrossHair;
 	UImage* HPui;
 	UImage* spearImg;
-	UImage* sowrdImg;
+	UImage* swordImg;
 	UImage* bowImg;
+
+
+
 
 
 

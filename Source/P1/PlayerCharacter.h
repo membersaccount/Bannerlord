@@ -29,7 +29,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	int HP = 100;
+	float HP = 100;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
@@ -69,6 +69,8 @@ public:
 	AArrowActor* arrow;
 
 	bool isHit = false;
+
+	bool bDead = false;
 
 
 public:
@@ -129,7 +131,7 @@ public:
 
 public:
 
-	int getHP() const;
+	float getHP() const;
 
 	void setHP(int InValue);
 	//좌우 회전 입력 함수
@@ -178,7 +180,7 @@ public:
 
 	void arrowShotHandler();
 
-	void hitHandler();
+	void hitHandler(float enenmyDamage);
 
 
 };

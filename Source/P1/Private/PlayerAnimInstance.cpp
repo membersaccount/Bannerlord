@@ -31,10 +31,16 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	CurrentMontage = this->GetCurrentActiveMontage();
 
 	if (!CurrentMontage) return;
-	if (characterState == ECharacterState::IDLE) {
-			Montage_Resume(CurrentMontage);
-	}
 
+	switch (characterState)
+	{
+	case ECharacterState::IDLE:
+		Montage_Resume(CurrentMontage);
+		break;
+	case ECharacterState::DIE:
+
+		break;
+	}
 
 }
 
@@ -93,6 +99,13 @@ void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchin
 			player->CurWeapon->SwordMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
+	if (NotifyName == FName(TEXT("DieNotify"))) {
+		CurrentMontage = this->GetCurrentActiveMontage();
+		Montage_JumpToSection(FName("die"), CurrentMontage);
+		player->eChractoerState = ECharacterState::DIE;
+		player->bDead = true;
+		UE_LOG(LogTemp, Log, TEXT("%f"),player->getHP());
+	}
 }
 
 void UPlayerAnimInstance::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
@@ -114,5 +127,6 @@ void UPlayerAnimInstance::setCharacterMovement()
 	weaponState = weaponComp->weaponState;
 	IsMove = player->GetCharacterMovement()->IsMovingOnGround();
 	characterState = player->eChractoerState;
+
 }
 
