@@ -149,27 +149,29 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	if (auto playerInput = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::lookUpHandler);
-		playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::turnHandler);
-		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Triggered, this, &APlayerCharacter::moveHandler);
-		playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Completed, this, &APlayerCharacter::stopHandler);
-		playerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacter::jumpHandler);
-		playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::noneWeaponHandler);
-		playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
-		playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
-		playerInput->BindAction(IA_Sword, ETriggerEvent::Started, this, &APlayerCharacter::swordWeaponHandler);
+			playerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &APlayerCharacter::lookUpHandler);
+			playerInput->BindAction(IA_Turn, ETriggerEvent::Triggered, this, &APlayerCharacter::turnHandler);
+			playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Triggered, this, &APlayerCharacter::moveHandler);
+			playerInput->BindAction(IA_PlayerMove, ETriggerEvent::Completed, this, &APlayerCharacter::stopHandler);
+			playerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &APlayerCharacter::jumpHandler);
+			playerInput->BindAction(IA_NONE, ETriggerEvent::Started, this, &APlayerCharacter::noneWeaponHandler);
+			playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
+			playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
+			playerInput->BindAction(IA_Sword, ETriggerEvent::Started, this, &APlayerCharacter::swordWeaponHandler);
 
 
-		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackLPressHandler);
+			playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackLPressHandler);
 
-		playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackLReleaseHandler);
+			playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackLReleaseHandler);
 
-		playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
-		playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
+			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
+			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
+
+
 	}
 }
 
-int APlayerCharacter::getHP() const
+float APlayerCharacter::getHP() const
 {
 	return HP;
 }
@@ -230,7 +232,7 @@ void APlayerCharacter::stopHandler(const struct FInputActionValue& InputValue)
 void APlayerCharacter::jumpHandler(const struct FInputActionValue& InputValue)
 {
 	//Jump();
-	hitHandler();
+	hitHandler(50.0f);
 }
 
 void APlayerCharacter::noneWeaponHandler(const struct FInputActionValue& InputValue)
@@ -260,7 +262,7 @@ void APlayerCharacter::swordWeaponHandler(const struct FInputActionValue& InputV
 
 void APlayerCharacter::AttackLPressHandler(const struct FInputActionValue& InputValue)
 {
-	if (isAttack) return; if (isHit)return;
+	if (isAttack) return; 	if (isHit) return; if (bDead)return;
 	isAttack = true;
 	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent1->attackHandler();
@@ -291,7 +293,7 @@ void APlayerCharacter::AttackLReleaseHandler(const struct FInputActionValue& Inp
 
 void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& InputValue)
 {
-	if (isHit) return;
+	if (isHit) return; if (bDead)return;
 
 	eChractoerState = ECharacterState::ATTACKING;
 	WeaponComponent1->guardHandler();
@@ -300,7 +302,7 @@ void APlayerCharacter::AttackRPressHandler(const struct FInputActionValue& Input
 
 void APlayerCharacter::AttackRReleaseHandler(const struct FInputActionValue& InputValue)
 {
-	if (isHit) return;
+	if (isHit) return; if (bDead)return;
 
 	eChractoerState = ECharacterState::IDLE;
 }
@@ -329,7 +331,7 @@ void APlayerCharacter::OnMyMontageStarted(UAnimMontage* Montage)
 
 void APlayerCharacter::spawnArrow()
 {
-	if (isHit) return;
+	if (isHit) return; if (bDead)return;
 
 	MakeBullet();
 
@@ -408,18 +410,30 @@ void APlayerCharacter::arrowShotHandler()
 	}
 }
 
-void APlayerCharacter::hitHandler()
+void APlayerCharacter::hitHandler(float enenmyDamage)
 {
-	isHit = true;
-	GetCharacterMovement()->SetMovementMode(MOVE_None);
-	setHP(getHP() - 10);
-	WeaponComponent1->widget->HPUI->SetPercent(getHP() / 100);
-	eChractoerState = ECharacterState::HIT;
-	Anim->Montage_Play(CurWeapon->MontageData.HitMontage);
+	if (getHP() <= 0) {
+		isHit = true;
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+		eChractoerState = ECharacterState::DIE;
+		Anim->Montage_Play(CurWeapon->MontageData.DieMontage);
+	}
+	if (getHP() > 0) {
+		isHit = true;
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+		setHP(getHP() - enenmyDamage);
+		WeaponComponent1->widget->HPUI->SetPercent(getHP() / 100);
+		eChractoerState = ECharacterState::HIT;
+		Anim->Montage_Play(CurWeapon->MontageData.HitMontage);
 
-	FTimerHandle visibleTime;
+		FTimerHandle visibleTime;
 
-	FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() {  isAttack = false; 	GetCharacterMovement()->SetMovementMode(MOVE_Walking); isHit = false; eChractoerState =ECharacterState::IDLE; });
-	GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 2.0f, false);
+		if (!bDead)
+		{
+			FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() {  isAttack = false; 	GetCharacterMovement()->SetMovementMode(MOVE_Walking); isHit = false; eChractoerState = ECharacterState::IDLE; });
+			GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 2.0f, false);
+		}
+	}
+
 
 }

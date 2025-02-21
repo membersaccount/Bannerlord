@@ -42,14 +42,23 @@ void UWeaponComponent::BeginPlay()
 	AimR= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimR")));
 	AimL= Cast<UImage>(widget->GetWidgetFromName(TEXT("AimL")));
 
+	spearImg= Cast<UImage>(widget->GetWidgetFromName(TEXT("spear")));
+	swordImg= Cast<UImage>(widget->GetWidgetFromName(TEXT("sowrd")));
+	bowImg= Cast<UImage>(widget->GetWidgetFromName(TEXT("bow")));
+
 	CrossHair= Cast<UImage>(widget->GetWidgetFromName(TEXT("Crosshair")));
 
+	spearImg->SetOpacity(0);
+	swordImg->SetOpacity(0);
+	bowImg->SetOpacity(0);
 
 
 	AimT->SetOpacity(0);
 	AimB->SetOpacity(0);
 	AimR->SetOpacity(0);
 	AimL->SetOpacity(0);
+	CrossHair->SetOpacity(0);
+
 }
 
 
@@ -95,6 +104,21 @@ void UWeaponComponent::changeWeaponAnamation()
 	FString log = UEnum::GetValueAsString(weaponState);
 	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Red, log);
 	CurrentWeapon->playChangeMontage(weaponState);
+	switch (weaponState)
+	{
+	case EWeaponState::NONE: { spearImg->SetOpacity(0); swordImg->SetOpacity(0); bowImg->SetOpacity(0);}
+		break;
+	case EWeaponState::SPEAR: { spearImg->SetOpacity(1); swordImg->SetOpacity(0); bowImg->SetOpacity(0); }
+		break;
+	case EWeaponState::SWORD: { spearImg->SetOpacity(0); swordImg->SetOpacity(1); bowImg->SetOpacity(0); }
+		break;
+	case EWeaponState::BOW: { spearImg->SetOpacity(0); swordImg->SetOpacity(0); bowImg->SetOpacity(1); }
+		break;
+	case EWeaponState::MAX:
+		break;
+	default:
+		break;
+	}
 }
 
 void UWeaponComponent::attackHandler()
