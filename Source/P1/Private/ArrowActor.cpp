@@ -11,6 +11,8 @@
 #include "TimerManager.h"
 #include "WeaponComponent.h"
 #include "Components/Image.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
+#include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
 
 // Sets default values
 AArrowActor::AArrowActor()
@@ -29,6 +31,14 @@ AArrowActor::AArrowActor()
 	arrowProjectileMovementComponent->SetUpdatedComponent(RootComponent);
 	ArrowMesh->SetCollisionProfileName(TEXT("arrow"));
 	ArrowMesh->OnComponentBeginOverlap.AddDynamic(this, &AArrowActor::overlapEvent);
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> TempNiagaraSystem(
+		TEXT("/Script/Niagara.NiagaraSystem'/Game/LHW/Assets/Blood_VFX_Pack/Particles/Systems/P_BigSplash_Hit.P_BigSplash_Hit'"));
+
+	if (TempNiagaraSystem.Succeeded())
+	{
+		BloodSplatterNiagara = TempNiagaraSystem.Object;
+	}
 
 }
 
@@ -65,6 +75,11 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
 	if (Enemy) {
 		Enemy->OnHit(50);
+		if (BloodSplatterNiagara)
+		{
+			FVector HitLocation = SweepResult.ImpactPoint;
+			auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
+		}
 
 		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
 

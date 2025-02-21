@@ -113,6 +113,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Sword;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order_Move;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order_Attact;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent1;
 
@@ -181,6 +187,11 @@ public:
 	void arrowShotHandler();
 
 	void hitHandler(float enenmyDamage);
+
+	void OrderMoveHander();
+
+	void OrderAttackHander();
+
 
 
 };

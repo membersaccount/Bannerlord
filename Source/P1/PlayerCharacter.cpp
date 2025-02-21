@@ -167,6 +167,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
 
+			playerInput->BindAction(IA_Order_Move, ETriggerEvent::Completed, this, &APlayerCharacter::OrderMoveHander);
+
+			playerInput->BindAction(IA_Order_Attact, ETriggerEvent::Completed, this, &APlayerCharacter::OrderAttackHander);
+
 
 	}
 }
@@ -436,4 +440,20 @@ void APlayerCharacter::hitHandler(float enenmyDamage)
 	}
 
 
+}
+
+void APlayerCharacter::OrderMoveHander()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+
+	}
+}
+
+void APlayerCharacter::OrderAttackHander()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+
+	}
 }

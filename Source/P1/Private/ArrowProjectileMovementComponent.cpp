@@ -39,7 +39,7 @@ void UArrowProjectileMovementComponent::shotHandler(const FVector& TargetLocatio
 bool UArrowProjectileMovementComponent::calculateLaunchVelocity(FVector& OutLaunchVelocity, const FVector& StartLocation, const FVector& TargetLocation) const
 {
 	// A default launch speed
-	float LaunchSpeed = 5000.0f; // Set a default launch speed or calculate based on distance
+	float LaunchSpeed = 4000; // Set a default launch speed or calculate based on distance
 
 	// Use UGameplayStatics::SuggestProjectileVelocity to calculate the launch velocity
 	return UGameplayStatics::SuggestProjectileVelocity(
