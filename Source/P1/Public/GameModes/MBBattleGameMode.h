@@ -71,4 +71,5 @@ private: // Cached Data
 
 private: // Debug
 	FTimerHandle DebugTimer;
+	int ColumCount = 50;
 };
