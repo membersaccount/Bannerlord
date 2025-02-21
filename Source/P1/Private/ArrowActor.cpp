@@ -66,7 +66,6 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 
 		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
 
-		// Optionally, stop the projectile movement
 		if (arrowProjectileMovementComponent)
 		{
 			APlayerCharacter* player = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
