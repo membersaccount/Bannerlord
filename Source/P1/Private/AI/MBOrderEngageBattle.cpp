@@ -1,7 +1,7 @@
 #include "AI/MBOrderEngageBattle.h"
 #include "Characters/MBAIBaseCharacter.h"
 
-void MBOrderEngageBattle::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
+void MBOrderEngageBattle::InitOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->IsIdle = false;
 }

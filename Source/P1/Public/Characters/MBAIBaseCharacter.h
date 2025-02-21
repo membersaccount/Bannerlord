@@ -21,7 +21,7 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
+	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,6 +58,11 @@ public: // Timer
 	void SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime);
 
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
+
+public: // Animation
+	void PlayMontageAttack();
+	void PlayMontageDefend();
+	void PlayMontageDead();
 
 private: // Data Handle
 	void Dead();
@@ -102,7 +107,6 @@ public: // Timer
 protected:
 	bool IsDead;
 
-
 private:
 	FVector ForceMoveLocation;
 
@@ -110,9 +114,11 @@ private: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UStaticMeshComponent* StaticMeshSpearComponent;
 	UAnimBlueprint* AnimationBlueprint;
+	UAnimMontage* AnimMontage;
 
 protected: // Cached Data
 	UWorld* CachedWorld;
+	UAnimInstance* CachedAnimInstance;
 
 private: // Debug
 	float CurrentTime = 0.f;

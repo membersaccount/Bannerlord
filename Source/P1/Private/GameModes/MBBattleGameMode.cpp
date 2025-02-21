@@ -8,6 +8,7 @@ USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
 UStaticMesh* AMBBattleGameMode::SharedMeshSpear = nullptr;
 UAnimBlueprint* AMBBattleGameMode::SharedSpearmanAnimBlueprint = nullptr;
+UAnimMontage* AMBBattleGameMode::SharedSpearAnimMontage = nullptr;
 
 AMBBattleGameMode::AMBBattleGameMode()
 {
@@ -15,23 +16,27 @@ AMBBattleGameMode::AMBBattleGameMode()
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/MFS_vA"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Red"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
-	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObj(TEXT("/Game/YSH/Assets/Anim/ABP_SpearMan"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
+	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObject(TEXT("/Game/YSH/Assets/Anim/ABP_AI"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontageObject(TEXT("/Game/YSH/Assets/Anim/AM_AI"));
 
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
-	check(MeshAsset.Succeeded());
-	check(AnimBlueprintObj.Succeeded());
+	check(MeshObject.Succeeded());
+	//check(AnimBlueprintObject.Succeeded());
+	//check(AnimMontageObject.Succeeded());
 
 	SharedMeshSpearmanPlayerTroop = BlueTeamMeshObject.Object;
 	SharedMeshSpearmanEnemyTroop = RedTeamMeshObject.Object;
-	SharedMeshSpear = MeshAsset.Object;
-	SharedSpearmanAnimBlueprint = AnimBlueprintObj.Object;
+	SharedMeshSpear = MeshObject.Object;
+	SharedSpearmanAnimBlueprint = AnimBlueprintObject.Object;
+	SharedSpearAnimMontage = AnimMontageObject.Object;
 
 	check(SharedMeshSpearmanPlayerTroop);
 	check(SharedMeshSpearmanEnemyTroop);
 	check(SharedMeshSpear);
-	check(SharedSpearmanAnimBlueprint);
+	//check(SharedSpearmanAnimBlueprint);
+	//check(SharedSpearAnimMontage);
 }
 
 void AMBBattleGameMode::InitGameData()
@@ -180,11 +185,11 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	if (InIsPlayerTeam)
 	{
 		PlayerTeamInfo.push_back(Info);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &PlayerTeamInfo.back(), &CharacterStateManager);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearAnimMontage, &PlayerTeamInfo.back(), &CharacterStateManager);
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, &EnemyTeamInfo.back(), &CharacterStateManager);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearAnimMontage, &EnemyTeamInfo.back(), &CharacterStateManager);
 }
 
 void AMBBattleGameMode::UpdateTeamCount()
@@ -263,7 +268,7 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 	{
 		auto it = DeadCharacters.top();
 		InData.erase(it);
-		it->InfoSelfData->Destroy();
+		//it->InfoSelfData->Destroy();
 		DeadCharacters.pop();
 	}
 }

@@ -15,7 +15,7 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
+void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
 {
 	SkeletalMeshComponent->SetSkeletalMesh(InSkeletalMesh);
 	SkeletalMeshComponent->SetAnimInstanceClass(InAnimBlueprint->GeneratedClass);
@@ -33,7 +33,7 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	AIState.ActionData = &StateManager->ManagerActionNone;
 	AIState.MoveData = &StateManager->ManagerMoveStop;
 
-	AIState.OrderData->InItOrder(this);
+	AIState.OrderData->InitOrder(this);
 
 	StaticMeshSpearComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass());
 	check(StaticMeshSpearComponent);
@@ -43,6 +43,9 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
 	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
 	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
+	AnimMontage = InMontage;
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -60,33 +63,6 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
-
-	//if (CurrentTime > 1.f)
-	//{
-	//	CurrentTime = 0.f;
-
-	//	if (true == EnableActionDelay)
-	//	{
-	//		Debug::Print("EnableActionDelay is true", FColor::Blue);
-	//	}
-	//	else
-	//	{
-	//		Debug::Print("EnableActionDelay is false", FColor::Red);
-	//	}
-
-	//	if (true == EnableAttackDelay)
-	//	{
-	//		Debug::Print("EnableAttackDelay is true", FColor::Blue);
-	//	}
-	//	else
-	//	{
-	//		Debug::Print("EnableAttackDelay is false", FColor::Red);
-	//	}
-	//}
-	//else
-	//{
-	//	CurrentTime += DeltaTime;
-	//}
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -97,7 +73,7 @@ bool AMBAIBaseCharacter::GetIsDead()
 void AMBAIBaseCharacter::SetOrder(MBOrder* InOrder)
 {
 	AIState.OrderData = InOrder;
-	AIState.OrderData->InItOrder(AIInfo->InfoSelfData);
+	AIState.OrderData->InitOrder(AIInfo->InfoSelfData);
 }
 
 void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation)
@@ -108,6 +84,9 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 void AMBAIBaseCharacter::OnHit(int InDamage)
 {
 	Debug::Print("AI hit", FColor::Black);
+
+	if (true == IsDead)
+		return;
 
 	HP -= InDamage;
 	if (0 >= HP)
@@ -315,8 +294,30 @@ void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime
 {
 }
 
+void AMBAIBaseCharacter::PlayMontageAttack()
+{
+	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_JumpToSection("Attack", AnimMontage);
+}
+
+void AMBAIBaseCharacter::PlayMontageDefend()
+{
+	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_JumpToSection("Defend", AnimMontage);
+}
+
+void AMBAIBaseCharacter::PlayMontageDead()
+{
+	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_JumpToSection("Dead", AnimMontage);
+}
+
 void AMBAIBaseCharacter::Dead()
 {
-	Debug::Print("AI is killed", FColor::Black);
 	IsDead = true;
+	PlayMontageDead();
+	CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
+		{
+			this->Destroy();
+		}, 3.f, false);
 }
