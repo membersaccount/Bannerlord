@@ -23,8 +23,8 @@ AMBBattleGameMode::AMBBattleGameMode()
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
 	check(MeshObject.Succeeded());
-	//check(AnimBlueprintObject.Succeeded());
-	//check(AnimMontageObject.Succeeded());
+	check(AnimBlueprintObject.Succeeded());
+	check(AnimMontageObject.Succeeded());
 
 	SharedMeshSpearmanPlayerTroop = BlueTeamMeshObject.Object;
 	SharedMeshSpearmanEnemyTroop = RedTeamMeshObject.Object;
@@ -35,8 +35,8 @@ AMBBattleGameMode::AMBBattleGameMode()
 	check(SharedMeshSpearmanPlayerTroop);
 	check(SharedMeshSpearmanEnemyTroop);
 	check(SharedMeshSpear);
-	//check(SharedSpearmanAnimBlueprint);
-	//check(SharedSpearAnimMontage);
+	check(SharedSpearmanAnimBlueprint);
+	check(SharedSpearAnimMontage);
 }
 
 void AMBBattleGameMode::InitGameData()
@@ -53,9 +53,9 @@ void AMBBattleGameMode::InitGameData()
 
 	GameInstance->LoadBattleData(InitPlayerTroopCount, InitEnemyTroopCount);
 
-	FVector PlayerTeamLocation(0.f, 100.f, 100.f);
+	FVector PlayerTeamLocation(0.f, 100.f, 0.f);
 	FRotator PlayerTeamRotation(0.f, 180.f, 0.f);
-	FVector EnemyTeamLocation(-4000.f, 1000.f, 100.f);
+	FVector EnemyTeamLocation(-4000.f, 1000.f, 0.f);
 	FRotator EnemyTeamRotation(0.f, 0.f, 0.f);
 
 	BattleInitSpawn(true, InitPlayerTroopCount, PlayerTeamLocation, PlayerTeamRotation);
