@@ -44,7 +44,6 @@ private: // Character Manage
 	void SearchDeadCharacter(std::list<AIInfoData>& InData);
 
 private: // Formation
-
 	void SetFormation();
 
 private: // Shared Data
@@ -52,6 +51,7 @@ private: // Shared Data
 	static USkeletalMesh* SharedMeshSpearmanEnemyTroop;
 	static UStaticMesh* SharedMeshSpear;
 	static UAnimBlueprint* SharedSpearmanAnimBlueprint;
+	static UAnimMontage* SharedSpearAnimMontage;
 
 private: // Character Data
 	int PlayerTeamCount;
@@ -63,12 +63,13 @@ private: // Character Data
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
 
 private: // Formation
-	int Row = 0;
-	int Column = 0;
+	int Row = 0;	// Y
+	int Column = 0;	// X
 
 private: // Cached Data
 	UWorld* CachedWorld;
 
 private: // Debug
 	FTimerHandle DebugTimer;
+	int ColumCount = 50;
 };

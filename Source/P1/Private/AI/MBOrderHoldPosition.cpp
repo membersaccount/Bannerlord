@@ -2,7 +2,7 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 
-void MBOrderHoldPosition::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
+void MBOrderHoldPosition::InitOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->IsIdle = false;
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;

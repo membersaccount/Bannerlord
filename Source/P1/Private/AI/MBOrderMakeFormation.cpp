@@ -2,7 +2,7 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 
-void MBOrderMakeFormation::InItOrder(AMBAIBaseCharacter* const InAICharacter) const
+void MBOrderMakeFormation::InitOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->IsIdle = false;
 	InAICharacter->IsArrivedForceLocation = false;
