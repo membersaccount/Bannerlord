@@ -94,6 +94,8 @@ public: // AI
 	bool IsAttacking = false;	// 0.65 ~ 1.3, 2.3
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsDefending = false;	// 0.2 ~ 1.1 -> 1.5
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsMovingbackwards = false;
 
 public: // Timer
 	FTimerHandle ActionAnimTimer;

@@ -136,18 +136,28 @@ void AMBAIBaseCharacter::MoveControl(const FVector& InLocation, const float InSp
 
 void AMBAIBaseCharacter::MoveForceLocation(const float InSpeed)
 {
-	//FString Str = FString::Printf(TEXT("ForceMoveLocation = %s"), *ForceMoveLocation.ToString());
-	//Debug::Print(*Str);
+	IsMovingbackwards = false;
 	MoveControl(ForceMoveLocation, InSpeed);
 }
 
 void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 {
+	if (0 > InSpeed)
+	{
+		IsMovingbackwards = true;
+	}
+	else
+	{
+		IsMovingbackwards = false;
+	}
+
 	MoveControl(AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
 }
 
 void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 {
+	IsMovingbackwards = true;
+
 	FVector Direction = AIInfo->InfoTargetData->AIInfo->InfoLocation - AIInfo->InfoLocation;
 	FRotator TurnRotation = AIInfo->InfoRotation;
 
