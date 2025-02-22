@@ -8,7 +8,8 @@ USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
 UStaticMesh* AMBBattleGameMode::SharedMeshSpear = nullptr;
 UAnimBlueprint* AMBBattleGameMode::SharedSpearmanAnimBlueprint = nullptr;
-UAnimMontage* AMBBattleGameMode::SharedSpearAnimMontage = nullptr;
+UAnimMontage* AMBBattleGameMode::SharedSpearMontageFullbody = nullptr;
+UAnimMontage* AMBBattleGameMode::SharedSpearMontageUpperbody = nullptr;
 
 AMBBattleGameMode::AMBBattleGameMode()
 {
@@ -18,25 +19,29 @@ AMBBattleGameMode::AMBBattleGameMode()
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_AI_EnemyTeam"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObject(TEXT("/Game/YSH/Assets/Anim/ABP_AI"));
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontageObject(TEXT("/Game/YSH/Assets/Anim/AM_AI"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SpearMontageFullBodyObject(TEXT("/Game/YSH/Assets/Anim/AM_AI_Full"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SpearMontageUpperBodyObject(TEXT("/Game/YSH/Assets/Anim/AM_AI_Upper"));
 
 	check(BlueTeamMeshObject.Succeeded());
 	check(RedTeamMeshObject.Succeeded());
 	check(MeshObject.Succeeded());
 	check(AnimBlueprintObject.Succeeded());
-	check(AnimMontageObject.Succeeded());
+	check(SpearMontageFullBodyObject.Succeeded());
+	check(SpearMontageUpperBodyObject.Succeeded());
 
 	SharedMeshSpearmanPlayerTroop = BlueTeamMeshObject.Object;
 	SharedMeshSpearmanEnemyTroop = RedTeamMeshObject.Object;
 	SharedMeshSpear = MeshObject.Object;
 	SharedSpearmanAnimBlueprint = AnimBlueprintObject.Object;
-	SharedSpearAnimMontage = AnimMontageObject.Object;
+	SharedSpearMontageFullbody = SpearMontageFullBodyObject.Object;
+	SharedSpearMontageUpperbody = SpearMontageUpperBodyObject.Object;
 
 	check(SharedMeshSpearmanPlayerTroop);
 	check(SharedMeshSpearmanEnemyTroop);
 	check(SharedMeshSpear);
 	check(SharedSpearmanAnimBlueprint);
-	check(SharedSpearAnimMontage);
+	check(SharedSpearMontageFullbody);
+	check(SharedSpearMontageUpperbody);
 }
 
 void AMBBattleGameMode::InitGameData()
@@ -144,11 +149,11 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	if (InIsPlayerTeam)
 	{
 		PlayerTeamInfo.push_back(Info);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearAnimMontage, &PlayerTeamInfo.back(), &CharacterStateManager);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody , &PlayerTeamInfo.back(), &CharacterStateManager);
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearAnimMontage, &EnemyTeamInfo.back(), &CharacterStateManager);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody, &EnemyTeamInfo.back(), &CharacterStateManager);
 }
 
 void AMBBattleGameMode::UpdateTeamCount()

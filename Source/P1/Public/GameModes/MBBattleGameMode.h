@@ -56,7 +56,8 @@ private: // Shared Data
 	static USkeletalMesh* SharedMeshSpearmanEnemyTroop;
 	static UStaticMesh* SharedMeshSpear;
 	static UAnimBlueprint* SharedSpearmanAnimBlueprint;
-	static UAnimMontage* SharedSpearAnimMontage;
+	static UAnimMontage* SharedSpearMontageFullbody;
+	static UAnimMontage* SharedSpearMontageUpperbody;
 
 private: // Character Data
 	int PlayerTeamCount;
