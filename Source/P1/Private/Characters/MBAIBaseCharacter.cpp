@@ -264,7 +264,7 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
-		}, 3.f, false);
+		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
 		{
 			this->EnableAttackDelay = false;
@@ -293,7 +293,7 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
-		}, 3.f, false);
+		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsDefending = false;
@@ -314,10 +314,25 @@ void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime
 {
 }
 
-void AMBAIBaseCharacter::PlayMontageAttack()
+void AMBAIBaseCharacter::PlayMontageAttack(int InType)
 {
 	CachedAnimInstance->Montage_Play(AnimMontage);
-	CachedAnimInstance->Montage_JumpToSection("Attack", AnimMontage);
+
+	switch (InType)
+	{
+	case 1:
+		CachedAnimInstance->Montage_JumpToSection("AttackDown", AnimMontage);
+		break;
+	case 2:
+		CachedAnimInstance->Montage_JumpToSection("AttackUp", AnimMontage);
+		break;
+	case 3:
+		CachedAnimInstance->Montage_JumpToSection("AttackRight", AnimMontage);
+		break;
+	default:
+		check(false);
+		break;
+	}
 }
 
 void AMBAIBaseCharacter::PlayMontageHit()

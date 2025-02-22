@@ -60,7 +60,7 @@ public: // Timer
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
 
 public: // Animation
-	void PlayMontageAttack();
+	void PlayMontageAttack(int InType);
 	void PlayMontageHit();
 	void PlayMontageDefend();
 	void PlayMontageDead();

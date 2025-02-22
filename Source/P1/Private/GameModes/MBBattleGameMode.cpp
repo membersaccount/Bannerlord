@@ -80,8 +80,9 @@ void AMBBattleGameMode::BeginPlay()
 
 			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 				{
+					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
 					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-				}, 30.f, false);
+				}, 1.f, false);
 		}, 1.f, false);
 }
 
