@@ -4,6 +4,7 @@
 #include "Datas/MBStructs.h"
 #include <cmath>
 #include "MBDebug.h"
+#include "MBSettings.h"
 #include <typeinfo>
 
 AMBAIBaseCharacter::AMBAIBaseCharacter()
@@ -16,7 +17,7 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontage, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
+void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
 {
 	SkeletalMeshComponent->SetSkeletalMesh(InSkeletalMesh);
 	SkeletalMeshComponent->SetAnimInstanceClass(InAnimBlueprint->GeneratedClass);
@@ -46,7 +47,8 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
-	AnimMontage = InMontage;
+	MontageFullbody = InMontageFullbody;
+	MontageUpperbody = InMontageUpperbody;
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -84,10 +86,12 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 
 bool AMBAIBaseCharacter::OnHit(int InDamage)
 {
+#ifdef DebugMode
 	Debug::Print("AI hit", FColor::Black);
+#endif // DebugMode
 
 	if (true == IsDead)
-		return true;
+		return false;
 
 	HP -= InDamage;
 	if (0 >= HP)
@@ -96,18 +100,6 @@ bool AMBAIBaseCharacter::OnHit(int InDamage)
 		return true;
 	}
 
-	AIState.ActionData = &StateManager->ManagerActionNone;
-	ClearTimer(&ActionAnimTimer);
-	ClearTimer(&ActionEventTimer);
-
-	State CachedState;
-	CachedState.OrderData = AIState.OrderData;
-	AIState.OrderData = &StateManager->ManagerOrderHoldPosition;
-
-	CachedWorld->GetTimerManager().SetTimer(HitTimer, [this, CachedState]()
-		{
-			AIState.OrderData = CachedState.OrderData;
-		}, 1.7f, false);
 	PlayMontageHit();
 
 	return false;
@@ -284,15 +276,15 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 			this->IsAttacking = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
-	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-		{
-			this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
-			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-				{
-					this->AIState.ActionData = &this->StateManager->ManagerActionAttacking;
-				}, InEffectTime, false);
+	//CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+	//	{
+	//		this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
+	//		CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+	//			{
+	//				this->AIState.ActionData = &this->StateManager->ManagerActionAttacking;
+	//			}, InEffectTime, false);
 
-		}, InEffectStartTime, false);
+	//	}, InEffectStartTime, false);
 }
 
 void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
@@ -309,15 +301,15 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
-	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-		{
-			this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
-			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-				{
-					this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
-				}, InEffectTime, false);
+	//CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+	//	{
+	//		this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
+	//		CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+	//			{
+	//				this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
+	//			}, InEffectTime, false);
 
-		}, InEffectStartTime, false);
+	//	}, InEffectStartTime, false);
 }
 
 void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)
@@ -326,18 +318,18 @@ void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime
 
 void AMBAIBaseCharacter::PlayMontageAttack(int InType)
 {
-	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_Play(MontageUpperbody);
 
 	switch (InType)
 	{
 	case 1:
-		CachedAnimInstance->Montage_JumpToSection("AttackDown", AnimMontage);
+		CachedAnimInstance->Montage_JumpToSection("AttackDown", MontageUpperbody);
 		break;
 	case 2:
-		CachedAnimInstance->Montage_JumpToSection("AttackUp", AnimMontage);
+		CachedAnimInstance->Montage_JumpToSection("AttackUp", MontageUpperbody);
 		break;
 	case 3:
-		CachedAnimInstance->Montage_JumpToSection("AttackRight", AnimMontage);
+		CachedAnimInstance->Montage_JumpToSection("AttackRight", MontageUpperbody);
 		break;
 	default:
 		check(false);
@@ -347,20 +339,20 @@ void AMBAIBaseCharacter::PlayMontageAttack(int InType)
 
 void AMBAIBaseCharacter::PlayMontageHit()
 {
-	CachedAnimInstance->Montage_Play(AnimMontage);
-	CachedAnimInstance->Montage_JumpToSection("Hit", AnimMontage);
+	CachedAnimInstance->Montage_Play(MontageUpperbody);
+	CachedAnimInstance->Montage_JumpToSection("Hit", MontageUpperbody);
 }
 
 void AMBAIBaseCharacter::PlayMontageDefend()
 {
-	CachedAnimInstance->Montage_Play(AnimMontage);
-	CachedAnimInstance->Montage_JumpToSection("Defend", AnimMontage);
+	CachedAnimInstance->Montage_Play(MontageUpperbody);
+	CachedAnimInstance->Montage_JumpToSection("Defend", MontageUpperbody);
 }
 
 void AMBAIBaseCharacter::PlayMontageDead()
 {
-	CachedAnimInstance->Montage_Play(AnimMontage);
-	CachedAnimInstance->Montage_JumpToSection("Dead", AnimMontage);
+	CachedAnimInstance->Montage_Play(MontageFullbody);
+	CachedAnimInstance->Montage_JumpToSection("Dead", MontageFullbody);
 }
 
 void AMBAIBaseCharacter::Dead()
