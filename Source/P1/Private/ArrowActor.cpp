@@ -13,6 +13,8 @@
 #include "Components/Image.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h"
+#include "KillLogWidget.h"
+#include "WeaponActor.h"
 
 // Sets default values
 AArrowActor::AArrowActor()
@@ -77,6 +79,10 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 		Enemy->OnHit(50);
 		if (BloodSplatterNiagara)
 		{
+
+			FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} 제국 민병대 창병"), player->CurWeapon->MontageData.damage);
+			player->widget->AddKillLogEntry(KillMessage);
+
 			FVector HitLocation = SweepResult.ImpactPoint;
 			auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
 		}

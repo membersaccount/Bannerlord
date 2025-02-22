@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "WeaponActor.h"
@@ -24,6 +24,7 @@
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Classes/NiagaraSystem.h"
 #include "UObject/ConstructorHelpers.h"
 #include "../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h"
+#include "KillLogWidget.h"
 // Sets default values
 AWeaponActor::AWeaponActor()
 {
@@ -90,7 +91,7 @@ void AWeaponActor::playChangeMontage(EWeaponState weaponState)
 
 		if (MontageData.ChangeWeaponMontage)
 		{
-			// ¹«±â º¯°æ ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà
+			// ë¬´ê¸° ë³€ê²½ ì• ë‹ˆë©”ì´ì…˜ ì‹¤í–‰
 			//selectWeapon(weaponState);
 
 			me->Anim->Montage_Play(MontageData.ChangeWeaponMontage);
@@ -273,7 +274,7 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 		//{
 		//	me->Anim->Montage_SetPlayRate(currentMontage, 0);
 
-		//	// ÇöÀç Àç»ý À§Ä¡ ¾ò±â
+		//	// í˜„ìž¬ ìž¬ìƒ ìœ„ì¹˜ ì–»ê¸°
 
 		//	FTimerHandle visibleTime1;
 		//	FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() {
@@ -284,6 +285,10 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 
 
 		//}
+
+		FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} ì œêµ­ ë¯¼ë³‘ëŒ€ ì°½ë³‘"), MontageData.damage);
+		me->widget->AddKillLogEntry(KillMessage);
+
 		FTimerHandle visibleTime;
 		FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { showCrossHair(false); });
 		GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
@@ -300,16 +305,16 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 		me->isAttack = false;
 
 		//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
-		// ÇöÀç ¾Ö´Ï¸ÞÀÌ¼ÇÀÌ Àç»ý ÁßÀÎÁö È®ÀÎ
+		// í˜„ìž¬ ì• ë‹ˆë©”ì´ì…˜ì´ ìž¬ìƒ ì¤‘ì¸ì§€ í™•ì¸
 		if (me->Anim->Montage_IsPlaying(me->Anim->GetCurrentActiveMontage()))
 		{
-			// ¾Ö´Ï¸ÞÀÌ¼ÇÀ» ÀÏ½Ã Á¤Áö (ÇöÀç À§Ä¡¿¡¼­ ¸ØÃß±â)
+			// ì• ë‹ˆë©”ì´ì…˜ì„ ì¼ì‹œ ì •ì§€ (í˜„ìž¬ ìœ„ì¹˜ì—ì„œ ë©ˆì¶”ê¸°)
 			me->Anim->Montage_Pause(me->Anim->GetCurrentActiveMontage());
 
-			// ÇöÀç Àç»ý À§Ä¡ ¾ò±â
+			// í˜„ìž¬ ìž¬ìƒ ìœ„ì¹˜ ì–»ê¸°
 			float CurrentPosition = me->Anim->Montage_GetPosition(me->Anim->GetCurrentActiveMontage());
 
-			// ¿ª¹æÇâÀ¸·Î ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý (ÇöÀç À§Ä¡¿¡¼­ ¿ªÀç»ý)
+			// ì—­ë°©í–¥ìœ¼ë¡œ ì• ë‹ˆë©”ì´ì…˜ ìž¬ìƒ (í˜„ìž¬ ìœ„ì¹˜ì—ì„œ ì—­ìž¬ìƒ)
 			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
 			me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
 		}
