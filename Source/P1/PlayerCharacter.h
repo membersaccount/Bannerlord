@@ -204,6 +204,9 @@ public:
 
 	void OrderAttackHander();
 
+	UFUNCTION(BlueprintCallable)
+	void UiVisibleHandler();
+
 
 
 };
