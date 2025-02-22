@@ -61,6 +61,7 @@ public: // Timer
 
 public: // Animation
 	void PlayMontageAttack();
+	void PlayMontageHit();
 	void PlayMontageDefend();
 	void PlayMontageDead();
 
@@ -102,6 +103,7 @@ public: // Timer
 	FTimerHandle RandomLeadTimer;
 	FTimerHandle SwitchTargetTimer;
 	FTimerHandle FormationTimer;
+	FTimerHandle HitTimer;
 	FTimerHandle DebugTimer;
 
 protected:

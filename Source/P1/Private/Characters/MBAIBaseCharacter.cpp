@@ -90,7 +90,24 @@ void AMBAIBaseCharacter::OnHit(int InDamage)
 
 	HP -= InDamage;
 	if (0 >= HP)
+	{
 		Dead();
+		return;
+	}
+
+	AIState.ActionData = &StateManager->ManagerActionNone;
+	ClearTimer(&ActionAnimTimer);
+	ClearTimer(&ActionEventTimer);
+
+	State CachedState;
+	CachedState.OrderData = AIState.OrderData;
+	AIState.OrderData = &StateManager->ManagerOrderHoldPosition;
+
+	CachedWorld->GetTimerManager().SetTimer(HitTimer, [this, CachedState]()
+		{
+			AIState.OrderData = CachedState.OrderData;
+		}, 1.7f, false);
+	PlayMontageHit();
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
@@ -298,6 +315,12 @@ void AMBAIBaseCharacter::PlayMontageAttack()
 {
 	CachedAnimInstance->Montage_Play(AnimMontage);
 	CachedAnimInstance->Montage_JumpToSection("Attack", AnimMontage);
+}
+
+void AMBAIBaseCharacter::PlayMontageHit()
+{
+	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_JumpToSection("Hit", AnimMontage);
 }
 
 void AMBAIBaseCharacter::PlayMontageDefend()

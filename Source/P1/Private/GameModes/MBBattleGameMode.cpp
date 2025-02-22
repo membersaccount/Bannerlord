@@ -14,8 +14,8 @@ AMBBattleGameMode::AMBBattleGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/MFS_vA"));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Mesh/SK_Red"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BlueTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_AI_PlayerTeam"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> RedTeamMeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_AI_EnemyTeam"));
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObject(TEXT("/Game/YSH/Assets/Infantry/Meshes/SM_Spear"));
 	static ConstructorHelpers::FObjectFinder<UAnimBlueprint> AnimBlueprintObject(TEXT("/Game/YSH/Assets/Anim/ABP_AI"));
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontageObject(TEXT("/Game/YSH/Assets/Anim/AM_AI"));
@@ -293,7 +293,7 @@ void AMBBattleGameMode::DefaultFormation(float InSpace)
 
 	for (auto& Data : PlayerTeamInfo)
 	{
-		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(InSpace * 0.75f * FormationRow, InSpace * ForamtionColumn, 0.f));
+		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(InSpace * FormationRow, InSpace * ForamtionColumn, 0.f));
 
 		if (ForamtionColumn == Column - 1)
 		{
