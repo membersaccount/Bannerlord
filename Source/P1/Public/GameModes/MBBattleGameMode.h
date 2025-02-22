@@ -16,7 +16,7 @@ UCLASS()
 class P1_API AMBBattleGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 	typedef Structs::AI::AIInfoData AIInfoData;
 	typedef Enums::Player::Order::Formation Formation;
 
@@ -37,6 +37,8 @@ public: // Player Troop Controll
 	void SetFormation(Formation InFormation, FVector InLocation);
 
 	void DefaultFormation(float InSpace);
+	MBStateManager CharacterStateManager;
+
 
 private: // Spawn
 	void BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation);
@@ -64,7 +66,6 @@ private: // Character Data
 	int EnemyTeamCount;
 	std::list<AIInfoData> PlayerTeamInfo;
 	std::list<AIInfoData> EnemyTeamInfo;
-	MBStateManager CharacterStateManager;
 
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
 

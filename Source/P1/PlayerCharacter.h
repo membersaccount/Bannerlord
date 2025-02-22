@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ECharacterState.h"
 #include "ArrowProjectileMovementComponent.h"
+#include "AI/MBStateManager.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -139,10 +140,13 @@ public:
 	UPROPERTY()
 	class UAnimInstance* Anim;
 
-		UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	UArrowProjectileMovementComponent* arrowProjectileMovementComponent;
 
+	UPROPERTY()
+	class AMBBattleGameMode* gameMode;
 
+	MBStateManager CharacterStateManager;
 public:
 
 	float getHP() const;
