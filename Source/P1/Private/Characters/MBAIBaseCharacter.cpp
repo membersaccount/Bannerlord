@@ -1,4 +1,5 @@
 #include "Characters/MBAIBaseCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "AI/MBStateManager.h"
 #include "Datas/MBStructs.h"
 #include <cmath>
@@ -81,18 +82,18 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 	ForceMoveLocation = InForceMoveLocation;
 }
 
-void AMBAIBaseCharacter::OnHit(int InDamage)
+bool AMBAIBaseCharacter::OnHit(int InDamage)
 {
 	Debug::Print("AI hit", FColor::Black);
 
 	if (true == IsDead)
-		return;
+		return true;
 
 	HP -= InDamage;
 	if (0 >= HP)
 	{
 		Dead();
-		return;
+		return true;
 	}
 
 	AIState.ActionData = &StateManager->ManagerActionNone;
@@ -108,6 +109,8 @@ void AMBAIBaseCharacter::OnHit(int InDamage)
 			AIState.OrderData = CachedState.OrderData;
 		}, 1.7f, false);
 	PlayMontageHit();
+
+	return false;
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
@@ -338,6 +341,9 @@ void AMBAIBaseCharacter::PlayMontageDead()
 void AMBAIBaseCharacter::Dead()
 {
 	IsDead = true;
+
+	this->GetCapsuleComponent();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PlayMontageDead();
 	CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 		{

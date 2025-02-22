@@ -80,45 +80,8 @@ void AMBBattleGameMode::BeginPlay()
 
 			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 				{
-					this->DefaultFormation(80.f);
-					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
-					Debug::Print("Order: MakeFormation - 80");
-
-					CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-						{
-							this->DefaultFormation(300.f);
-							this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
-							Debug::Print("Order: MakeFormation - 300");
-
-							CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-								{
-									this->DefaultFormation(200.f);
-									this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderMakeFormation);
-									Debug::Print("Order: MakeFormation - 200");
-
-									CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-										{
-											this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-											this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-											Debug::Print("Order: EngageBattle");
-
-											CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-												{
-													this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
-													//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
-													Debug::Print("Order: HoldPosition");
-
-													CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-														{
-															this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-															//this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-															Debug::Print("Order: EngageBattle");
-														}, 3.f, false);
-												}, 3.f, false);
-										}, 15.f, false);
-								}, 20.f, false);
-						}, 15.f, false);
-				}, 2.f, false);
+					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
+				}, 30.f, false);
 		}, 1.f, false);
 }
 
@@ -307,18 +270,40 @@ void AMBBattleGameMode::DefaultFormation(float InSpace)
 	}
 }
 
-void AMBBattleGameMode::SetFormation()
-{
-
-
-}
-
 void AMBBattleGameMode::OrderPlayerTeam(MBOrder* InOrder)
 {
+	Debug::Print("Ordered!!!");
+
 	for (auto& Data : PlayerTeamInfo)
 	{
 		Data.InfoSelfData->SetOrder(InOrder);
 	}
+}
+
+void AMBBattleGameMode::OrderPlayerTeam(MBOrder* InOrder, Formation InFormation)
+{
+	if (InOrder != &CharacterStateManager.ManagerOrderMakeFormation)
+		return;
+
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetOrder(InOrder);
+	}
+
+	SetFormation(InFormation);
+}
+
+void AMBBattleGameMode::OrderPlayerTeam(MBOrder* InOrder, Formation InFormation, FVector InLocation)
+{
+	if (InOrder != &CharacterStateManager.ManagerOrderMoveLocation)
+		return;
+
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetOrder(InOrder);
+	}
+
+	SetFormation(InFormation, InLocation);
 }
 
 void AMBBattleGameMode::OrderEnemyTeam(MBOrder* InOrder)
@@ -326,5 +311,78 @@ void AMBBattleGameMode::OrderEnemyTeam(MBOrder* InOrder)
 	for (auto& Data : EnemyTeamInfo)
 	{
 		Data.InfoSelfData->SetOrder(InOrder);
+	}
+}
+
+void AMBBattleGameMode::SetFormation(Formation InFormation)
+{
+	float FormationSpace = static_cast<float>(InFormation);
+
+	FVector StartLocation;
+	int FormationRow = 0;
+	int ForamtionColumn = 0;
+
+	int FormationCenter = Column / 2;
+
+	auto it = std::next(PlayerTeamInfo.begin(), FormationCenter);
+	FVector CenterLocation = it->InfoLocation;
+
+	StartLocation = CenterLocation;
+	StartLocation.Y -= FormationSpace * FormationCenter;
+
+#ifdef DebugMode
+	FString TempStr = FString::Printf(TEXT("FormationCenter = %s"), *FString::FromInt(FormationCenter));
+	Debug::Print(TempStr);
+	TempStr = FString::Printf(TEXT("CenterLocation = %s"), *CenterLocation.ToString());
+	Debug::Print(TempStr);
+	TempStr = FString::Printf(TEXT("StartLocation = %s"), *StartLocation.ToString());
+	Debug::Print(TempStr);
+#endif // DebugMode
+
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(FormationSpace * FormationRow, FormationSpace * ForamtionColumn, 0.f));
+
+		if (ForamtionColumn == Column - 1)
+		{
+			ForamtionColumn = 0;
+			++FormationRow;
+		}
+		else
+		{
+			++ForamtionColumn;
+		}
+	}
+}
+
+void AMBBattleGameMode::SetFormation(Formation InFormation, FVector InLocation)
+{
+	float FormationSpace = static_cast<float>(InFormation);
+
+	FVector StartLocation;
+	int FormationRow = 0;
+	int ForamtionColumn = 0;
+
+	StartLocation = InLocation;
+	StartLocation.Y += FormationSpace / 2;
+
+#ifdef DebugMode
+	FString TempStr = FString::Printf(TEXT("StartLocation = %s"), *StartLocation.ToString());
+	Debug::Print(TempStr);
+#endif // DebugMode
+
+	for (auto& Data : PlayerTeamInfo)
+	{
+		Data.InfoSelfData->SetForceMoveLocation(StartLocation + FVector(FormationSpace * FormationRow, FormationSpace * ForamtionColumn, 0.f));
+
+		if (ForamtionColumn == Column - 1)
+		{
+			ForamtionColumn = 0;
+			++FormationRow;
+		}
+		else
+		{
+			++ForamtionColumn;
+		}
 	}
 }

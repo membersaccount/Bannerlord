@@ -34,7 +34,7 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-	void OnHit(int InDamage);
+	bool OnHit(int InDamage);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);

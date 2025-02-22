@@ -1,6 +1,7 @@
 #pragma once
 #include "AI/MBOrderHoldPosition.h"
 #include "AI/MBOrderMakeFormation.h"
+#include "AI/MBOrderMoveLocation.h"
 #include "AI/MBOrderEngageBattle.h"
 
 #include "AI/MBAttitudeIdle.h"
@@ -27,6 +28,7 @@ class P1_API MBStateManager
 public:
 	MBOrderHoldPosition ManagerOrderHoldPosition;
 	MBOrderMakeFormation ManagerOrderMakeFormation;
+	MBOrderMoveLocation ManagerOrderMoveLocation;
 	MBOrderEngageBattle ManagerOrderEngageBattle;
 
 	MBAttitudeIdle ManagerAttitudeIdle;
