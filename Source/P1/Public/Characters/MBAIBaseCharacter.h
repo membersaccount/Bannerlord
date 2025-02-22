@@ -34,7 +34,7 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-	bool OnHit(int InDamage);
+	int OnHit(int InDamage);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
@@ -114,7 +114,7 @@ protected:
 private:
 	FVector ForceMoveLocation;
 
-private: // Default Data
+public: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UStaticMeshComponent* StaticMeshSpearComponent;
 	UAnimBlueprint* AnimationBlueprint;

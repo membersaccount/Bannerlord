@@ -13,6 +13,8 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshSpearComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	StaticMeshSpearComponent->SetupAttachment(SkeletalMeshComponent);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -87,25 +89,28 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 	ForceMoveLocation = InForceMoveLocation;
 }
 
-bool AMBAIBaseCharacter::OnHit(int InDamage)
+int AMBAIBaseCharacter::OnHit(int InDamage)
 {
 #ifdef DebugMode
 	Debug::Print("AI hit", FColor::Black);
 #endif // DebugMode
 
 	if (true == IsDead)
-		return false;
+		return 0;
 
 	HP -= InDamage;
 	if (0 >= HP)
 	{
 		Dead();
-		return true;
+		return 1;
 	}
 
 	PlayMontageHit();
-
-	return false;
+	
+	if (AIState.ActionData == &StateManager->ManagerActionDefending)
+		return 2;
+	
+	return 0;
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
