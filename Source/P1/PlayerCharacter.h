@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -44,9 +44,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerSetting")
 	class UArrowComponent* ArrowComp;
 
+	float currentTime=0.0f;
+
 	int32 MaxArrowCnt = 20;
 
 	TArray<class AArrowActor*> Magazine;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UKillLogWidget* widget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widge")
+	TSubclassOf<class UKillLogWidget>widgetFactory;
 
 	FVector direction;
 
@@ -113,6 +121,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Sword;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order_Move;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order_Attact;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent1;
 
@@ -134,37 +148,37 @@ public:
 	float getHP() const;
 
 	void setHP(int InValue);
-	//ÁÂ¿ì È¸Àü ÀÔ·Â ÇÔ¼ö
+	//ì¢Œìš° íšŒì „ ì…ë ¥ í•¨ìˆ˜
 	void turnHandler(const struct FInputActionValue& InputValue);
-	//»óÇÏ È¸Àü ÀÔ·Â ÇÔ¼ö
+	//ìƒí•˜ íšŒì „ ì…ë ¥ í•¨ìˆ˜
 	void lookUpHandler(const struct FInputActionValue& InputValue);
-	//ÀÌµ¿ ÇÔ¼ö
+	//ì´ë™ í•¨ìˆ˜
 	void moveHandler(const struct FInputActionValue& InputValue);
-	//ÀÌµ¿ Ãë¼Ò ÇÔ¼ö
+	//ì´ë™ ì·¨ì†Œ í•¨ìˆ˜
 	void stopHandler(const struct FInputActionValue& InputValue);
-	//Á¡ÇÁ
+	//ì í”„
 	void jumpHandler(const struct FInputActionValue& InputValue);
 
-	//ZÅ° ÀÔ·Â
+	//Zí‚¤ ì…ë ¥
 	void noneWeaponHandler(const struct FInputActionValue& InputValue);
-	//XÅ°ÀÔ·Â
+	//Xí‚¤ì…ë ¥
 	void spearWeaponHandler(const struct FInputActionValue& InputValue);
-	//CÅ°ÀÔ·Â
+	//Cí‚¤ì…ë ¥
 	void bowWeaponHandler(const struct FInputActionValue& InputValue);
-	//VÅ°ÀÔ·Â
+	//Ví‚¤ì…ë ¥
 	void swordWeaponHandler(const struct FInputActionValue& InputValue);
 
-	//¸¶¿ì½º ÁÂÅ¬¸¯
+	//ë§ˆìš°ìŠ¤ ì¢Œí´ë¦­
 	void AttackLPressHandler(const struct FInputActionValue& InputValue);
 
 	void AttackLReleaseHandler(const struct FInputActionValue& InputValue);
 
-	//¸¶¿ì½º ¿ìÅ¬¸¯
+	//ë§ˆìš°ìŠ¤ ìš°í´ë¦­
 	void AttackRPressHandler(const struct FInputActionValue& InputValue);
 
 	void AttackRReleaseHandler(const struct FInputActionValue& InputValue);
 
-	//¹«±â ¼ÒÄÏ À§Ä¡ º¯°æ
+	//ë¬´ê¸° ì†Œì¼“ ìœ„ì¹˜ ë³€ê²½
 	void weaponSoketChange(bool isChange);
 
 	void setArrowVisible();
@@ -181,6 +195,11 @@ public:
 	void arrowShotHandler();
 
 	void hitHandler(float enenmyDamage);
+
+	void OrderMoveHander();
+
+	void OrderAttackHander();
+
 
 
 };

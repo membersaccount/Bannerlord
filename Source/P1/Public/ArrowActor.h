@@ -30,6 +30,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USceneComponent* SceneComp;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+    class UNiagaraSystem* BloodSplatterNiagara;
+
 	//void targetSetLocation(FVector TargetLocation);
 
 	APlayerController* PC;

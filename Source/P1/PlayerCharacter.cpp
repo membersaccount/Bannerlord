@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "PlayerCharacter.h"
@@ -25,6 +25,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 #include "Components/ProgressBar.h"
+#include "KillLogWidget.h"
+#include "Components/VerticalBox.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -72,6 +74,10 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	arrow=Cast<AArrowActor>(arrowActor);
 
+	widget = CreateWidget<UKillLogWidget>(GetWorld(), widgetFactory);
+	widget->AddToViewport();
+	widget->MaxEntries = 10;
+
 	for (int32 i= 0; i < MaxArrowCnt; ++i) {
 		FActorSpawnParameters params;
 		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -118,31 +124,42 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//currentTime += DeltaTime;
+	//if (currentTime >= 1.0) {
+	//	if (widget->KillLogBox->GetChildrenCount() > 0) {
+	//		widget->ClearKillLog();
+	//		currentTime = 0;
+	//	}
+	//}
 
-	direction = FTransform(GetControlRotation()).TransformVector(direction);
-	AddMovementInput(direction);
-	direction = FVector::ZeroVector;
-	ForwardSpeed = FVector::DotProduct(this->GetVelocity(), GetActorForwardVector());
-	RightSpeed = FVector::DotProduct(this->GetVelocity(), GetActorRightVector());
-	switch (eChractoerState)
-	{
-	case ECharacterState::IDLE:
-		break;
-	case ECharacterState::ATTACK:
-		break;
-	case ECharacterState::HIT:
-		break;
-	case ECharacterState::DIE:
-		break;
-	case ECharacterState::ATTACKING:
-		break;
-	case ECharacterState::GAURD:
-		break;
-	default:
-		break;
+
+
+
+
+		direction = FTransform(GetControlRotation()).TransformVector(direction);
+		AddMovementInput(direction);
+		direction = FVector::ZeroVector;
+		ForwardSpeed = FVector::DotProduct(this->GetVelocity(), GetActorForwardVector());
+		RightSpeed = FVector::DotProduct(this->GetVelocity(), GetActorRightVector());
+		switch (eChractoerState)
+		{
+		case ECharacterState::IDLE:
+			break;
+		case ECharacterState::ATTACK:
+			break;
+		case ECharacterState::HIT:
+			break;
+		case ECharacterState::DIE:
+			break;
+		case ECharacterState::ATTACKING:
+			break;
+		case ECharacterState::GAURD:
+			break;
+		default:
+			break;
+		}
+
 	}
-
-}
 
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -167,6 +184,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
 
+			playerInput->BindAction(IA_Order_Move, ETriggerEvent::Completed, this, &APlayerCharacter::OrderMoveHander);
+
+			playerInput->BindAction(IA_Order_Attact, ETriggerEvent::Completed, this, &APlayerCharacter::OrderAttackHander);
+
 
 	}
 }
@@ -187,9 +208,9 @@ void APlayerCharacter::turnHandler(const struct FInputActionValue& InputValue)
 
 	float targetYawSpeed = InputValue.Get<float>();
 
-	// ÀÌÀü Yaw ¼Óµµ¿Í ¸ñÇ¥ Yaw ¼Óµµ¸¦ º¸°£ÇÏ¿© ºÎµå·´°Ô º¯°æ
+	// ì´ì „ Yaw ì†ë„ì™€ ëª©í‘œ Yaw ì†ë„ë¥¼ ë³´ê°„í•˜ì—¬ ë¶€ë“œëŸ½ê²Œ ë³€ê²½
 
-	// º¸°£µÈ °ªÀ¸·Î ÄÁÆ®·Ñ·¯ È¸Àü Àû¿ë
+	// ë³´ê°„ëœ ê°’ìœ¼ë¡œ ì»¨íŠ¸ë¡¤ëŸ¬ íšŒì „ ì ìš©
 	AddControllerYawInput(FMath::FInterpTo(SpringArmComp->GetRelativeRotation().Yaw, targetYawSpeed, GetWorld()->GetDeltaSeconds(), 20.0f));
 
 }
@@ -205,7 +226,7 @@ void APlayerCharacter::lookUpHandler(const struct FInputActionValue& InputValue)
 
 	float TargetPitch = FMath::Clamp(CurrentRotation.Pitch + Value, -85.0f, 70.0f);
 
-	// º¸°£ Àû¿ë
+	// ë³´ê°„ ì ìš©
 	float InterpPitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, GetWorld()->GetDeltaSeconds(), 200.0f);
 
 	CurrentRotation.Pitch = InterpPitch;
@@ -231,8 +252,10 @@ void APlayerCharacter::stopHandler(const struct FInputActionValue& InputValue)
 
 void APlayerCharacter::jumpHandler(const struct FInputActionValue& InputValue)
 {
-	//Jump();
-	hitHandler(50.0f);
+	Jump();
+	//hitHandler(50.0f);
+
+
 }
 
 void APlayerCharacter::noneWeaponHandler(const struct FInputActionValue& InputValue)
@@ -436,4 +459,20 @@ void APlayerCharacter::hitHandler(float enenmyDamage)
 	}
 
 
+}
+
+void APlayerCharacter::OrderMoveHander()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+
+	}
+}
+
+void APlayerCharacter::OrderAttackHander()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+
+	}
 }
