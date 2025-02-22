@@ -27,7 +27,9 @@
 #include "Components/ProgressBar.h"
 #include "KillLogWidget.h"
 #include "Components/VerticalBox.h"
-
+#include "GameModes/MBBattleGameMode.h"
+#include "Kismet/GameplayStatics.h"
+typedef Enums::Player::Order::Formation Formation;
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -74,6 +76,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	arrow=Cast<AArrowActor>(arrowActor);
 
+	gameMode = Cast<AMBBattleGameMode>(UGameplayStatics::GetGameMode(GetWorld()->GetAuthGameMode()));
 	widget = CreateWidget<UKillLogWidget>(GetWorld(), widgetFactory);
 	widget->AddToViewport();
 	widget->MaxEntries = 10;
@@ -124,17 +127,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//currentTime += DeltaTime;
-	//if (currentTime >= 1.0) {
-	//	if (widget->KillLogBox->GetChildrenCount() > 0) {
-	//		widget->ClearKillLog();
-	//		currentTime = 0;
-	//	}
-	//}
-
-
-
-
 
 		direction = FTransform(GetControlRotation()).TransformVector(direction);
 		AddMovementInput(direction);
@@ -465,7 +457,7 @@ void APlayerCharacter::OrderMoveHander()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
 	}
 }
 
@@ -473,6 +465,8 @@ void APlayerCharacter::OrderAttackHander()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
+
 
 	}
 }
