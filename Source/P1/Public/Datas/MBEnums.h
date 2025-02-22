@@ -60,4 +60,17 @@ namespace Enums
 			};
 		}
 	}
+
+	namespace Player
+	{
+		namespace Order
+		{
+			enum class Formation
+			{
+				Default = 200,
+				Shield = 80,
+				Spread = 300,
+			};
+		}
+	}
 }

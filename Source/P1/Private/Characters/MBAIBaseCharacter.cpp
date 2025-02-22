@@ -1,4 +1,5 @@
 #include "Characters/MBAIBaseCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "AI/MBStateManager.h"
 #include "Datas/MBStructs.h"
 #include <cmath>
@@ -81,16 +82,35 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 	ForceMoveLocation = InForceMoveLocation;
 }
 
-void AMBAIBaseCharacter::OnHit(int InDamage)
+bool AMBAIBaseCharacter::OnHit(int InDamage)
 {
 	Debug::Print("AI hit", FColor::Black);
 
 	if (true == IsDead)
-		return;
+		return true;
 
 	HP -= InDamage;
 	if (0 >= HP)
+	{
 		Dead();
+		return true;
+	}
+
+	AIState.ActionData = &StateManager->ManagerActionNone;
+	ClearTimer(&ActionAnimTimer);
+	ClearTimer(&ActionEventTimer);
+
+	State CachedState;
+	CachedState.OrderData = AIState.OrderData;
+	AIState.OrderData = &StateManager->ManagerOrderHoldPosition;
+
+	CachedWorld->GetTimerManager().SetTimer(HitTimer, [this, CachedState]()
+		{
+			AIState.OrderData = CachedState.OrderData;
+		}, 1.7f, false);
+	PlayMontageHit();
+
+	return false;
 }
 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
@@ -116,18 +136,28 @@ void AMBAIBaseCharacter::MoveControl(const FVector& InLocation, const float InSp
 
 void AMBAIBaseCharacter::MoveForceLocation(const float InSpeed)
 {
-	//FString Str = FString::Printf(TEXT("ForceMoveLocation = %s"), *ForceMoveLocation.ToString());
-	//Debug::Print(*Str);
+	IsMovingbackwards = false;
 	MoveControl(ForceMoveLocation, InSpeed);
 }
 
 void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 {
+	if (0 > InSpeed)
+	{
+		IsMovingbackwards = true;
+	}
+	else
+	{
+		IsMovingbackwards = false;
+	}
+
 	MoveControl(AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
 }
 
 void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 {
+	IsMovingbackwards = true;
+
 	FVector Direction = AIInfo->InfoTargetData->AIInfo->InfoLocation - AIInfo->InfoLocation;
 	FRotator TurnRotation = AIInfo->InfoRotation;
 
@@ -244,7 +274,7 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
-		}, 3.f, false);
+		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
 		{
 			this->EnableAttackDelay = false;
@@ -273,7 +303,7 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
-		}, 3.f, false);
+		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsDefending = false;
@@ -294,10 +324,31 @@ void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime
 {
 }
 
-void AMBAIBaseCharacter::PlayMontageAttack()
+void AMBAIBaseCharacter::PlayMontageAttack(int InType)
 {
 	CachedAnimInstance->Montage_Play(AnimMontage);
-	CachedAnimInstance->Montage_JumpToSection("Attack", AnimMontage);
+
+	switch (InType)
+	{
+	case 1:
+		CachedAnimInstance->Montage_JumpToSection("AttackDown", AnimMontage);
+		break;
+	case 2:
+		CachedAnimInstance->Montage_JumpToSection("AttackUp", AnimMontage);
+		break;
+	case 3:
+		CachedAnimInstance->Montage_JumpToSection("AttackRight", AnimMontage);
+		break;
+	default:
+		check(false);
+		break;
+	}
+}
+
+void AMBAIBaseCharacter::PlayMontageHit()
+{
+	CachedAnimInstance->Montage_Play(AnimMontage);
+	CachedAnimInstance->Montage_JumpToSection("Hit", AnimMontage);
 }
 
 void AMBAIBaseCharacter::PlayMontageDefend()
@@ -315,6 +366,9 @@ void AMBAIBaseCharacter::PlayMontageDead()
 void AMBAIBaseCharacter::Dead()
 {
 	IsDead = true;
+
+	this->GetCapsuleComponent();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PlayMontageDead();
 	CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
 		{

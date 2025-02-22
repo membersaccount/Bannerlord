@@ -8,7 +8,9 @@
 #include "MBSettings.h"
 #include "AI/MBStateManager.h"
 #include "Datas/MBStructs.h"
+#include "Datas/MBEnums.h"
 #include "MBBattleGameMode.generated.h"
+
 
 UCLASS()
 class P1_API AMBBattleGameMode : public AGameModeBase
@@ -16,19 +18,25 @@ class P1_API AMBBattleGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 	typedef Structs::AI::AIInfoData AIInfoData;
+	typedef Enums::Player::Order::Formation Formation;
 
 public:
 	AMBBattleGameMode();
 	void InitGameData();
 
-public:
-	void OrderPlayerTeam(MBOrder* InOrder);
-	void OrderEnemyTeam(MBOrder* InOrder);
-	void DefaultFormation(float InSpace);
-
 protected: // Default
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+public: // Player Troop Controll
+	void OrderPlayerTeam(MBOrder* InOrder);
+	void OrderPlayerTeam(MBOrder* InOrder, Formation InFormation);
+	void OrderPlayerTeam(MBOrder* InOrder, Formation InFormation, FVector InLocation);
+	void OrderEnemyTeam(MBOrder* InOrder);
+	void SetFormation(Formation InFormation);
+	void SetFormation(Formation InFormation, FVector InLocation);
+
+	void DefaultFormation(float InSpace);
 
 private: // Spawn
 	void BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation);
@@ -42,9 +50,6 @@ private: // Update
 
 private: // Character Manage
 	void SearchDeadCharacter(std::list<AIInfoData>& InData);
-
-private: // Formation
-	void SetFormation();
 
 private: // Shared Data
 	static USkeletalMesh* SharedMeshSpearmanPlayerTroop;
@@ -71,5 +76,5 @@ private: // Cached Data
 
 private: // Debug
 	FTimerHandle DebugTimer;
-	int ColumCount = 50;
+	int ColumCount = 40;
 };

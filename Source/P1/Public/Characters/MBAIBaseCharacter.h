@@ -34,7 +34,7 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-	void OnHit(int InDamage);
+	bool OnHit(int InDamage);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
@@ -60,7 +60,8 @@ public: // Timer
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
 
 public: // Animation
-	void PlayMontageAttack();
+	void PlayMontageAttack(int InType);
+	void PlayMontageHit();
 	void PlayMontageDefend();
 	void PlayMontageDead();
 
@@ -93,6 +94,8 @@ public: // AI
 	bool IsAttacking = false;	// 0.65 ~ 1.3, 2.3
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsDefending = false;	// 0.2 ~ 1.1 -> 1.5
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsMovingbackwards = false;
 
 public: // Timer
 	FTimerHandle ActionAnimTimer;
@@ -102,6 +105,7 @@ public: // Timer
 	FTimerHandle RandomLeadTimer;
 	FTimerHandle SwitchTargetTimer;
 	FTimerHandle FormationTimer;
+	FTimerHandle HitTimer;
 	FTimerHandle DebugTimer;
 
 protected:
