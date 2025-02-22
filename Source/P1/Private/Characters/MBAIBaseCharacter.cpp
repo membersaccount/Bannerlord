@@ -49,6 +49,9 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
 	MontageFullbody = InMontageFullbody;
 	MontageUpperbody = InMontageUpperbody;
+
+	this->SetActorEnableCollision(true);
+	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -292,24 +295,32 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	EnableActionDelay = true;
 	IsDefending = true;
 
+	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
+	Debug::Print("Spear Collision On");
+
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
 		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
+			StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			Debug::Print("Spear Collision Off");
+
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
-	//CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-	//	{
-	//		this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
-	//		CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-	//			{
-	//				this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
-	//			}, InEffectTime, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+		{
+			this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
+			//StaticMeshSpearComponent->SetCollisionProfileName(TEXT("spear"));
+			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+				{
+					//StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+					this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
+				}, InEffectTime, false);
 
-	//	}, InEffectStartTime, false);
+		}, InEffectStartTime, false);
 }
 
 void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)

@@ -73,7 +73,7 @@ public: // Default Data
 	State AIState;
 	MBStateManager* StateManager;
 
-	int HP = 100;
+	int HP = 10000;
 	int Damage = 25;
 	float CalculatedTargetDistance = 0.f;
 
