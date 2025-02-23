@@ -179,6 +179,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			playerInput->BindAction(IA_Order6, ETriggerEvent::Started, this, &APlayerCharacter::orderHander6);
 			playerInput->BindAction(IA_Order7, ETriggerEvent::Started, this, &APlayerCharacter::orderHander7);
 			playerInput->BindAction(IA_Order8, ETriggerEvent::Started, this, &APlayerCharacter::enemyOrderHander);
+			playerInput->BindAction(IA_Horn, ETriggerEvent::Started, this, &APlayerCharacter::soundPlayer);
 	}
 }
 
@@ -454,6 +455,8 @@ void APlayerCharacter::hitHandler(float enenmyDamage)
 void APlayerCharacter::OrderMoveHander()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, moveSound, GetActorLocation());
+
 		FRotator CameraRotation;
 
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -461,7 +464,7 @@ void APlayerCharacter::OrderMoveHander()
 		FVector Start = GetActorLocation(); // 시작 지점 (캐릭터 위치)
 		PlayerController->GetPlayerViewPoint(Start, CameraRotation);
 		FVector ForwardVector = CameraRotation.Vector();
-		FVector End = Start + (ForwardVector * 1000.0f); // 1000cm(10m) 거리로 쏨
+		FVector End = Start + (ForwardVector * 1000.0f); // 1000cm(10m) 거리로 쏨c
 
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
@@ -494,7 +497,10 @@ void APlayerCharacter::OrderMoveHander()
 
 void APlayerCharacter::OrderAttackHander()
 {
+
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, attackSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
 	}
@@ -508,6 +514,8 @@ void APlayerCharacter::UiVisibleHandler()
 void APlayerCharacter::orderHander3()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, attackSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
 	}
@@ -516,6 +524,8 @@ void APlayerCharacter::orderHander3()
 void APlayerCharacter::orderHander4()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, orderSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation,Formation::Default);
 	}
@@ -524,6 +534,8 @@ void APlayerCharacter::orderHander4()
 void APlayerCharacter::orderHander5()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, orderSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Shield);
 	}
@@ -532,6 +544,8 @@ void APlayerCharacter::orderHander5()
 void APlayerCharacter::orderHander6()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, orderSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
 	}
@@ -540,6 +554,8 @@ void APlayerCharacter::orderHander6()
 void APlayerCharacter::orderHander7()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		UGameplayStatics::PlaySoundAtLocation(this, orderSound, GetActorLocation());
+
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderHoldPosition);
 	}
@@ -551,4 +567,9 @@ void APlayerCharacter::enemyOrderHander()
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderEnemyTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
 	}
+}
+
+void APlayerCharacter::soundPlayer()
+{
+	UGameplayStatics::PlaySoundAtLocation(this, hornSound, GetActorLocation());
 }

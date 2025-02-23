@@ -7,6 +7,7 @@
 #include "ECharacterState.h"
 #include "ArrowProjectileMovementComponent.h"
 #include "AI/MBStateManager.h"
+#include "Sound/SoundCue.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -140,6 +141,8 @@ public:
 	class UInputAction* IA_Order7;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Order8;
+		UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Horn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent1;
@@ -160,6 +163,18 @@ public:
 	class AMBBattleGameMode* gameMode;
 
 	MBStateManager CharacterStateManager;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="sound")
+	USoundCue* hornSound;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="sound")
+	USoundCue* moveSound;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="sound")
+	USoundCue* attackSound;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="sound")
+	USoundCue* orderSound;
 public:
 
 	float getHP() const;
@@ -219,13 +234,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UiVisibleHandler();
-	
+
 	void orderHander3();
 	void orderHander4();
 	void orderHander5();
 	void orderHander6();
 	void orderHander7();
 	void enemyOrderHander();
+	void soundPlayer();
 
 
 

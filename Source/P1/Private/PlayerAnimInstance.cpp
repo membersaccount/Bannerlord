@@ -8,6 +8,7 @@
 #include "ArrowActor.h"
 #include "WeaponActor.h"
 #include "CollisionQueryParams.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -42,6 +43,14 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		break;
 	}
 
+}
+
+void UPlayerAnimInstance::AnimNotify_footSound()
+{
+	if (player->GetMovementComponent()->IsFalling()) return;
+	FVector FootLocation = player->GetMesh()->GetSocketLocation(FName("foot_r"));
+
+	UGameplayStatics::PlaySoundAtLocation(this, FootstepSoundCue, FootLocation, 1.0f, 1.0f, 0.0f, FootstepAttenuationSettings);
 }
 
 void UPlayerAnimInstance::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
