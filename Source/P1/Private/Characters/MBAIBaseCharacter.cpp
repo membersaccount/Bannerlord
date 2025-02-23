@@ -165,20 +165,24 @@ void AMBAIBaseCharacter::MoveForceLocation(const float InSpeed)
 
 void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 {
+#ifdef DebugModeBugFix_Move
+	//Debug::NullCheck(AIInfo->InfoTargetData->AIInfo, "AIInfo->InfoTargetData->AIInfo");
+#endif // DebugModeBugFix_Move
+
 	if (0 > InSpeed)
 	{
 		IsMovingbackwards = true;
 
-		int Tendency = FMath::RandRange(1, 100);
-		CalculateTeamCenterDistance();
+		//int Tendency = FMath::RandRange(1, 100);
+		//CalculateTeamCenterDistance();
 
-		if (10000.f < CalculatedTeamCenterDistance)
-		{
-			FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
-			FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
-			FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
-			return;
-		}
+		//if (10000.f < CalculatedTeamCenterDistance)
+		//{
+		//	FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
+		//	FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
+		//	FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
+		//	return;
+		//}
 
 		//if (20 > Tendency)
 		//{
@@ -213,14 +217,14 @@ void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 	int Tendency = FMath::RandRange(1, 100);
 	CalculateTeamCenterDistance();
 	
-	if (10000.f < CalculatedTeamCenterDistance)
-	{
-		FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
-		FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
+	//if (10000.f < CalculatedTeamCenterDistance)
+	//{
+	//	FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
+	//	FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
 
-		AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
-		return;
-	}
+	//	AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
+	//	return;
+	//}
 
 	//if (30 > Tendency)
 	//{

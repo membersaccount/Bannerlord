@@ -114,8 +114,13 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	}
 	else
 	{
-		OrderPlayerTeam(&CharacterStateManager.ManagerOrderForceStop);
-		OrderEnemyTeam(&CharacterStateManager.ManagerOrderForceStop);
+		if (false == IsGameEnd)
+		{
+			OrderPlayerTeam(&CharacterStateManager.ManagerOrderForceStop);
+			OrderEnemyTeam(&CharacterStateManager.ManagerOrderForceStop);
+
+			IsGameEnd = true;
+		}
 	}
 
 #ifdef DebugMode
