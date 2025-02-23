@@ -167,20 +167,18 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			playerInput->BindAction(IA_SPEAR, ETriggerEvent::Started, this, &APlayerCharacter::spearWeaponHandler);
 			playerInput->BindAction(IA_BOW, ETriggerEvent::Started, this, &APlayerCharacter::bowWeaponHandler);
 			playerInput->BindAction(IA_Sword, ETriggerEvent::Started, this, &APlayerCharacter::swordWeaponHandler);
-
-
 			playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackLPressHandler);
-
 			playerInput->BindAction(IA_MouseLeftClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackLReleaseHandler);
-
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Started, this, &APlayerCharacter::AttackRPressHandler);
 			playerInput->BindAction(IA_MouseRightClick, ETriggerEvent::Completed, this, &APlayerCharacter::AttackRReleaseHandler);
-
-			playerInput->BindAction(IA_Order_Move, ETriggerEvent::Completed, this, &APlayerCharacter::OrderMoveHander);
-
-			playerInput->BindAction(IA_Order_Attact, ETriggerEvent::Completed, this, &APlayerCharacter::OrderAttackHander);
-
-
+			playerInput->BindAction(IA_Order_Move, ETriggerEvent::Started, this, &APlayerCharacter::OrderMoveHander);
+			playerInput->BindAction(IA_Order_Attact, ETriggerEvent::Started, this, &APlayerCharacter::OrderAttackHander);
+			playerInput->BindAction(IA_Order3, ETriggerEvent::Started, this, &APlayerCharacter::orderHander3);
+			playerInput->BindAction(IA_Order4, ETriggerEvent::Started, this, &APlayerCharacter::orderHander4);
+			playerInput->BindAction(IA_Order5, ETriggerEvent::Started, this, &APlayerCharacter::orderHander5);
+			playerInput->BindAction(IA_Order6, ETriggerEvent::Started, this, &APlayerCharacter::orderHander6);
+			playerInput->BindAction(IA_Order7, ETriggerEvent::Started, this, &APlayerCharacter::orderHander7);
+			playerInput->BindAction(IA_Order8, ETriggerEvent::Started, this, &APlayerCharacter::enemyOrderHander);
 	}
 }
 
@@ -456,8 +454,34 @@ void APlayerCharacter::hitHandler(float enenmyDamage)
 void APlayerCharacter::OrderMoveHander()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
-		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
+
+		FVector Start = GetActorLocation(); // 시작 지점 (캐릭터 위치)
+		FVector ForwardVector = GetActorForwardVector(); // 캐릭터의 앞 방향
+		FVector End = Start + (ForwardVector * 1000.0f); // 1000cm(10m) 거리로 쏨
+
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(this); // 자기 자신은 무시
+
+		// 라인트레이스 실행
+		bool bHit = GetWorld()->LineTraceSingleByChannel(
+			HitResult, Start, End, ECC_Visibility, CollisionParams);
+
+		if (bHit) // 충돌이 발생했을 경우
+		{
+			FVector HitLocation = HitResult.ImpactPoint; // 충돌한 위치 가져오기
+			UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *HitLocation.ToString());
+
+			// 디버그 선을 그려 확인하기
+			DrawDebugLine(GetWorld(), Start, HitLocation, FColor::Red, false, 2.0f, 0, 2.0f);
+			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, HitLocation);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No Hit"));
+		}
+
 	}
 }
 
@@ -466,12 +490,58 @@ void APlayerCharacter::OrderAttackHander()
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
-
-
 	}
 }
 
 void APlayerCharacter::UiVisibleHandler()
 {
 	WeaponComponent1->widget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void APlayerCharacter::orderHander3()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
+	}
+}
+
+void APlayerCharacter::orderHander4()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation,Formation::Default);
+	}
+}
+
+void APlayerCharacter::orderHander5()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Shield);
+	}
+}
+
+void APlayerCharacter::orderHander6()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
+	}
+}
+
+void APlayerCharacter::orderHander7()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderHoldPosition);
+	}
+}
+
+void APlayerCharacter::enemyOrderHander()
+{
+	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+		gameMode->OrderEnemyTeam(&gameMode->CharacterStateManager.ManagerOrderEngageBattle);
+	}
 }
