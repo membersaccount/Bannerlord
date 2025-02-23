@@ -93,6 +93,8 @@ private: // Debug
 	FTimerHandle DebugTimer;
 	int ColumCount = 40;
 
+	float temp = 0.f;
+
 	void ShowTeam();
 	void ShowTroopTeamCenterLocation();
 	void ShowTroopTeamRectangle(float InMaxX, float InMinX, float InMaxY, float InMinY, FColor InColor);

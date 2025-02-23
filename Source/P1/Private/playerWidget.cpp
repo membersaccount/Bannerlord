@@ -30,8 +30,8 @@ void UplayerWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 	int playerTeamCount= gamemode->PlayerTeamCount;
 	int enemyTeamCount = gamemode->EnemyTeamCount;
 
-	playerTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, FMath::Clamp(playerTeamCount, 0.0f, 1.0f)));
-	enemyTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, FMath::Clamp(enemyTeamCount, 0.0f, 1.0f)));
+	playerTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, playerTeamCount));
+	enemyTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, enemyTeamCount));
 }
 
 void UplayerWidget::AimPlayAnimation(bool isClick)

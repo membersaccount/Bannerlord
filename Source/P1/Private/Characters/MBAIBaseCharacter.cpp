@@ -45,15 +45,14 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	StaticMeshSpearComponent->SetStaticMesh(InSpearMesh);
 	StaticMeshSpearComponent->RegisterComponent();
 	StaticMeshSpearComponent->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Spear");
-	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
-	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	CachedAnimInstance = SkeletalMeshComponent->GetAnimInstance();
 	MontageFullbody = InMontageFullbody;
 	MontageUpperbody = InMontageUpperbody;
 
-	this->SetActorEnableCollision(true);
-	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetActorEnableCollision(true);
+	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
+	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -341,20 +340,23 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 	EnableAttackDelay = true;
 	IsAttacking = true;
 
-	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
-		{
-			this->EnableActionDelay = false;
-		}, FMath::RandRange(3.5f, 5.5f), false);
-	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
-		{
-			this->EnableAttackDelay = false;
-		}, 7.f, false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsAttacking = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
-	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+
+	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+		{
+			this->EnableActionDelay = false;
+		}, FMath::RandRange(3.5f, 5.5f), false);
+
+	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
+		{
+			this->EnableAttackDelay = false;
+		}, 7.f, false);
+
+	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this]()
 		{
 			this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
 		}, InEffectTime, false);
@@ -365,16 +367,18 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	EnableActionDelay = true;
 	IsDefending = true;
 
-	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
-		{
-			this->EnableActionDelay = false;
-		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
+
+	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
+		{
+			this->EnableActionDelay = false;
+		}, FMath::RandRange(3.5f, 5.5f), false);
+
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
 		{
 			this->AIState.ActionData = &this->StateManager->ManagerActionBlock;

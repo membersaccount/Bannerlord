@@ -76,7 +76,7 @@ public: // Default Data
 	State AIState;
 	MBStateManager* StateManager;
 
-	int HP = 10000;
+	int HP = 100;
 	int Damage = 25;
 	float CalculatedTargetDistance = 0.f;
 	float CalculatedTeamCenterDistance = 0.f;

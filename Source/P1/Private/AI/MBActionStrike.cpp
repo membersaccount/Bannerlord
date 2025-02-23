@@ -16,7 +16,7 @@ void MBActionStrike::ExecuteAction(AMBAIBaseCharacter* const InAICharacter) cons
 
 	if (InAICharacter->AIInfo->InfoTargetData->AIState.ActionData != &InAICharacter->StateManager->ManagerActionBlock)
 	{
-		InAICharacter->AIInfo->InfoTargetData->OnHit(InAICharacter->Damage);
+		//InAICharacter->AIInfo->InfoTargetData->OnHit(InAICharacter->Damage);
 	}
 
 	InAICharacter->AIState.ActionData = &InAICharacter->StateManager->ManagerActionAttacking;

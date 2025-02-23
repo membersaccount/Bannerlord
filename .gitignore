@@ -20,6 +20,8 @@ saved/
 *.userosscache
 *.sln.docstates
 
+Content/SpringLandscape/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
