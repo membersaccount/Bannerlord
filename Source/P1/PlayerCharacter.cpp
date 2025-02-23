@@ -473,7 +473,9 @@ void APlayerCharacter::OrderMoveHander()
 		// 라인트레이스 실행
 		bool bHit = GetWorld()->LineTraceSingleByChannel(
 			HitResult, Start, End, ECC_Visibility, CollisionParams);
+#ifdef DebugMode
 		DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, 2.0f, 0, 2.0f);
+#endif // DebugMode
 
 		if (bHit) // 충돌이 발생했을 경우
 		{
@@ -481,15 +483,17 @@ void APlayerCharacter::OrderMoveHander()
 			UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *HitLocation.ToString());
 
 			// 디버그 선을 그려 확인하기
+#ifdef DebugMode
 			DrawDebugLine(GetWorld(), Start, HitLocation, FColor::Red, true, 2.0f, 0, 2.0f);
+#endif // DebugMode
 			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, HitLocation);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, FormationData, HitLocation);
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("No Hit"));
 			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, End);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, FormationData, End);
 		}
 
 	}
@@ -528,6 +532,7 @@ void APlayerCharacter::orderHander4()
 
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation,Formation::Default);
+		FormationData = Formation::Default;
 	}
 }
 
@@ -538,6 +543,7 @@ void APlayerCharacter::orderHander5()
 
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Shield);
+		FormationData = Formation::Shield;
 	}
 }
 
@@ -548,6 +554,7 @@ void APlayerCharacter::orderHander6()
 
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
+		FormationData = Formation::Spread;
 	}
 }
 

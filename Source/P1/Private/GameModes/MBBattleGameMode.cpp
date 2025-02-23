@@ -102,16 +102,25 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SearchDeadCharacter(PlayerTeamInfo);
+	SearchDeadCharacter(EnemyTeamInfo);
 	UpdateTeamCount();
-	UpdateAllCharacterInfo();
-	UpdateTroopTeamCenter();
 
-	if (0 < PlayerTeamCount || 0 < EnemyTeamCount)
+	if (0 < PlayerTeamCount && 0 < EnemyTeamCount)
 	{
+		UpdateAllCharacterInfo();
 		UpdateTargets();
+		UpdateTroopTeamCenter();
+	}
+	else
+	{
+		if (false == IsGameEnd)
+		{
+			OrderPlayerTeam(&CharacterStateManager.ManagerOrderForceStop);
+			OrderEnemyTeam(&CharacterStateManager.ManagerOrderForceStop);
 
-		SearchDeadCharacter(PlayerTeamInfo);
-		SearchDeadCharacter(EnemyTeamInfo);
+			IsGameEnd = true;
+		}
 	}
 
 #ifdef DebugMode
@@ -251,6 +260,8 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 
 		bool NeedInit = true;
 
+		if (0 == PlayerTroopTeam[i].size())
+			continue;
 		for (auto it = PlayerTroopTeam[i].begin(); it != PlayerTroopTeam[i].end(); ++it)
 		{
 			if (nullptr == (*it)->InfoSelfData)
@@ -296,6 +307,8 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 
 		bool NeedInit = true;
 
+		if (0 == EnemyTroopTeam[i].size())
+			continue;
 		for (auto it = EnemyTroopTeam[i].begin(); it != EnemyTroopTeam[i].end(); ++it)
 		{
 			if (nullptr == (*it)->InfoSelfData)
@@ -534,6 +547,7 @@ void AMBBattleGameMode::SetFormation(Formation InFormation, FVector InLocation)
 
 	StartLocation = InLocation;
 	StartLocation.Y += FormationSpace / 2;
+	StartLocation.Y -= FormationSpace * (Column / 2);
 
 #ifdef DebugMode
 	FString TempStr = FString::Printf(TEXT("StartLocation = %s"), *StartLocation.ToString());

@@ -91,6 +91,7 @@ private: // Cached Data
 private: // Debug
 	FTimerHandle DebugTimer;
 	int ColumCount = 40;
+	bool IsGameEnd = false;
 
 #ifdef DebugMode
 public:

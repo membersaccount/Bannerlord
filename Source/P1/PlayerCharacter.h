@@ -7,6 +7,7 @@
 #include "ECharacterState.h"
 #include "ArrowProjectileMovementComponent.h"
 #include "AI/MBStateManager.h"
+#include "Datas/MBEnums.h"
 #include "Sound/SoundCue.h"
 #include "PlayerCharacter.generated.h"
 
@@ -164,6 +165,7 @@ public:
 
 	MBStateManager CharacterStateManager;
 
+	Enums::Player::Order::Formation FormationData = Enums::Player::Order::Formation::Default;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="sound")
 	USoundCue* hornSound;
 

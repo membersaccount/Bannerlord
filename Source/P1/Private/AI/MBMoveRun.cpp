@@ -3,6 +3,7 @@
 
 void MBMoveRun::DecideMove(AMBAIBaseCharacter* const InAICharacter) const
 {
+	InAICharacter->AIState.AttitudeData->PassDecideMoveAttitude(InAICharacter);
 }
 
 void MBMoveRun::ExecuteMove(AMBAIBaseCharacter* const InAICharacter) const

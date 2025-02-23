@@ -18,7 +18,8 @@ void MBOrderMoveLocation::HandleOrder(AMBAIBaseCharacter* const InAICharacter) c
 {
 	if (true == InAICharacter->IsArrivedForceLocation)
 	{
-		InAICharacter->TurnToTarget();
+		//InAICharacter->TurnToTarget();
+		InAICharacter->TurnToFront();
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
 		InAICharacter->AIState.ActionData->DecideAction(InAICharacter);
 		InAICharacter->AIState.ActionData->ExecuteAction(InAICharacter);

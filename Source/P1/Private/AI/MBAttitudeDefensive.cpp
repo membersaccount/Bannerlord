@@ -41,9 +41,6 @@ void MBAttitudeDefensive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAIC
 {
 	typedef Enums::AI::States::Distance Distance;
 
-	if (InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
-		InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
-
 	switch (InAICharacter->TargetDistance)
 	{
 	case Distance::None:
@@ -53,12 +50,16 @@ void MBAttitudeDefensive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAIC
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveCharge;
 		break;
 	case Distance::Short:
+		InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveCharge;
 		break;
 	case Distance::Combat:
+		InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveAvoid;
 		break;
+
 	case Distance::TooClose:
+		InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveAvoid;
 		break;
 	}
