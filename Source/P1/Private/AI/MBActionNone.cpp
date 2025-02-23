@@ -2,6 +2,7 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
 #include "Datas/MBEnums.h"
+#include "MBDebug.h"
 
 void MBActionNone::DecideAction(AMBAIBaseCharacter* const InAICharacter) const
 {

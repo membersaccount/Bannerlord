@@ -171,7 +171,7 @@ void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 		int Tendency = FMath::RandRange(1, 100);
 		CalculateTeamCenterDistance();
 
-		if (40000.f < CalculatedTeamCenterDistance && 50 > Tendency)
+		if (10000.f < CalculatedTeamCenterDistance)
 		{
 			FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
 			FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
@@ -179,15 +179,15 @@ void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 			return;
 		}
 
-		if (20 > Tendency)
-		{
-			FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
-			FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
-			FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
+		//if (20 > Tendency)
+		//{
+		//	FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
+		//	FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
+		//	FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
 
-			MoveControl(OppositeLocation, AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
-			return;
-		}
+		//	MoveControl(OppositeLocation, AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
+		//	return;
+		//}
 
 		MoveControl(AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
 	}
@@ -212,7 +212,7 @@ void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 	int Tendency = FMath::RandRange(1, 100);
 	CalculateTeamCenterDistance();
 	
-	if (10000.f < CalculatedTeamCenterDistance && 70 > Tendency)
+	if (10000.f < CalculatedTeamCenterDistance)
 	{
 		FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
 		FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
@@ -221,16 +221,16 @@ void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 		return;
 	}
 
-	if (30 > Tendency)
-	{
-		FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
-		FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
+	//if (30 > Tendency)
+	//{
+	//	FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
+	//	FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
 
-		AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
-		return;
-	}
+	//	AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
+	//	return;
+	//}
 
-	float RandomAngle = FMath::RandRange(110.0f, 160.0f);
+	float RandomAngle = FMath::RandRange(110.0f, 140.0f);
 	if (50 < FMath::RandRange(1, 100))
 		RandomAngle = -RandomAngle;
 
@@ -347,14 +347,32 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 
 void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const float InEffectTime)
 {
+#ifdef DebugMode
+	if (IsPlayerTeam)
+		Debug::Print("--- Attack TimerSet ---");
+#endif // DebugMode
+
 	EnableActionDelay = true;
 	EnableAttackDelay = true;
 	IsAttacking = true;
+
+#ifdef DebugMode
+	if (IsPlayerTeam)
+	{
+		Debug::Print("EnableActionDelay = true");
+		Debug::Print("EnableAttackDelay = true");
+		Debug::Print("IsAttacking = true");
+	}
+#endif // DebugMode
 
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsAttacking = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+#ifdef DebugMode
+			if (IsPlayerTeam)
+				Debug::Print("IsAttacking = false");
+#endif // DebugMode
 		}, InAnimTime, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
@@ -365,6 +383,11 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(AttackDelayTimer, [this]()
 		{
 			this->EnableAttackDelay = false;
+			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+#ifdef DebugMode
+			if (IsPlayerTeam)
+				Debug::Print("EnableActionDelay = false");
+#endif // DebugMode
 		}, 7.f, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this]()
@@ -375,19 +398,40 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 
 void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
 {
+#ifdef DebugMode
+	if (IsPlayerTeam)
+		Debug::Print("--- Defend TimerSet ---");
+#endif // DebugMode
+
 	EnableActionDelay = true;
 	IsDefending = true;
 
+#ifdef DebugMode
+	if (IsPlayerTeam)
+	{
+		Debug::Print("EnableActionDelay = true");
+		Debug::Print("IsDefending = true");
+	}
+#endif // DebugMode
+
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
-
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+#ifdef DebugMode
+			if (IsPlayerTeam)
+				Debug::Print("IsDefending = false");
+#endif // DebugMode
 		}, InAnimTime, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
+			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
+#ifdef DebugMode
+			if (IsPlayerTeam)
+				Debug::Print("EnableActionDelay = false");
+#endif // DebugMode
 		}, FMath::RandRange(3.5f, 5.5f), false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()

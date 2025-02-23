@@ -1,22 +1,42 @@
 #include "AI/MBAction.h"
 #include "Characters/MBAIBaseCharacter.h"
 #include "AI/MBStateManager.h"
+#include "MBDebug.h"
 
 void MBAction::WideDecideAction(AMBAIBaseCharacter* const InAICharacter) const
 {
+#ifdef DebugMode
+	if (InAICharacter->IsPlayerTeam)
+		Debug::Print("WideDecideAction Called");
+#endif // DebugMode
+
 	if (nullptr == InAICharacter->AIInfo->InfoTargetData &&
 		true == InAICharacter->AIInfo->InfoTargetData->GetIsDead())
 	{
 		//TODO: Search other Target
+#ifdef DebugMode
+		if (InAICharacter->IsPlayerTeam)
+			Debug::Print("=== NoTarget ===");
+#endif // DebugMode
 		return;
 	}
 
 	if (true == InAICharacter->EnableActionDelay)
+	{
+#ifdef DebugMode
+		if (InAICharacter->IsPlayerTeam)
+			Debug::Print("=== ActionDelay is true ===");
+#endif // DebugMode
 		return;
+	}
 
 	if (true == InAICharacter->EnableAttackDelay)
 	{
 		InAICharacter->AIState.ActionData = &InAICharacter->StateManager->ManagerActionDefending;
+#ifdef DebugMode
+		if (InAICharacter->IsPlayerTeam)
+			Debug::Print("=== Defend ===");
+#endif // DebugMode
 		InAICharacter->PlayMontageDefend();
 		InAICharacter->SetActionDefendTimer(1.5f, 0.4f, 1.f);
 		return;
@@ -25,12 +45,20 @@ void MBAction::WideDecideAction(AMBAIBaseCharacter* const InAICharacter) const
 	if (50 < FMath::RandRange(1, 100))
 	{
 		InAICharacter->AIState.ActionData = &InAICharacter->StateManager->ManagerActionDefending;
+#ifdef DebugMode
+		if (InAICharacter->IsPlayerTeam)
+			Debug::Print("=== Defend ===");
+#endif // DebugMode
 		InAICharacter->PlayMontageDefend();
 		InAICharacter->SetActionDefendTimer(1.5f, 0.4f, 1.f);
 		return;
 	}
 
 	InAICharacter->AIState.ActionData = &InAICharacter->StateManager->ManagerActionAttacking;
+#ifdef DebugMode
+	if (InAICharacter->IsPlayerTeam)
+		Debug::Print("=== Attack ===");
+#endif // DebugMode
 	// Down 2.3, Up 1.8, Right 1.3, Down 0.8, Up 0.54, Right 0.47
 	int AttackType = FMath::RandRange(1, 3);
 	switch (AttackType)

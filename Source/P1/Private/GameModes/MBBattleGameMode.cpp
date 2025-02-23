@@ -251,6 +251,8 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 
 		bool NeedInit = true;
 
+		if (0 == PlayerTroopTeam[i].size())
+			continue;
 		for (auto it = PlayerTroopTeam[i].begin(); it != PlayerTroopTeam[i].end(); ++it)
 		{
 			if (nullptr == (*it)->InfoSelfData)
@@ -296,6 +298,8 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 
 		bool NeedInit = true;
 
+		if (0 == EnemyTroopTeam[i].size())
+			continue;
 		for (auto it = EnemyTroopTeam[i].begin(); it != EnemyTroopTeam[i].end(); ++it)
 		{
 			if (nullptr == (*it)->InfoSelfData)

@@ -1,6 +1,7 @@
 #include "AI/MBOrderEngageBattle.h"
 #include "Characters/MBAIBaseCharacter.h"
 #include "GameModes/MBBattleGameMode.h"
+#include "MBDebug.h"
 
 void MBOrderEngageBattle::InitOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
