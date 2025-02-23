@@ -454,9 +454,13 @@ void APlayerCharacter::hitHandler(float enenmyDamage)
 void APlayerCharacter::OrderMoveHander()
 {
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
+		FRotator CameraRotation;
+
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 		FVector Start = GetActorLocation(); // 시작 지점 (캐릭터 위치)
-		FVector ForwardVector = GetActorForwardVector(); // 캐릭터의 앞 방향
+		PlayerController->GetPlayerViewPoint(Start, CameraRotation);
+		FVector ForwardVector = CameraRotation.Vector();
 		FVector End = Start + (ForwardVector * 1000.0f); // 1000cm(10m) 거리로 쏨
 
 		FHitResult HitResult;
