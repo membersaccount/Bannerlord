@@ -61,6 +61,7 @@ void AMBAIBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	CachedWorld = GetWorld();
+	check(CachedWorld);
 }
 
 void AMBAIBaseCharacter::Tick(float DeltaTime)
@@ -71,6 +72,10 @@ void AMBAIBaseCharacter::Tick(float DeltaTime)
 		return;
 
 	AIState.OrderData->HandleOrder(this);
+
+#ifdef DebugMode
+	ShowAIState();
+#endif // DebugMode
 }
 
 bool AMBAIBaseCharacter::GetIsDead()
@@ -92,7 +97,7 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 int AMBAIBaseCharacter::OnHit(int InDamage)
 {
 #ifdef DebugMode
-	Debug::Print("AI hit", FColor::Black);
+	//Debug::Print("AI hit", FColor::Black);
 #endif // DebugMode
 
 	if (true == IsDead)
@@ -106,10 +111,11 @@ int AMBAIBaseCharacter::OnHit(int InDamage)
 	}
 
 	PlayMontageHit();
-	
-	if (AIState.ActionData == &StateManager->ManagerActionDefending)
+
+	if (AIState.ActionData == &StateManager->ManagerActionBlock)
+	{
 		return 2;
-	
+	}
 	return 0;
 }
 
@@ -134,6 +140,18 @@ void AMBAIBaseCharacter::MoveControl(const FVector& InLocation, const float InSp
 	AddMovementInput(Direction.GetSafeNormal(), InSpeed);
 }
 
+void AMBAIBaseCharacter::MoveControl(const FVector& InLocation, const FVector& InRotationLocation, const float InSpeed)
+{
+	FVector LookDirection = InRotationLocation - AIInfo->InfoLocation;
+	FRotator TurnRotation = AIInfo->InfoRotation;
+
+	TurnRotation.Yaw = LookDirection.Rotation().Yaw;
+	SetActorRotation(TurnRotation);
+
+	FVector MoveDirection = InLocation - AIInfo->InfoLocation;
+	AddMovementInput(MoveDirection.GetSafeNormal(), InSpeed);
+}
+
 void AMBAIBaseCharacter::MoveForceLocation(const float InSpeed)
 {
 	IsMovingbackwards = false;
@@ -145,6 +163,29 @@ void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
 	if (0 > InSpeed)
 	{
 		IsMovingbackwards = true;
+
+		int Tendency = FMath::RandRange(1, 100);
+		CalculateTeamCenterDistance();
+
+		if (40000.f < CalculatedTeamCenterDistance && 50 > Tendency)
+		{
+			FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
+			FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
+			FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
+			return;
+		}
+
+		if (20 > Tendency)
+		{
+			FVector Direction = AIInfo->TeamCenter - AIInfo->InfoLocation;
+			FVector OppositeDirection = FVector(-Direction.X, -Direction.Y, Direction.Z);
+			FVector OppositeLocation = AIInfo->InfoLocation + OppositeDirection;
+
+			MoveControl(OppositeLocation, AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
+			return;
+		}
+
+		MoveControl(AIInfo->InfoTargetData->AIInfo->InfoLocation, InSpeed);
 	}
 	else
 	{
@@ -163,6 +204,27 @@ void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 
 	TurnRotation.Yaw = Direction.Rotation().Yaw;
 	SetActorRotation(TurnRotation);
+
+	int Tendency = FMath::RandRange(1, 100);
+	CalculateTeamCenterDistance();
+	
+	if (10000.f < CalculatedTeamCenterDistance && 70 > Tendency)
+	{
+		FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
+		FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
+
+		AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
+		return;
+	}
+
+	if (30 > Tendency)
+	{
+		FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
+		FVector OppositeDirection = FVector(-TeamCenterDirection.X, -TeamCenterDirection.Y, TeamCenterDirection.Z);
+
+		AddMovementInput(OppositeDirection.GetSafeNormal(), InSpeed);
+		return;
+	}
 
 	float RandomAngle = FMath::RandRange(110.0f, 160.0f);
 	if (50 < FMath::RandRange(1, 100))
@@ -204,6 +266,14 @@ void AMBAIBaseCharacter::CalculateDistance(const FVector& InTargetLocation)
 		std::pow(InTargetLocation.Y - AIInfo->InfoLocation.Y, 2) +
 		std::pow(InTargetLocation.Z - AIInfo->InfoLocation.Z, 2)
 	);
+}
+
+void AMBAIBaseCharacter::CalculateTeamCenterDistance()
+{
+	CalculatedTeamCenterDistance =
+		std::pow(AIInfo->TeamCenter.X - AIInfo->InfoLocation.X, 2) +
+		std::pow(AIInfo->TeamCenter.Y - AIInfo->InfoLocation.Y, 2) +
+		std::pow(AIInfo->TeamCenter.Z - AIInfo->InfoLocation.Z, 2);
 }
 
 void AMBAIBaseCharacter::DecideTargetDistance()
@@ -265,7 +335,7 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 		}, InTime, false);
 }
 
-void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
+void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const float InEffectTime)
 {
 	EnableActionDelay = true;
 	EnableAttackDelay = true;
@@ -284,15 +354,10 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 			this->IsAttacking = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
 		}, InAnimTime, false);
-	//CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-	//	{
-	//		this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
-	//		CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
-	//			{
-	//				this->AIState.ActionData = &this->StateManager->ManagerActionAttacking;
-	//			}, InEffectTime, false);
-
-	//	}, InEffectStartTime, false);
+	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
+		{
+			this->AIState.ActionData = &this->StateManager->ManagerActionStrike;
+		}, InEffectTime, false);
 }
 
 void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
@@ -300,17 +365,12 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	EnableActionDelay = true;
 	IsDefending = true;
 
-	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
-	Debug::Print("Spear Collision On");
-
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
 		}, FMath::RandRange(3.5f, 5.5f), false);
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
-			StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			Debug::Print("Spear Collision Off");
 
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
@@ -318,14 +378,11 @@ void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const floa
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
 		{
 			this->AIState.ActionData = &this->StateManager->ManagerActionBlock;
-			//StaticMeshSpearComponent->SetCollisionProfileName(TEXT("spear"));
 			CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()
 				{
-					//StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 					this->AIState.ActionData = &this->StateManager->ManagerActionDefending;
 				}, InEffectTime, false);
-
-		}, InEffectStartTime, false);
+		}, InEffectTime, false);
 }
 
 void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue)
@@ -383,3 +440,52 @@ void AMBAIBaseCharacter::Dead()
 			this->Destroy();
 		}, 3.f, false);
 }
+
+#ifdef DebugMode
+void AMBAIBaseCharacter::ShowAIState()
+{
+	switch (AIAttitude)
+	{
+	case Attitude::Idle:
+		DrawDebug::DrawSphere(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f));
+		break;
+	case Attitude::Aggressive:
+		DrawDebug::DrawSphere(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f), FColor::Red);
+		break;
+	case Attitude::Defensive:
+		DrawDebug::DrawSphere(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f), FColor::Yellow);
+		break;
+	}
+
+	switch (AIAction)
+	{
+	case Action::None:
+		break;
+	case Action::Attacking:
+		DrawDebug::DrawString(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f), "Attacking", FColor::Red);
+		break;
+	case Action::Strike:
+		DrawDebug::DrawString(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f), "Strike", FColor::Yellow, 3.f);
+		break;
+	case Action::Defending:
+		break;
+	case Action::Block:
+		DrawDebug::DrawString(CachedWorld, AIInfo->InfoLocation + FVector(0.f, 0.f, 100.f), "Blocking", FColor::Cyan);
+		break;
+	}
+
+	switch (AIMove)
+	{
+	case Move::Charge:
+		break;
+	case Move::Chase:
+		break;
+	case Move::Lead:
+		break;
+	case Move::Avoid:
+		break;
+	default:
+		break;
+	}
+}
+#endif // DebugMode

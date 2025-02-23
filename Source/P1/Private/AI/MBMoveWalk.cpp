@@ -8,5 +8,5 @@ void MBMoveWalk::DecideMove(AMBAIBaseCharacter* const InAICharacter) const
 
 void MBMoveWalk::ExecuteMove(AMBAIBaseCharacter* const InAICharacter) const
 {
-	InAICharacter->MoveTargetLocation(0.22f);
+	InAICharacter->MoveTargetLocation(0.2f);
 }

@@ -154,11 +154,11 @@ namespace DrawDebug
 		DrawDebugLine(InWorld, InStartLocation, InEndLocation, InColor, false, -1.f, 0U, 3.f);
 	}
 
-	inline static void DrawString(const UWorld* InWorld, const FVector& InLocation, const FString& InMessage)
+	inline static void DrawString(const UWorld* InWorld, const FVector& InLocation, const FString& InMessage, FColor InColor = FColor::Black, float InTime = -1.f)
 	{
 		if (nullptr == InWorld)
 			return;
 
-		DrawDebugString(InWorld, InLocation, InMessage, 0, FColor::White, -1.f, false);
+		DrawDebugString(InWorld, InLocation, InMessage, 0, InColor, -1.f, false);
 	}
 }
