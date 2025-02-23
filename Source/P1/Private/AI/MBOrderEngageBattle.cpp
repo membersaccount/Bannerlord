@@ -1,5 +1,6 @@
 #include "AI/MBOrderEngageBattle.h"
 #include "Characters/MBAIBaseCharacter.h"
+#include "GameModes/MBBattleGameMode.h"
 
 void MBOrderEngageBattle::InitOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
@@ -10,7 +11,17 @@ void MBOrderEngageBattle::HandleOrder(AMBAIBaseCharacter* const InAICharacter) c
 {
 	InAICharacter->CheckTargetExist();
 	if (false == InAICharacter->IsTargetExist)
-		return;
+	{
+		AMBBattleGameMode* GameMode = Cast<AMBBattleGameMode>(InAICharacter->CachedWorld->GetAuthGameMode());
+
+		GameMode->TargetSearchCloseTeam();
+
+		InAICharacter->CheckTargetExist();
+		if (false == InAICharacter->IsTargetExist)
+		{
+			return;
+		}
+	}
 
 	InAICharacter->CalculateDistance(InAICharacter->AIInfo->InfoTargetData->AIInfo->InfoLocation);
 	InAICharacter->DecideTargetDistance();

@@ -9,10 +9,9 @@ void MBOrderMakeFormation::InitOrder(AMBAIBaseCharacter* const InAICharacter) co
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
 	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveForce;
 
-	//-0
-	//InAICharacter->IsIdle = true;
-	//InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
-	//InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
+#ifdef DebugMode
+	InAICharacter->AIAttitude = Enums::AI::States::Attitude::Idle;
+#endif // DebugMode
 }
 
 void MBOrderMakeFormation::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const

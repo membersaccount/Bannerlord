@@ -7,6 +7,10 @@ void MBOrderHoldPosition::InitOrder(AMBAIBaseCharacter* const InAICharacter) con
 	InAICharacter->IsIdle = false;
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
 	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveStop;
+
+#ifdef DebugMode
+	InAICharacter->AIAttitude = Enums::AI::States::Attitude::Idle;
+#endif // DebugMode
 }
 
 void MBOrderHoldPosition::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const

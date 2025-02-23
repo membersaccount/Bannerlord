@@ -8,22 +8,34 @@ void MBAttitudeAggressive::DecideAttitude(AMBAIBaseCharacter* const InAICharacte
 	if (false == InAICharacter->IsTargetExist)
 	{
 		InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
+#ifdef DebugMode
+		InAICharacter->AIAttitude = Enums::AI::States::Attitude::Idle;
+#endif // DebugMode
 		return;
 	}
 
-	if (InAICharacter->AIState.AttitudeData != &InAICharacter->StateManager->ManagerAttitudeAggressive)
+	if (InAICharacter->AIInfo->InfoTargetData->AIState.AttitudeData != &InAICharacter->StateManager->ManagerAttitudeAggressive)
 	{
 		InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeAggressive;
+#ifdef DebugMode
+		InAICharacter->AIAttitude = Enums::AI::States::Attitude::Aggressive;
+#endif // DebugMode
 		return;
 	}
 
 	if (InAICharacter->HP < InAICharacter->AIInfo->InfoTargetData->HP)
 	{
 		InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeDefensive;
+#ifdef DebugMode
+		InAICharacter->AIAttitude = Enums::AI::States::Attitude::Defensive;
+#endif // DebugMode
 		return;
 	}
 
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeAggressive;
+#ifdef DebugMode
+	InAICharacter->AIAttitude = Enums::AI::States::Attitude::Aggressive;
+#endif // DebugMode
 }
 
 void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAICharacter) const
@@ -54,9 +66,11 @@ void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAI
 			break;
 		}
 
-		if (InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::Combat)
+		if (InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::Combat ||
+			InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::TooClose)
 		{
-			if (false == InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
+			if (InAICharacter->AIState.AttitudeData == &InAICharacter->StateManager->ManagerAttitudeAggressive &&
+				false == InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
 			{
 				InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveLead;
 				InAICharacter->SetLeadTimer(FMath::RandRange(2.5f, 7.5f));
@@ -68,14 +82,23 @@ void MBAttitudeAggressive::PassDecideMoveAttitude(AMBAIBaseCharacter* const InAI
 		break;
 
 	case Distance::TooClose:
-		if (InAICharacter->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
+		if (InAICharacter->AIInfo->InfoTargetData->AIState.MoveData == &InAICharacter->StateManager->ManagerMoveLead)
 		{
+			InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+			InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveWalk;
 			break;
 		}
 
-		if (InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
+		if (InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::Combat ||
+			InAICharacter->AIInfo->InfoTargetData->TargetDistance == Distance::TooClose)
 		{
-			InAICharacter->ClearTimer(&InAICharacter->RandomLeadTimer);
+			if (InAICharacter->AIState.AttitudeData == &InAICharacter->StateManager->ManagerAttitudeAggressive &&
+				false == InAICharacter->IsTimerActive(&InAICharacter->RandomLeadTimer))
+			{
+				InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveLead;
+				InAICharacter->SetLeadTimer(FMath::RandRange(2.5f, 7.5f));
+			}
+			break;
 		}
 
 		InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveWalk;
