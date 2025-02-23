@@ -128,6 +128,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Order_Attact;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order3;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order4;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order5;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order6;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order7;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Order8;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponComponent")
 	class UWeaponComponent* WeaponComponent1;
@@ -207,6 +219,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UiVisibleHandler();
+	
+	void orderHander3();
+	void orderHander4();
+	void orderHander5();
+	void orderHander6();
+	void orderHander7();
+	void enemyOrderHander();
 
 
 
