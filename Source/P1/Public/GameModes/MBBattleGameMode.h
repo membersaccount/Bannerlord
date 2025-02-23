@@ -36,14 +36,42 @@ public: // Player Troop Controll
 	void SetFormation(Formation InFormation);
 	void SetFormation(Formation InFormation, FVector InLocation);
 
+	void showEndWidget();
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void playBackGroundMusic();
+
+	void playEndMusic();
+
+	bool isEnd=false;
+
 	void DefaultFormation(float InSpace);
+
 	MBStateManager CharacterStateManager;
 
 	int PlayerTeamCount;
+
 	int EnemyTeamCount;
+
+    UPROPERTY(VisibleAnywhere)
+    UAudioComponent* BackgroundMusicComp;
+
+    UPROPERTY(VisibleAnywhere)
+    class UAudioComponent* EndMusicComp;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    class USoundCue* BackgroundMusicCue;
+
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    class USoundCue* EndMusicCue;
+
+	class UEndWidget* endWidget;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TSubclassOf<class UEndWidget>endWidgetFactory;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TSubclassOf<class UUserWidget>introWidget;
+
 	class UUserWidget* widget;
 
 public: // Target Search
