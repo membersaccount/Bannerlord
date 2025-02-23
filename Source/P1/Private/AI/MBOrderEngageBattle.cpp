@@ -11,6 +11,13 @@ void MBOrderEngageBattle::InitOrder(AMBAIBaseCharacter* const InAICharacter) con
 void MBOrderEngageBattle::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const
 {
 	InAICharacter->CheckTargetExist();
+	bool IsOkay = InAICharacter->IsTargetExist;
+
+	if (IsOkay)
+	{
+		Debug::Called();
+	}
+
 	if (false == InAICharacter->IsTargetExist)
 	{
 		AMBBattleGameMode* GameMode = Cast<AMBBattleGameMode>(InAICharacter->CachedWorld->GetAuthGameMode());

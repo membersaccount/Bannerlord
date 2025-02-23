@@ -115,6 +115,7 @@ int AMBAIBaseCharacter::OnHit(int InDamage, bool IsPlayer)
 	}
 
 	PlayMontageHit();
+	AIState.MoveData->ExecuteMove(this);
 
 	if (AIState.ActionData == &StateManager->ManagerActionBlock)
 	{
@@ -257,8 +258,11 @@ void AMBAIBaseCharacter::TurnToFront()
 
 void AMBAIBaseCharacter::CheckTargetExist()
 {
-	if (nullptr == AIInfo->InfoTargetData)
+	if (nullptr == AIInfo->InfoTargetData->AIInfo)
+	{
+		TargetDistance = Distance::None;
 		IsTargetExist = false;
+	}
 
 	IsTargetExist = true;
 }
@@ -347,32 +351,32 @@ void AMBAIBaseCharacter::SetLeadTimer(const float InTime)
 
 void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const float InEffectTime)
 {
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 	if (IsPlayerTeam)
 		Debug::Print("--- Attack TimerSet ---");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 
 	EnableActionDelay = true;
 	EnableAttackDelay = true;
 	IsAttacking = true;
 
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 	if (IsPlayerTeam)
 	{
 		Debug::Print("EnableActionDelay = true");
 		Debug::Print("EnableAttackDelay = true");
 		Debug::Print("IsAttacking = true");
 	}
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsAttacking = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 			if (IsPlayerTeam)
 				Debug::Print("IsAttacking = false");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 		}, InAnimTime, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
@@ -384,10 +388,10 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 		{
 			this->EnableAttackDelay = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 			if (IsPlayerTeam)
 				Debug::Print("EnableActionDelay = false");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 		}, 7.f, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this]()
@@ -398,40 +402,40 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 
 void AMBAIBaseCharacter::SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime)
 {
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 	if (IsPlayerTeam)
 		Debug::Print("--- Defend TimerSet ---");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 
 	EnableActionDelay = true;
 	IsDefending = true;
 
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 	if (IsPlayerTeam)
 	{
 		Debug::Print("EnableActionDelay = true");
 		Debug::Print("IsDefending = true");
 	}
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 
 	CachedWorld->GetTimerManager().SetTimer(ActionAnimTimer, [this]()
 		{
 			this->IsDefending = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 			if (IsPlayerTeam)
 				Debug::Print("IsDefending = false");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 		}, InAnimTime, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionDelayTimer, [this]()
 		{
 			this->EnableActionDelay = false;
 			this->AIState.ActionData = &this->StateManager->ManagerActionNone;
-#ifdef DebugMode
+#ifdef DebugModeBugFix_Action
 			if (IsPlayerTeam)
 				Debug::Print("EnableActionDelay = false");
-#endif // DebugMode
+#endif // DebugModeBugFix_Action
 		}, FMath::RandRange(3.5f, 5.5f), false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this, InEffectTime]()

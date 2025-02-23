@@ -102,16 +102,20 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	SearchDeadCharacter(PlayerTeamInfo);
+	SearchDeadCharacter(EnemyTeamInfo);
 	UpdateTeamCount();
-	UpdateAllCharacterInfo();
-	UpdateTroopTeamCenter();
 
-	if (0 < PlayerTeamCount || 0 < EnemyTeamCount)
+	if (0 < PlayerTeamCount && 0 < EnemyTeamCount)
 	{
+		UpdateAllCharacterInfo();
 		UpdateTargets();
-
-		SearchDeadCharacter(PlayerTeamInfo);
-		SearchDeadCharacter(EnemyTeamInfo);
+		UpdateTroopTeamCenter();
+	}
+	else
+	{
+		OrderPlayerTeam(&CharacterStateManager.ManagerOrderForceStop);
+		OrderEnemyTeam(&CharacterStateManager.ManagerOrderForceStop);
 	}
 
 #ifdef DebugMode

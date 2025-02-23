@@ -3,6 +3,7 @@
 #include "AI/MBOrderMakeFormation.h"
 #include "AI/MBOrderMoveLocation.h"
 #include "AI/MBOrderEngageBattle.h"
+#include "AI/MBOrderForceStop.h"
 
 #include "AI/MBAttitudeIdle.h"
 #include "AI/MBAttitudeAggressive.h"
@@ -30,6 +31,7 @@ public:
 	MBOrderMakeFormation ManagerOrderMakeFormation;
 	MBOrderMoveLocation ManagerOrderMoveLocation;
 	MBOrderEngageBattle ManagerOrderEngageBattle;
+	MBOrderForceStop ManagerOrderForceStop;
 
 	MBAttitudeIdle ManagerAttitudeIdle;
 	MBAttitudeAggressive ManagerAttitudeAggressive;
