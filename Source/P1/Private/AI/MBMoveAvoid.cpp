@@ -8,5 +8,5 @@ void MBMoveAvoid::DecideMove(AMBAIBaseCharacter* InAICharacter) const
 
 void MBMoveAvoid::ExecuteMove(AMBAIBaseCharacter* InAICharacter) const
 {
-	InAICharacter->MoveTargetLocation(-0.30f);
+	InAICharacter->MoveTargetLocation(-0.3f);
 }

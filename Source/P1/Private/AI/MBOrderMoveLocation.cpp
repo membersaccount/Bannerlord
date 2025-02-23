@@ -8,6 +8,10 @@ void MBOrderMoveLocation::InitOrder(AMBAIBaseCharacter* const InAICharacter) con
 	InAICharacter->IsArrivedForceLocation = false;
 	InAICharacter->AIState.AttitudeData = &InAICharacter->StateManager->ManagerAttitudeIdle;
 	InAICharacter->AIState.MoveData = &InAICharacter->StateManager->ManagerMoveForce;
+
+#ifdef DebugMode
+	InAICharacter->AIAttitude = Enums::AI::States::Attitude::Idle;
+#endif // DebugMode
 }
 
 void MBOrderMoveLocation::HandleOrder(AMBAIBaseCharacter* const InAICharacter) const

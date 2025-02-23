@@ -39,16 +39,20 @@ public: // Player Troop Controll
 	void DefaultFormation(float InSpace);
 	MBStateManager CharacterStateManager;
 
+public: // Target Search
+	void TargetSearchCloseTeam();
 
 private: // Spawn
 	void BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation);
-	void SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, FRotator InRotation);
+	void SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, FRotator InRotation, int InPlayerTroopTeam);
 
 private: // Update
 	void UpdateTeamCount();
 	void UpdateAllCharacterInfo();
 	void UpdateTargets();
 	void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation);
+
+	void UpdateTroopTeamCenter();
 
 private: // Character Manage
 	void SearchDeadCharacter(std::list<AIInfoData>& InData);
@@ -66,7 +70,10 @@ private: // Character Data
 	int EnemyTeamCount;
 	std::list<AIInfoData> PlayerTeamInfo;
 	std::list<AIInfoData> EnemyTeamInfo;
-
+	std::vector<std::list<AIInfoData*>> PlayerTroopTeam;
+	std::vector<std::list<AIInfoData*>> EnemyTroopTeam;
+	std::vector<FVector> PlayerTroopTeamLocation;
+	std::vector<FVector> EnemyTroopTeamLocation;
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
 
 private: // Formation
@@ -79,4 +86,8 @@ private: // Cached Data
 private: // Debug
 	FTimerHandle DebugTimer;
 	int ColumCount = 40;
+
+	void ShowTeam();
+	void ShowTroopTeamCenterLocation();
+	void ShowTroopTeamRectangle(float InMaxX, float InMinX, float InMaxY, float InMinY, FColor InColor);
 };

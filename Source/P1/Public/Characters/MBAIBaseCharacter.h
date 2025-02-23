@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MBSettings.h"
 #include "Datas/MBStructs.h"
 #include "Datas/MBEnums.h"
 #include "MBAIBaseCharacter.generated.h"
@@ -34,11 +35,12 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-	bool OnHit(int InDamage);
+	int OnHit(int InDamage);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
 	void MoveControl(const FVector& InLocation, const float InSpeed);
+	void MoveControl(const FVector& InLocation, const FVector& InRotationLocation, const float InSpeed);
 	void MoveForceLocation(const float InSpeed);
 	void MoveTargetLocation(const float InSpeed);
 	void MoveSideways(const float InSpeed);
@@ -47,6 +49,7 @@ public: // Move
 public: // Target
 	void CheckTargetExist();
 	void CalculateDistance(const FVector& InTargetLocation);
+	void CalculateTeamCenterDistance();
 	void DecideTargetDistance();
 	void CheckForceLocationArrive();
 
@@ -54,7 +57,7 @@ public: // Timer
 	bool IsTimerActive(FTimerHandle* InTimer);
 	void ClearTimer(FTimerHandle* InTimer);
 	void SetLeadTimer(const float InTime);
-	void SetActionAttackTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime);
+	void SetActionAttackTimer(const float InAnimTime, const float InEffectTime);
 	void SetActionDefendTimer(const float InAnimTime, const float InEffectStartTime, const float InEffectTime);
 
 	void SetDelayTimer(FTimerHandle* InTimer, const float InTime, bool* InValue);
@@ -76,6 +79,7 @@ public: // Default Data
 	int HP = 10000;
 	int Damage = 25;
 	float CalculatedTargetDistance = 0.f;
+	float CalculatedTeamCenterDistance = 0.f;
 
 public: // AI
 	Distance TargetDistance = Distance::None;
@@ -109,7 +113,7 @@ public: // Timer
 	FTimerHandle DebugTimer;
 
 protected:
-	bool IsDead;
+	bool IsDead = false;
 
 private:
 	FVector ForceMoveLocation;
@@ -121,10 +125,23 @@ private: // Default Data
 	UAnimMontage* MontageFullbody;
 	UAnimMontage* MontageUpperbody;
 
-protected: // Cached Data
+public: // Cached Data
 	UWorld* CachedWorld;
 	UAnimInstance* CachedAnimInstance;
 
 private: // Debug
 	float CurrentTime = 0.f;
+#ifdef DebugMode
+public:
+	typedef Enums::AI::States::Attitude Attitude;
+	typedef Enums::AI::States::Action Action;
+	typedef Enums::AI::States::Move Move;
+
+	Attitude AIAttitude = Attitude::Idle;
+	Action AIAction = Action::None;
+	Move AIMove = Move::Stop;
+
+	void ShowAIState();
+#endif // DebugMode
+
 };

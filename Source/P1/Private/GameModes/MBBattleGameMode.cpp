@@ -49,6 +49,11 @@ void AMBBattleGameMode::InitGameData()
 	int InitPlayerTroopCount = 0;
 	int InitEnemyTroopCount = 0;
 
+	PlayerTroopTeam.resize(20, std::list<AIInfoData*>());
+	EnemyTroopTeam.resize(20, std::list<AIInfoData*>());
+	PlayerTroopTeamLocation.resize(20);
+	EnemyTroopTeamLocation.resize(20);
+
 	UMBGameInstance* GameInstance = Cast<UMBGameInstance>(GetGameInstance());
 
 	GameInstance->LoadBattleData(InitPlayerTroopCount, InitEnemyTroopCount);
@@ -96,7 +101,8 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateTeamCount();
-	UpdateAllCharacterInfo();
+	//UpdateAllCharacterInfo();
+	UpdateTroopTeamCenter();
 
 	if (0 < PlayerTeamCount || 0 < EnemyTeamCount)
 	{
@@ -105,12 +111,25 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 		SearchDeadCharacter(PlayerTeamInfo);
 		SearchDeadCharacter(EnemyTeamInfo);
 	}
+
+#ifdef DebugMode
+	//ShowTeam();
+	ShowTroopTeamCenterLocation();
+#endif // DebugMode
+
+}
+
+void AMBBattleGameMode::TargetSearchCloseTeam()
+{
+
 }
 
 void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation)
 {
 	int lineX = 0;
 	int lineY = 0;
+	int TroopTeamCount = 0;
+
 	for (int32 i = 0; i < InNum; ++i)
 	{
 		if (i % ColumCount == 0)
@@ -124,21 +143,25 @@ void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVecto
 				--lineX;
 			}
 			lineY = 0;
+			TroopTeamCount = 0;
 		}
 
 		++lineY;
 		FVector SpawnLocation = InLocation + FVector(lineX * 300.0f, lineY * 200.f, 0.f);
-		SpawnCharacter(InIsPlayerTeam, SpawnLocation, InRotation);
+		SpawnCharacter(InIsPlayerTeam, SpawnLocation, InRotation, TroopTeamCount / 2);
+		++TroopTeamCount;
 	}
 
 	Row = lineX;
 	Column = ColumCount;
 
+#ifdef DebugMode
 	FString Str = FString::Printf(TEXT("Row = %d, Colum = %d"), Row, Column);
 	Debug::Print(*Str);
+#endif // DebugMode
 }
 
-void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, FRotator InRotation)
+void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, FRotator InRotation, int InTroopTeam)
 {
 	AMBAISpearman* SpawnedAI = GetWorld()->SpawnActor<AMBAISpearman>(AMBAISpearman::StaticClass(), InLocation, InRotation);
 	SpawnedAI->PrimaryActorTick.AddPrerequisite(this, this->PrimaryActorTick);
@@ -150,10 +173,12 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	{
 		PlayerTeamInfo.push_back(Info);
 		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody , &PlayerTeamInfo.back(), &CharacterStateManager);
+		PlayerTroopTeam[InTroopTeam].push_back(&PlayerTeamInfo.back());
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
 	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody, &EnemyTeamInfo.back(), &CharacterStateManager);
+	EnemyTroopTeam[InTroopTeam].push_back(&EnemyTeamInfo.back());
 }
 
 void AMBBattleGameMode::UpdateTeamCount()
@@ -213,6 +238,76 @@ void AMBBattleGameMode::UpdateTargets()
 	}
 }
 
+void AMBBattleGameMode::UpdateTroopTeamCenter()
+{
+	for (int i = 0; i < PlayerTroopTeam.size(); ++i)
+	{
+		PlayerTroopTeam[i].front()->InfoLocation = PlayerTroopTeam[i].front()->InfoSelfData->GetActorLocation();
+
+		float MaxX = PlayerTroopTeam[i].front()->InfoLocation.X;
+		float MinX = MaxX;
+		float MaxY = PlayerTroopTeam[i].front()->InfoLocation.Y;
+		float MinY = MaxY;
+
+		for (auto& Data : PlayerTroopTeam[i])
+		{
+			Data->InfoLocation = Data->InfoSelfData->GetActorLocation();
+			Data->InfoRotation = Data->InfoSelfData->GetActorRotation();
+
+			int X = Data->InfoLocation.X;
+			int Y = Data->InfoLocation.Y;
+
+			if (X > MaxX)
+				MaxX = X;
+			if (X < MinX)
+				MinX = X;
+			if (Y > MaxY)
+				MaxY = Y;
+			if (Y < MinY)
+				MinY = Y;
+		}
+
+		PlayerTroopTeamLocation[i] = FVector((MaxX + MinX) / 2, (MaxY + MinY) / 2, 0.f);
+#ifdef DebugMode
+		ShowTroopTeamRectangle(MaxX, MinX, MaxY, MinY, FColor::Blue);
+#endif // DebugMode
+
+	}
+
+	for (int i = 0; i < EnemyTroopTeam.size(); ++i)
+	{
+		EnemyTroopTeam[i].front()->InfoLocation = EnemyTroopTeam[i].front()->InfoSelfData->GetActorLocation();
+
+		float MaxX = EnemyTroopTeam[i].front()->InfoLocation.X;
+		float MinX = MaxX;
+		float MaxY = EnemyTroopTeam[i].front()->InfoLocation.Y;
+		float MinY = MaxY;
+
+		for (auto& Data : EnemyTroopTeam[i])
+		{
+			Data->InfoLocation = Data->InfoSelfData->GetActorLocation();
+			Data->InfoRotation = Data->InfoSelfData->GetActorRotation();
+
+			int X = Data->InfoLocation.X;
+			int Y = Data->InfoLocation.Y;
+
+			if (X > MaxX)
+				MaxX = X;
+			if (X < MinX)
+				MinX = X;
+			if (Y > MaxY)
+				MaxY = Y;
+			if (Y < MinY)
+				MinY = Y;
+		}
+
+		EnemyTroopTeamLocation[i] = FVector((MaxX + MinX) / 2, (MaxY + MinY) / 2, 0.f);
+#ifdef DebugMode
+		ShowTroopTeamRectangle(MaxX, MinX, MaxY, MinY, FColor::Red);
+#endif // DebugMode
+	}
+}
+
 void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation)
 {
 	InCharacter->SetForceMoveLocation(InLocation);
@@ -234,6 +329,49 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 		InData.erase(it);
 		//it->InfoSelfData->Destroy();
 		DeadCharacters.pop();
+	}
+}
+
+void AMBBattleGameMode::ShowTeam()
+{
+	for (auto& Data : PlayerTroopTeam[0])
+	{
+		DrawDebug::DrawSphere(GetWorld(), Data->InfoLocation);
+	}
+
+	for (auto& Data : EnemyTroopTeam[0])
+	{
+		DrawDebug::DrawSphere(GetWorld(), Data->InfoLocation);
+	}
+}
+
+void AMBBattleGameMode::ShowTroopTeamCenterLocation()
+{
+	for (auto& Data : PlayerTroopTeamLocation)
+	{
+		DrawDebug::DrawSphere(GetWorld(), Data + FVector(0.f, 0.f, 300.f), FColor::Blue);
+	}
+
+	for (auto& Data : EnemyTroopTeamLocation)
+	{
+		DrawDebug::DrawSphere(GetWorld(), Data + FVector(0.f, 0.f, 300.f), FColor::Red);
+	}
+}
+
+void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float InMaxY, float InMinY, FColor InColor)
+{
+	float X[4] = { InMaxX, InMaxX, InMinX, InMinX };
+	float Y[4] = { InMaxY ,InMinY, InMinY, InMaxY };
+
+	for (int i = 0; i < 4; ++i)
+	{
+		int j = i + 1;
+		if (j == 4)
+			j = 0;
+
+		FVector StartLine = FVector(X[i], Y[i], 0.f);
+		FVector EndLine = FVector(X[j], Y[j], 0.f);
+		DrawDebug::DrawLine(GetWorld(), StartLine, EndLine, InColor);
 	}
 }
 

@@ -17,6 +17,7 @@ namespace Structs
 			FVector InfoLocation;
 			FRotator InfoRotation;
 			AMBAIBaseCharacter* InfoTargetData;
+			FVector TeamCenter;
 			int TargetedCount;
 		};
 
