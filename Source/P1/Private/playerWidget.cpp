@@ -3,6 +3,9 @@
 
 #include "playerWidget.h"
 #include "Animation/WidgetAnimation.h"
+#include "GameModes/MBBattleGameMode.h"
+#include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UplayerWidget::NativeConstruct()
@@ -12,6 +15,9 @@ void UplayerWidget::NativeConstruct()
 	AnimDelegate.BindDynamic(this, &UplayerWidget::PlayAnimReverse);
 	BindToAnimationFinished(AimAnimation, AnimDelegate);
 
+	gamemode = Cast<AMBBattleGameMode>(UGameplayStatics::GetGameMode(GetWorld()->GetAuthGameMode()));
+
+
 
 }
 
@@ -20,6 +26,12 @@ void UplayerWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 	Super::NativeTick(MyGeometry, DeltaTime);
 	if(AimAnimation)
 		CurrentAnimationTime = this->GetAnimationCurrentTime(AimAnimation);
+
+	int playerTeamCount= gamemode->PlayerTeamCount;
+	int enemyTeamCount = gamemode->EnemyTeamCount;
+
+	playerTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, FMath::Clamp(playerTeamCount, 0.0f, 1.0f)));
+	enemyTeam->SetPercent(FMath::GetRangePct(0.0f, 200.0f, FMath::Clamp(enemyTeamCount, 0.0f, 1.0f)));
 }
 
 void UplayerWidget::AimPlayAnimation(bool isClick)
@@ -34,6 +46,7 @@ void UplayerWidget::AimPlayAnimation(bool isClick)
 
 		PlayAnimation(AimAnimationReturn, 0.0f, 1.0f, EUMGSequencePlayMode::Forward, 1.0f);  // ¿ª¹æÇâ
 	}
+
 
 }
 

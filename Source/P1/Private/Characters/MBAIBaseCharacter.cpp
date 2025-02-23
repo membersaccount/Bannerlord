@@ -13,6 +13,8 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
 	SkeletalMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshSpearComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	StaticMeshSpearComponent->SetupAttachment(SkeletalMeshComponent);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -109,11 +111,11 @@ int AMBAIBaseCharacter::OnHit(int InDamage)
 	}
 
 	PlayMontageHit();
+
 	if (AIState.ActionData == &StateManager->ManagerActionBlock)
 	{
 		return 2;
 	}
-
 	return 0;
 }
 

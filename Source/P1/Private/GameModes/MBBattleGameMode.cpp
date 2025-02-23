@@ -3,6 +3,8 @@
 #include "Characters/MBAIBaseCharacter.h"
 #include "Characters/MBAISpearman.h"
 #include "MBDebug.h"
+#include "Components/Widget.h"
+#include "Blueprint/UserWidget.h"
 
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
@@ -72,6 +74,10 @@ void AMBBattleGameMode::BeginPlay()
 #ifdef DebugMode
 	Debug::Called();
 #endif // DebugMode
+
+	widget = CreateWidget<UUserWidget>(GetWorld(),introWidget);
+	widget->AddToViewport();
+
 
 	InitGameData();
 

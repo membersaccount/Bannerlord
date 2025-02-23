@@ -54,6 +54,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UKillLogWidget* widget;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widge")
 	TSubclassOf<class UKillLogWidget>widgetFactory;
 
@@ -203,6 +204,9 @@ public:
 	void OrderMoveHander();
 
 	void OrderAttackHander();
+
+	UFUNCTION(BlueprintCallable)
+	void UiVisibleHandler();
 
 
 

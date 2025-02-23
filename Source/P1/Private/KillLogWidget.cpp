@@ -7,22 +7,42 @@
 #include "Blueprint/UserWidget.h"
 #include "KillLogEntryWidget.h"
 
-void UKillLogWidget::AddKillLogEntry(const FText& KillMessage)
+void UKillLogWidget::AddKillLogEntry(const FText& KillMessage, int isenemyState)
 {
 
 
 	UKillLogEntryWidget* NewEntryWidget = CreateWidget<UKillLogEntryWidget>(this, KillLogEntryClass);
+	UKillLogEntryWidget* NewEntryWidget1 = CreateWidget<UKillLogEntryWidget>(this, KillLogEntryClass1);
 	if (NewEntryWidget)
 	{
-		UTextBlock* KillLogText = Cast<UTextBlock>(NewEntryWidget->KillLogText);
-		if (KillLogText)
-		{
-			KillLogText->SetText(KillMessage);
-			KillLogBox->AddChildToVerticalBox(NewEntryWidget);
+		if (isenemyState == 1) {
+			UTextBlock* KillLogText = Cast<UTextBlock>(NewEntryWidget->KillLogText);
+			if (KillLogText)
+			{
 
-			FTimerHandle visibleTime;
-			FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { ClearKillLog(); });
-			GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
+				KillLogText->SetText(KillMessage);
+				KillLogBox->AddChildToVerticalBox(NewEntryWidget);
+
+				FTimerHandle visibleTime;
+				FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { ClearKillLog(); });
+				GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
+
+			}
+
+		}
+		else if (isenemyState == 0) {
+			UTextBlock* KillLogText1 = Cast<UTextBlock>(NewEntryWidget1->KillLogText);
+			if (KillLogText1)
+			{
+
+				KillLogText1->SetText(KillMessage);
+				KillLogBox->AddChildToVerticalBox(NewEntryWidget1);
+
+				FTimerHandle visibleTime;
+				FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { ClearKillLog(); });
+				GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
+
+			}
 		}
 	}
 }

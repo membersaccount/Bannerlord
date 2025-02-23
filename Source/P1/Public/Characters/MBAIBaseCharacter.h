@@ -118,7 +118,7 @@ protected:
 private:
 	FVector ForceMoveLocation;
 
-private: // Default Data
+public: // Default Data
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UStaticMeshComponent* StaticMeshSpearComponent;
 	UAnimBlueprint* AnimationBlueprint;

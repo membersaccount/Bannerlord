@@ -32,6 +32,8 @@ void UWeaponComponent::BeginPlay()
 	widget = CreateWidget<UplayerWidget>(GetWorld(), widgetFactory);
 	widget->AddToViewport();
 
+	widget->SetVisibility(ESlateVisibility::Hidden);
+
 	if (widget==nullptr)return;
 	ArrowT = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowT")));
 	ArrowB = Cast<UImage>(widget->GetWidgetFromName(TEXT("ArrowB")));

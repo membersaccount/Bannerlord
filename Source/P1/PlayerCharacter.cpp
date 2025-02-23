@@ -470,3 +470,8 @@ void APlayerCharacter::OrderAttackHander()
 
 	}
 }
+
+void APlayerCharacter::UiVisibleHandler()
+{
+	WeaponComponent1->widget->SetVisibility(ESlateVisibility::Visible);
+}
