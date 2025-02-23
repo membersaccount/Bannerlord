@@ -267,7 +267,7 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 	if (Enemy) {
 		me->isAttack = false;
 
-		int enemyState=Enemy->OnHit(MontageData.damage);
+		int enemyState=Enemy->OnHit(MontageData.damage, true);
 		UE_LOG(LogTemp, Warning, TEXT("%d"), enemyState);
 		if (enemyState==0) {
 			showCrossHair(true);
@@ -308,6 +308,9 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 				me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
 				me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
 			}
+		}
+		else if (enemyState==3)	{
+			me->isAttack = true;
 		}
 		//크로스 헤어 끄기
 		FTimerHandle visibleTime;

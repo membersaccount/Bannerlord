@@ -466,6 +466,7 @@ void APlayerCharacter::OrderMoveHander()
 		// 라인트레이스 실행
 		bool bHit = GetWorld()->LineTraceSingleByChannel(
 			HitResult, Start, End, ECC_Visibility, CollisionParams);
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red, true, 2.0f, 0, 2.0f);
 
 		if (bHit) // 충돌이 발생했을 경우
 		{
@@ -473,13 +474,15 @@ void APlayerCharacter::OrderMoveHander()
 			UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *HitLocation.ToString());
 
 			// 디버그 선을 그려 확인하기
-			DrawDebugLine(GetWorld(), Start, HitLocation, FColor::Red, false, 2.0f, 0, 2.0f);
+			DrawDebugLine(GetWorld(), Start, HitLocation, FColor::Red, true, 2.0f, 0, 2.0f);
 			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, HitLocation);
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("No Hit"));
+			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, End);
 		}
 
 	}
