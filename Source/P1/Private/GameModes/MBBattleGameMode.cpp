@@ -534,6 +534,7 @@ void AMBBattleGameMode::SetFormation(Formation InFormation, FVector InLocation)
 
 	StartLocation = InLocation;
 	StartLocation.Y += FormationSpace / 2;
+	StartLocation.Y -= FormationSpace * (Column / 2);
 
 #ifdef DebugMode
 	FString TempStr = FString::Printf(TEXT("StartLocation = %s"), *StartLocation.ToString());
