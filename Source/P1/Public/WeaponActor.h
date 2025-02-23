@@ -7,6 +7,7 @@
 #include "WeaponMontageData.h"
 #include "../PlayerCharacter.h"
 #include "EMouseState.h"
+#include "Sound/SoundCue.h"
 #include "WeaponActor.generated.h"
 
 UCLASS()
@@ -48,6 +49,8 @@ public:
 	FWeaponMontageData MontageData;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
     class UNiagaraSystem* BloodSplatterNiagara;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundCue* hitSound;
 
 public:
 	void playChangeMontage(EWeaponState weaponState);

@@ -8,6 +8,8 @@
 #include "WeaponComponent.h"
 #include "ECharacterState.h"
 #include "ArrowActor.h"
+#include "Sound/SoundCue.h"
+#include "Sound/SoundAttenuation.h"
 #include "PlayerAnimInstance.generated.h"
 
 /**
@@ -39,6 +41,15 @@ public:
 	ECharacterState characterState;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AArrowActor* arrow;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundCue* FootstepSoundCue;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundAttenuation* FootstepAttenuationSettings;
+
+	UFUNCTION()
+	void AnimNotify_footSound();
 
 
 	APlayerCharacter* player;

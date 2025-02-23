@@ -275,10 +275,12 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 			{
 				FVector HitLocation = SweepResult.ImpactPoint;
 				auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
+				FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "피해입음 {0} "), MontageData.damage);
+				me->widget->AddKillLogEntry(KillMessage, enemyState);
+				UGameplayStatics::PlaySoundAtLocation(this, hitSound, HitLocation);
 			}
-			FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "피해입음 {0} "), MontageData.damage);
 
-			me->widget->AddKillLogEntry(KillMessage, enemyState);
+
 
 		}
 		else if (enemyState==1) {
@@ -289,6 +291,8 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 			{
 				FVector HitLocation = SweepResult.ImpactPoint;
 				auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
+				UGameplayStatics::PlaySoundAtLocation(this, hitSound, HitLocation);
+
 			}
 		}
 		else if (enemyState==2) {
