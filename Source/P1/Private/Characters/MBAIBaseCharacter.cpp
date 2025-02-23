@@ -19,7 +19,7 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager)
+void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager, bool InIsPlayerTeam)
 {
 	SkeletalMeshComponent->SetSkeletalMesh(InSkeletalMesh);
 	SkeletalMeshComponent->SetAnimInstanceClass(InAnimBlueprint->GeneratedClass);
@@ -53,6 +53,8 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 	SetActorEnableCollision(true);
 	StaticMeshSpearComponent->SetCollisionProfileName(TEXT("enemyattack"));
 	StaticMeshSpearComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	IsPlayerTeam = InIsPlayerTeam;
 }
 
 void AMBAIBaseCharacter::BeginPlay()
@@ -93,11 +95,14 @@ void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation
 	ForceMoveLocation = InForceMoveLocation;
 }
 
-int AMBAIBaseCharacter::OnHit(int InDamage)
+int AMBAIBaseCharacter::OnHit(int InDamage, bool IsPlayer)
 {
 #ifdef DebugMode
 	//Debug::Print("AI hit", FColor::Black);
 #endif // DebugMode
+
+	if (IsPlayer && IsPlayerTeam)
+		return 3;
 
 	if (true == IsDead)
 		return 0;

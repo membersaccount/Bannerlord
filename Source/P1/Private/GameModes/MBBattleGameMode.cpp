@@ -92,13 +92,9 @@ void AMBBattleGameMode::BeginPlay()
 		{
 			this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderHoldPosition);
 			this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderHoldPosition);
+#ifdef DebugMode
 			Debug::Print("Order: HoldPosition");
-
-			CachedWorld->GetTimerManager().SetTimer(DebugTimer, [this]()
-				{
-					this->OrderPlayerTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-					this->OrderEnemyTeam(&CharacterStateManager.ManagerOrderEngageBattle);
-				}, 1.f, false);
+#endif // DebugMode
 		}, 1.f, false);
 }
 
@@ -178,12 +174,12 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 	if (InIsPlayerTeam)
 	{
 		PlayerTeamInfo.push_back(Info);
-		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody , &PlayerTeamInfo.back(), &CharacterStateManager);
+		SpawnedAI->InitCharacter(SharedMeshSpearmanPlayerTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody , &PlayerTeamInfo.back(), &CharacterStateManager, InIsPlayerTeam);
 		PlayerTroopTeam[InTroopTeam].push_back(&PlayerTeamInfo.back());
 		return;
 	}
 	EnemyTeamInfo.push_back(Info);
-	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody, &EnemyTeamInfo.back(), &CharacterStateManager);
+	SpawnedAI->InitCharacter(SharedMeshSpearmanEnemyTroop, SharedMeshSpear, SharedSpearmanAnimBlueprint, SharedSpearMontageFullbody, SharedSpearMontageUpperbody, &EnemyTeamInfo.back(), &CharacterStateManager, InIsPlayerTeam);
 	EnemyTroopTeam[InTroopTeam].push_back(&EnemyTeamInfo.back());
 }
 

@@ -22,7 +22,7 @@ class P1_API AMBAIBaseCharacter : public ACharacter
 
 public: // Init
 	AMBAIBaseCharacter();
-	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager);
+	void InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager, bool InIsPlayerTeam);
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,7 +35,7 @@ public: // Called Outside
 	void SetOrder(MBOrder* InOrder);
 	void SetForceMoveLocation(const FVector& InForceMoveLocation);
 
-	int OnHit(int InDamage);
+	int OnHit(int InDamage, bool IsPlayer = false);
 
 public: // Move
 	void MoveForward(const FVector& InLocation, const float InSpeed);
@@ -80,6 +80,7 @@ public: // Default Data
 	int Damage = 25;
 	float CalculatedTargetDistance = 0.f;
 	float CalculatedTeamCenterDistance = 0.f;
+	bool IsPlayerTeam = false;
 
 public: // AI
 	Distance TargetDistance = Distance::None;
