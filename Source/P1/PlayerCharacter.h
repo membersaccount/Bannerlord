@@ -54,6 +54,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	class UKillLogWidget* widget;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widge")
 	TSubclassOf<class UKillLogWidget>widgetFactory;
 

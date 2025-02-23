@@ -33,6 +33,14 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidgetAnim),Transient,BlueprintReadWrite)
     UWidgetAnimation* AimOut;
 
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* playerTeam;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* enemyTeam;
+
+
+	class AMBBattleGameMode* gamemode;
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HPUI;

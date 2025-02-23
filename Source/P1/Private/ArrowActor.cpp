@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "ArrowActor.h"
@@ -76,12 +76,19 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
 	if (Enemy) {
-		Enemy->OnHit(50);
+			int enemystate=Enemy->OnHit(50);
+
 		if (BloodSplatterNiagara)
 		{
+			if (enemystate == 0) {
+				FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "í”¼í•´ìž…íž˜ {0} "), player->CurWeapon->MontageData.damage);
+				player->widget->AddKillLogEntry(KillMessage, enemystate);
+			}
+			else if (enemystate == 1) {
+				FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} ì œêµ­ ë¯¼ë³‘ëŒ€ ì°½ë³‘"), player->CurWeapon->MontageData.damage);
+				player->widget->AddKillLogEntry(KillMessage, enemystate);
+			}
 
-			FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} Á¦±¹ ¹Îº´´ë Ã¢º´"), player->CurWeapon->MontageData.damage);
-			player->widget->AddKillLogEntry(KillMessage);
 
 			FVector HitLocation = SweepResult.ImpactPoint;
 			auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());

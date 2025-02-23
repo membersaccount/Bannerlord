@@ -21,11 +21,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Kill Log")
 	TSubclassOf<class UKillLogEntryWidget> KillLogEntryClass;
 
+		UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Kill Log")
+	TSubclassOf<class UKillLogEntryWidget> KillLogEntryClass1;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Kill Log")
 	int32 MaxEntries;
 
 	UFUNCTION(BlueprintCallable, Category = "Kill Log")
-	void AddKillLogEntry(const FText& KillMessage);
+	void AddKillLogEntry(const FText& KillMessage,int isenemyState);
 
 	UFUNCTION(BlueprintCallable, Category = "Kill Log")
 	void ClearKillLog();

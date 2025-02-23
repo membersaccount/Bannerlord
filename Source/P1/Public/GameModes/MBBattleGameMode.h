@@ -39,6 +39,13 @@ public: // Player Troop Controll
 	void DefaultFormation(float InSpace);
 	MBStateManager CharacterStateManager;
 
+	int PlayerTeamCount;
+	int EnemyTeamCount;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TSubclassOf<class UUserWidget>introWidget;
+	class UUserWidget* widget;
+
 
 private: // Spawn
 	void BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation);
@@ -62,8 +69,7 @@ private: // Shared Data
 	static UAnimMontage* SharedSpearMontageUpperbody;
 
 private: // Character Data
-	int PlayerTeamCount;
-	int EnemyTeamCount;
+
 	std::list<AIInfoData> PlayerTeamInfo;
 	std::list<AIInfoData> EnemyTeamInfo;
 

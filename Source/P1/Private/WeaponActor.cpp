@@ -267,57 +267,59 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 	if (Enemy) {
 		me->isAttack = false;
 
-		Enemy->OnHit(MontageData.damage);
-		showCrossHair(true);
-		//auto currentMontage = me->Anim->GetCurrentActiveMontage();
-		//if (me->Anim->Montage_IsPlaying(currentMontage))
-		//{
-		//	me->Anim->Montage_SetPlayRate(currentMontage, 0);
+		int enemyState=Enemy->OnHit(MontageData.damage);
+		UE_LOG(LogTemp, Warning, TEXT("%d"), enemyState);
+		if (enemyState==0) {
+			showCrossHair(true);
+			if (BloodSplatterNiagara)
+			{
+				FVector HitLocation = SweepResult.ImpactPoint;
+				auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
+			}
+			FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "피해입음 {0} "), MontageData.damage);
 
-		//	// 현재 재생 위치 얻기
+			me->widget->AddKillLogEntry(KillMessage, enemyState);
 
-		//	FTimerHandle visibleTime1;
-		//	FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() {
-		//		auto currentMontage = me->Anim->GetCurrentActiveMontage();
+		}
+		else if (enemyState==1) {
+			showCrossHair(true);
+			FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} 제국 민병대 창병"), MontageData.damage);
+			me->widget->AddKillLogEntry(KillMessage, enemyState);
+			if (BloodSplatterNiagara)
+			{
+				FVector HitLocation = SweepResult.ImpactPoint;
+				auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
+			}
+		}
+		else if (enemyState==2) {
+			me->isAttack = false;
 
-		//		me->Anim->Montage_SetPlayRate(currentMontage, 0.7f); });
-		//	GetWorld()->GetTimerManager().SetTimer(visibleTime1, TimerLambda, 0.5f, false);
+			//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
+			// 현재 애니메이션이 재생 중인지 확인
+			if (me->Anim->Montage_IsPlaying(me->Anim->GetCurrentActiveMontage()))
+			{
+				// 애니메이션을 일시 정지 (현재 위치에서 멈추기)
+				me->Anim->Montage_Pause(me->Anim->GetCurrentActiveMontage());
 
+				// 현재 재생 위치 얻기
+				float CurrentPosition = me->Anim->Montage_GetPosition(me->Anim->GetCurrentActiveMontage());
 
-		//}
-
-		FText KillMessage = FText::Format(NSLOCTEXT("KillLog", "KillMessage", "{0} 제국 민병대 창병"), MontageData.damage);
-		me->widget->AddKillLogEntry(KillMessage);
-
+				// 역방향으로 애니메이션 재생 (현재 위치에서 역재생)
+				me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
+				me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
+			}
+		}
+		//크로스 헤어 끄기
 		FTimerHandle visibleTime;
 		FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { showCrossHair(false); });
 		GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
-		if (BloodSplatterNiagara)
-		{
-			FVector HitLocation = SweepResult.ImpactPoint;
-			auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
-		}
+
 
 	}
 
 	if (me->Anim && Enemy == nullptr)
 	{
-		me->isAttack = false;
 
-		//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap"));
-		// 현재 애니메이션이 재생 중인지 확인
-		if (me->Anim->Montage_IsPlaying(me->Anim->GetCurrentActiveMontage()))
-		{
-			// 애니메이션을 일시 정지 (현재 위치에서 멈추기)
-			me->Anim->Montage_Pause(me->Anim->GetCurrentActiveMontage());
-
-			// 현재 재생 위치 얻기
-			float CurrentPosition = me->Anim->Montage_GetPosition(me->Anim->GetCurrentActiveMontage());
-
-			// 역방향으로 애니메이션 재생 (현재 위치에서 역재생)
-			me->Anim->Montage_Play(me->Anim->GetCurrentActiveMontage(), -1.0f);
-			me->Anim->Montage_SetPosition(me->Anim->GetCurrentActiveMontage(), CurrentPosition);
-		}
 	}
 }
 
