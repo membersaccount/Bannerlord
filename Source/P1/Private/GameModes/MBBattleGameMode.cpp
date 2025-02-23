@@ -107,7 +107,7 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateTeamCount();
-	//UpdateAllCharacterInfo();
+	UpdateAllCharacterInfo();
 	UpdateTroopTeamCenter();
 
 	if (0 < PlayerTeamCount || 0 < EnemyTeamCount)
@@ -248,20 +248,32 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 {
 	for (int i = 0; i < PlayerTroopTeam.size(); ++i)
 	{
-		PlayerTroopTeam[i].front()->InfoLocation = PlayerTroopTeam[i].front()->InfoSelfData->GetActorLocation();
+		float MaxX = 0.f;
+		float MinX = 0.f;
+		float MaxY = 0.f;
+		float MinY = 0.f;
 
-		float MaxX = PlayerTroopTeam[i].front()->InfoLocation.X;
-		float MinX = MaxX;
-		float MaxY = PlayerTroopTeam[i].front()->InfoLocation.Y;
-		float MinY = MaxY;
+		bool NeedInit = true;
 
-		for (auto& Data : PlayerTroopTeam[i])
+		for (auto it = PlayerTroopTeam[i].begin(); it != PlayerTroopTeam[i].end(); ++it)
 		{
-			Data->InfoLocation = Data->InfoSelfData->GetActorLocation();
-			Data->InfoRotation = Data->InfoSelfData->GetActorRotation();
+			if (nullptr == (*it)->InfoSelfData)
+			{
+				PlayerTroopTeam[i].erase(it);
+				continue;
+			}
 
-			int X = Data->InfoLocation.X;
-			int Y = Data->InfoLocation.Y;
+			float X = (*it)->InfoLocation.X;
+			float Y = (*it)->InfoLocation.Y;
+			if (NeedInit)
+			{
+				MaxX = X;
+				MinX = X;
+				MaxY = Y;
+				MinY = Y;
+				
+				NeedInit = false;
+			}
 
 			if (X > MaxX)
 				MaxX = X;
@@ -277,25 +289,36 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 #ifdef DebugMode
 		ShowTroopTeamRectangle(MaxX, MinX, MaxY, MinY, FColor::Blue);
 #endif // DebugMode
-
 	}
 
 	for (int i = 0; i < EnemyTroopTeam.size(); ++i)
 	{
-		EnemyTroopTeam[i].front()->InfoLocation = EnemyTroopTeam[i].front()->InfoSelfData->GetActorLocation();
+		float MaxX = 0.f;
+		float MinX = 0.f;
+		float MaxY = 0.f;
+		float MinY = 0.f;
 
-		float MaxX = EnemyTroopTeam[i].front()->InfoLocation.X;
-		float MinX = MaxX;
-		float MaxY = EnemyTroopTeam[i].front()->InfoLocation.Y;
-		float MinY = MaxY;
+		bool NeedInit = true;
 
-		for (auto& Data : EnemyTroopTeam[i])
+		for (auto it = EnemyTroopTeam[i].begin(); it != EnemyTroopTeam[i].end(); ++it)
 		{
-			Data->InfoLocation = Data->InfoSelfData->GetActorLocation();
-			Data->InfoRotation = Data->InfoSelfData->GetActorRotation();
+			if (nullptr == (*it)->InfoSelfData)
+			{
+				EnemyTroopTeam[i].erase(it);
+				continue;
+			}
 
-			int X = Data->InfoLocation.X;
-			int Y = Data->InfoLocation.Y;
+			float X = (*it)->InfoLocation.X;
+			float Y = (*it)->InfoLocation.Y;
+			if (NeedInit)
+			{
+				MaxX = X;
+				MinX = X;
+				MaxY = Y;
+				MinY = Y;
+
+				NeedInit = false;
+			}
 
 			if (X > MaxX)
 				MaxX = X;

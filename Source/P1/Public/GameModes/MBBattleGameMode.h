@@ -73,7 +73,6 @@ private: // Shared Data
 	static UAnimMontage* SharedSpearMontageUpperbody;
 
 private: // Character Data
-
 	std::list<AIInfoData> PlayerTeamInfo;
 	std::list<AIInfoData> EnemyTeamInfo;
 	std::vector<std::list<AIInfoData*>> PlayerTroopTeam;
