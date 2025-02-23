@@ -249,6 +249,12 @@ void AMBAIBaseCharacter::TurnToTarget()
 	SetActorRotation(TurnRotation);
 }
 
+void AMBAIBaseCharacter::TurnToFront()
+{
+	FRotator Front = FRotator(0.f, 180.f, 0.f);
+	SetActorRotation(Front);
+}
+
 void AMBAIBaseCharacter::CheckTargetExist()
 {
 	if (nullptr == AIInfo->InfoTargetData)

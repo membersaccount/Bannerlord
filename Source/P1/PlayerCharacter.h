@@ -7,6 +7,7 @@
 #include "ECharacterState.h"
 #include "ArrowProjectileMovementComponent.h"
 #include "AI/MBStateManager.h"
+#include "Datas/MBEnums.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -160,6 +161,8 @@ public:
 	class AMBBattleGameMode* gameMode;
 
 	MBStateManager CharacterStateManager;
+
+	Enums::Player::Order::Formation FormationData = Enums::Player::Order::Formation::Default;
 public:
 
 	float getHP() const;

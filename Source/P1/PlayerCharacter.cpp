@@ -484,13 +484,13 @@ void APlayerCharacter::OrderMoveHander()
 			DrawDebugLine(GetWorld(), Start, HitLocation, FColor::Red, true, 2.0f, 0, 2.0f);
 #endif // DebugMode
 			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, HitLocation);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, FormationData, HitLocation);
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("No Hit"));
 			Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
-			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, Formation::Default, End);
+			gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMoveLocation, FormationData, End);
 		}
 
 	}
@@ -522,6 +522,7 @@ void APlayerCharacter::orderHander4()
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation,Formation::Default);
+		FormationData = Formation::Default;
 	}
 }
 
@@ -530,6 +531,7 @@ void APlayerCharacter::orderHander5()
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Shield);
+		FormationData = Formation::Shield;
 	}
 }
 
@@ -538,6 +540,7 @@ void APlayerCharacter::orderHander6()
 	if (WeaponComponent1->weaponState == EWeaponState::NONE) {
 		Anim->Montage_Play(WeaponComponent1->CurrentWeapon->MontageData.BowAim);
 		gameMode->OrderPlayerTeam(&gameMode->CharacterStateManager.ManagerOrderMakeFormation, Formation::Spread);
+		FormationData = Formation::Spread;
 	}
 }
 

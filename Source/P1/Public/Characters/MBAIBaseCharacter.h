@@ -45,6 +45,7 @@ public: // Move
 	void MoveTargetLocation(const float InSpeed);
 	void MoveSideways(const float InSpeed);
 	void TurnToTarget();
+	void TurnToFront();
 
 public: // Target
 	void CheckTargetExist();
