@@ -279,9 +279,6 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 				me->widget->AddKillLogEntry(KillMessage, enemyState);
 				UGameplayStatics::PlaySoundAtLocation(this, hitSound, HitLocation);
 			}
-
-
-
 		}
 		else if (enemyState==1) {
 			showCrossHair(true);
@@ -292,7 +289,6 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 				FVector HitLocation = SweepResult.ImpactPoint;
 				auto BloodComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BloodSplatterNiagara, OtherActor->GetActorLocation());
 				UGameplayStatics::PlaySoundAtLocation(this, hitSound, HitLocation);
-
 			}
 		}
 		else if (enemyState==2) {
@@ -320,8 +316,6 @@ void AWeaponActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor
 		FTimerHandle visibleTime;
 		FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { showCrossHair(false); });
 		GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
-
-
 	}
 
 	if (me->Anim && Enemy == nullptr)

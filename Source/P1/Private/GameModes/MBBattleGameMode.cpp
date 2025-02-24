@@ -5,6 +5,9 @@
 #include "MBDebug.h"
 #include "Components/Widget.h"
 #include "Blueprint/UserWidget.h"
+#include "EndWidget.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanPlayerTroop = nullptr;
 USkeletalMesh* AMBBattleGameMode::SharedMeshSpearmanEnemyTroop = nullptr;
@@ -44,6 +47,9 @@ AMBBattleGameMode::AMBBattleGameMode()
 	check(SharedSpearmanAnimBlueprint);
 	check(SharedSpearMontageFullbody);
 	check(SharedSpearMontageUpperbody);
+	//사운드 추가
+	BackgroundMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent1"));
+	EndMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent2"));
 }
 
 void AMBBattleGameMode::InitGameData()
@@ -79,6 +85,9 @@ void AMBBattleGameMode::BeginPlay()
 
 	widget = CreateWidget<UUserWidget>(GetWorld(),introWidget);
 	widget->AddToViewport();
+
+	endWidget= CreateWidget<UEndWidget>(GetWorld(), endWidgetFactory);
+	endWidget->AddToViewport();
 
 
 	InitGameData();
@@ -298,6 +307,8 @@ void AMBBattleGameMode::UpdateTeamCount()
 {
 	PlayerTeamCount = PlayerTeamInfo.size();
 	EnemyTeamCount = EnemyTeamInfo.size();
+	if (PlayerTeamCount <= 0 || EnemyTeamCount <= 0)
+		showEndWidget();
 }
 
 void AMBBattleGameMode::UpdateAllCharacterInfo()
@@ -405,7 +416,7 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 				MinX = X;
 				MaxY = Y;
 				MinY = Y;
-				
+
 				NeedInit = false;
 			}
 
@@ -704,4 +715,24 @@ void AMBBattleGameMode::SetFormation(Formation InFormation, FVector InLocation)
 			++ForamtionColumn;
 		}
 	}
+}
+
+void AMBBattleGameMode::showEndWidget()
+{
+	if (isEnd)return;
+	isEnd = true;
+	playEndMusic();
+	endWidget->PlayAnimation(endWidget->uidown);
+}
+
+void AMBBattleGameMode::playBackGroundMusic()
+{
+	BackgroundMusicComp->SetSound(BackgroundMusicCue);
+	BackgroundMusicComp->Play();
+}
+
+void AMBBattleGameMode::playEndMusic()
+{
+	EndMusicComp->SetSound(EndMusicCue);
+	EndMusicComp->Play();
 }
