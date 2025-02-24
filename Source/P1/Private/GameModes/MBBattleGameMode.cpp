@@ -47,7 +47,7 @@ AMBBattleGameMode::AMBBattleGameMode()
 	check(SharedSpearmanAnimBlueprint);
 	check(SharedSpearMontageFullbody);
 	check(SharedSpearMontageUpperbody);
-	//»ç¿îµå Ãß°¡
+	//Â»Ã§Â¿Ã®ÂµÃ¥ ÃƒÃŸÂ°Â¡
 	BackgroundMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent1"));
 	EndMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent2"));
 }
@@ -237,7 +237,7 @@ void AMBBattleGameMode::SearchCloseTarget(AMBAIBaseCharacter* InCharacter, int I
 				TargetData = Data->InfoSelfData->AIInfo;
 				MinDistance = Distance;
 				SetData = true;
-			}		
+			}
 		}
 
 		if (SetData)
@@ -516,7 +516,6 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 		DeadCharacters.pop();
 	}
 }
-
 #ifdef DebugMode
 void AMBBattleGameMode::ShowTeam()
 {
@@ -561,6 +560,9 @@ void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float
 	}
 }
 #endif // DebugMode
+
+#endif // DebugMode
+
 
 void AMBBattleGameMode::DefaultFormation(float InSpace)
 {

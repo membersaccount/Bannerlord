@@ -76,7 +76,7 @@ void AArrowActor::overlapEvent(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	AMBAISpearman* Enemy = Cast<AMBAISpearman>(OtherActor);
 	if (Enemy) {
-			int enemystate=Enemy->OnHit(50);
+			int enemystate=Enemy->OnHit(player->CurWeapon->MontageData.damage);
 
 		if (BloodSplatterNiagara)
 		{
