@@ -318,8 +318,7 @@ void AMBAIBaseCharacter::CheckForceLocationArrive()
 {
 	CalculatedTargetDistance = std::sqrt(
 		std::pow(ForceMoveLocation.X - AIInfo->InfoLocation.X, 2) +
-		std::pow(ForceMoveLocation.Y - AIInfo->InfoLocation.Y, 2) +
-		std::pow(ForceMoveLocation.Z - AIInfo->InfoLocation.Z, 2)
+		std::pow(ForceMoveLocation.Y - AIInfo->InfoLocation.Y, 2)
 	);
 
 	if (10.f > CalculatedTargetDistance)
