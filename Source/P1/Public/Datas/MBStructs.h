@@ -18,7 +18,8 @@ namespace Structs
 			FRotator InfoRotation;
 			AMBAIBaseCharacter* InfoTargetData;
 			FVector TeamCenter;
-			int TargetedCount;
+			int TeamIndex;
+			int TargetCount;
 		};
 
 		struct State

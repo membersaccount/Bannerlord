@@ -56,7 +56,7 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 
 	IsPlayerTeam = InIsPlayerTeam;
 }
-
+ 
 void AMBAIBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -123,7 +123,7 @@ int AMBAIBaseCharacter::OnHit(int InDamage, bool IsPlayer)
 	}
 	return 0;
 }
-
+ 
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
 {
 	FVector Direction = InLocation - AIInfo->InfoLocation;
@@ -262,7 +262,7 @@ void AMBAIBaseCharacter::TurnToFront()
 
 void AMBAIBaseCharacter::CheckTargetExist()
 {
-	if (nullptr == AIInfo->InfoTargetData->AIInfo)
+	if (true == AIInfo->InfoTargetData->AIInfo->InfoSelfData->IsDead)
 	{
 		TargetDistance = Distance::None;
 		IsTargetExist = false;
@@ -498,6 +498,12 @@ void AMBAIBaseCharacter::PlayMontageDead()
 void AMBAIBaseCharacter::Dead()
 {
 	IsDead = true;
+	ClearTimer(&ActionAnimTimer);
+	ClearTimer(&ActionEventTimer);
+	ClearTimer(&ActionDelayTimer);
+	ClearTimer(&AttackDelayTimer);
+	ClearTimer(&RandomLeadTimer);
+	ClearTimer(&DebugTimer);
 
 	this->GetCapsuleComponent();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

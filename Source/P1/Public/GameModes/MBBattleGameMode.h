@@ -5,12 +5,12 @@
 #include <list>
 #include <utility>
 #include <stack>
+#include <unordered_map>
 #include "MBSettings.h"
 #include "AI/MBStateManager.h"
 #include "Datas/MBStructs.h"
 #include "Datas/MBEnums.h"
 #include "MBBattleGameMode.generated.h"
-
 
 UCLASS()
 class P1_API AMBBattleGameMode : public AGameModeBase
@@ -47,7 +47,8 @@ public: // Player Troop Controll
 	class UUserWidget* widget;
 
 public: // Target Search
-	void TargetSearchCloseTeam();
+	int TargetSearchCloseTeam(AMBAIBaseCharacter* InCharacter);
+	void SearchCloseTarget(AMBAIBaseCharacter* InCharacter, int InTargetIndex);
 
 private: // Spawn
 	void BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation);
@@ -57,9 +58,12 @@ private: // Update
 	void UpdateTeamCount();
 	void UpdateAllCharacterInfo();
 	void UpdateTargets();
+	void SearchTargets();
 	void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation);
 
 	void UpdateTroopTeamCenter();
+
+	float CalculateDistance(FVector& InLocation, FVector& InTargetLocation);
 
 private: // Character Manage
 	void SearchDeadCharacter(std::list<AIInfoData>& InData);
@@ -79,7 +83,10 @@ private: // Character Data
 	std::vector<std::list<AIInfoData*>> EnemyTroopTeam;
 	std::vector<FVector> PlayerTroopTeamLocation;
 	std::vector<FVector> EnemyTroopTeamLocation;
+	std::vector<std::vector<std::pair<int,float>>> PlayerTeamDistance;
+	std::vector<std::vector<std::pair<int,float>>> EnemyTeamDistance;
 	std::stack<std::list<AIInfoData>::iterator> DeadCharacters;
+	std::stack<std::list<AIInfoData>::iterator> TargetUpdate;
 
 private: // Formation
 	int Row = 0;	// Y

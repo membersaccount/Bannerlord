@@ -55,6 +55,8 @@ void AMBBattleGameMode::InitGameData()
 	EnemyTroopTeam.resize(20, std::list<AIInfoData*>());
 	PlayerTroopTeamLocation.resize(20);
 	EnemyTroopTeamLocation.resize(20);
+	PlayerTeamDistance.resize(20);
+	EnemyTeamDistance.resize(20);
 
 	UMBGameInstance* GameInstance = Cast<UMBGameInstance>(GetGameInstance());
 
@@ -109,7 +111,8 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	if (0 < PlayerTeamCount && 0 < EnemyTeamCount)
 	{
 		UpdateAllCharacterInfo();
-		UpdateTargets();
+		//UpdateTargets();
+		SearchTargets();
 		UpdateTroopTeamCenter();
 	}
 	else
@@ -130,9 +133,107 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 
 }
 
-void AMBBattleGameMode::TargetSearchCloseTeam()
+int AMBBattleGameMode::TargetSearchCloseTeam(AMBAIBaseCharacter* InCharacter)
 {
+#ifdef DebugModeBugFix_Move
+	Debug::Print("+++++ Called = TargetSearchCloseTeam +++++");
+#endif // DebugModeBugFix_Move
 
+	int TargetIndex = -1;
+	float MinDistance = 900000.f;
+
+	if (InCharacter->IsPlayerTeam)
+	{
+		FVector TeamLocation = PlayerTroopTeamLocation[InCharacter->AIInfo->TeamIndex];
+		for (int i = 0; i < 20; ++i)
+		{
+			if (EnemyTroopTeam[i].empty())
+				continue;
+
+			float Distance = CalculateDistance(TeamLocation, EnemyTroopTeamLocation[i]);
+			if (MinDistance > Distance)
+			{
+				TargetIndex = i;
+				MinDistance = Distance;
+#ifdef DebugModeBugFix_Move
+				FString str = "TargetIndex" + FString::FromInt(TargetIndex);
+				Debug::Print(str);
+				DrawDebug::DrawLine(GetWorld(), InCharacter->AIInfo->InfoLocation, EnemyTroopTeamLocation[TargetIndex], FColor::Emerald);
+#endif // DebugModeBugFix_Move
+			}
+		}
+	}
+	else
+	{
+		FVector TeamLocation = EnemyTroopTeamLocation[InCharacter->AIInfo->TeamIndex];
+		for (int i = 0; i < 20; ++i)
+		{
+			if (PlayerTroopTeam[i].empty())
+				continue;
+
+			float Distance = CalculateDistance(TeamLocation, PlayerTroopTeamLocation[i]);
+			if (MinDistance > Distance)
+			{
+				TargetIndex = i;
+				MinDistance = Distance;
+			}
+		}
+	}
+
+	return TargetIndex;
+}
+
+void AMBBattleGameMode::SearchCloseTarget(AMBAIBaseCharacter* InCharacter, int InTargetIndex)
+{
+#ifdef DebugModeBugFix_Move
+	Debug::Print("+++ Called = SearchCloseTarget +++");
+#endif // DebugModeBugFix_Move
+
+	float MinDistance = 900000.f;
+	float Distance = 0.f;
+	AIInfoData* TargetData = nullptr;
+	bool SetData = false;
+
+	if (InCharacter->IsPlayerTeam)
+	{
+		int TargetTeamSize = EnemyTroopTeam[InTargetIndex].size();
+		if (0 == TargetTeamSize)
+			return;
+
+		for (auto& Data : EnemyTroopTeam[InTargetIndex])
+		{
+			Distance = CalculateDistance(InCharacter->AIInfo->InfoLocation, Data->InfoLocation);
+			if (MinDistance > Distance)
+			{
+				TargetData = Data->InfoSelfData->AIInfo;
+				MinDistance = Distance;
+				SetData = true;
+			}
+		}
+
+		if(SetData)
+			InCharacter->AIInfo->InfoTargetData = TargetData->InfoSelfData;
+	}
+	else
+	{
+		int TargetTeamSize = PlayerTroopTeam[InTargetIndex].size();
+		if (0 == TargetTeamSize)
+			return;
+
+		for (auto& Data : PlayerTroopTeam[InTargetIndex])
+		{
+			Distance = CalculateDistance(InCharacter->AIInfo->InfoLocation, Data->InfoLocation);
+			if (MinDistance > Distance)
+			{
+				TargetData = Data->InfoSelfData->AIInfo;
+				MinDistance = Distance;
+				SetData = true;
+			}		
+		}
+
+		if (SetData)
+			InCharacter->AIInfo->InfoTargetData = TargetData->InfoSelfData;
+	}
 }
 
 void AMBBattleGameMode::BattleInitSpawn(bool InIsPlayerTeam, int32 InNum, FVector InLocation, FRotator InRotation)
@@ -179,6 +280,7 @@ void AMBBattleGameMode::SpawnCharacter(bool InIsPlayerTeam, FVector InLocation, 
 
 	AIInfoData Info;
 	Info.InfoSelfData = SpawnedAI;
+	Info.TeamIndex = InTroopTeam;
 
 	if (InIsPlayerTeam)
 	{
@@ -210,6 +312,31 @@ void AMBBattleGameMode::UpdateAllCharacterInfo()
 	{
 		InfoData.InfoLocation = InfoData.InfoSelfData->GetActorLocation();
 		InfoData.InfoRotation = InfoData.InfoSelfData->GetActorRotation();
+	}
+}
+
+void AMBBattleGameMode::SearchTargets()
+{
+	for (auto it = PlayerTeamInfo.begin(); it != PlayerTeamInfo.end(); ++it)
+	{
+		if (false == it->InfoTargetData->GetIsDead())
+			continue;
+		TargetUpdate.push(it);
+	}
+
+	for (auto it = EnemyTeamInfo.begin(); it != EnemyTeamInfo.end(); ++it)
+	{
+		if (false == it->InfoTargetData->GetIsDead())
+			continue;
+		TargetUpdate.push(it);
+	}
+
+	while (!TargetUpdate.empty())
+	{
+		auto it = TargetUpdate.top();
+		int Ret = TargetSearchCloseTeam(it->InfoSelfData);
+		SearchCloseTarget(it->InfoSelfData, Ret);
+		TargetUpdate.pop();
 	}
 }
 
@@ -344,6 +471,15 @@ void AMBBattleGameMode::UpdateTroopTeamCenter()
 		ShowTroopTeamRectangle(MaxX, MinX, MaxY, MinY, FColor::Red);
 #endif // DebugMode
 	}
+}
+
+float AMBBattleGameMode::CalculateDistance(FVector& InLocation, FVector& InTargetLocation)
+{
+	return (std::sqrt(
+		std::pow(InTargetLocation.X - InLocation.X, 2) +
+		std::pow(InTargetLocation.Y - InLocation.Y, 2) +
+		std::pow(InTargetLocation.Z - InLocation.Z, 2)
+	));
 }
 
 void UpdateForceMoveLocation(AMBAIBaseCharacter* InCharacter, FVector& InLocation)

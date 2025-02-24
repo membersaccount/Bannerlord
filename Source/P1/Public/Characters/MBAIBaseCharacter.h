@@ -133,6 +133,7 @@ public: // Cached Data
 
 private: // Debug
 	float CurrentTime = 0.f;
+
 #ifdef DebugMode
 public:
 	typedef Enums::AI::States::Attitude Attitude;
@@ -144,6 +145,7 @@ public:
 	Move AIMove = Move::Stop;
 
 	void ShowAIState();
+
 #endif // DebugMode
 
 };

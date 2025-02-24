@@ -38,7 +38,7 @@ void MBAction::WideDecideAction(AMBAIBaseCharacter* const InAICharacter) const
 			Debug::Print("=== Defend ===");
 #endif // DebugModeBugFix_Action
 		InAICharacter->PlayMontageDefend();
-		InAICharacter->SetActionDefendTimer(1.5f, 0.4f, 1.f);
+		InAICharacter->SetActionDefendTimer(1.5f, 0.2f, 1.2f);
 		return;
 	}
 
@@ -50,7 +50,7 @@ void MBAction::WideDecideAction(AMBAIBaseCharacter* const InAICharacter) const
 			Debug::Print("=== Defend ===");
 #endif // DebugModeBugFix_Action
 		InAICharacter->PlayMontageDefend();
-		InAICharacter->SetActionDefendTimer(1.5f, 0.4f, 1.f);
+		InAICharacter->SetActionDefendTimer(1.5f, 0.2f, 1.2f);
 		return;
 	}
 
