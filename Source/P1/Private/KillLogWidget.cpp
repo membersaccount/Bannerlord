@@ -26,12 +26,12 @@ void UKillLogWidget::AddKillLogEntry(const FText& KillMessage, int isenemyState)
 				FTimerHandle visibleTime;
 				FTimerDelegate TimerLambda = FTimerDelegate::CreateLambda([this]() { ClearKillLog(); });
 				GetWorld()->GetTimerManager().SetTimer(visibleTime, TimerLambda, 1.0f, false);
-
 			}
 
 		}
 		else if (isenemyState == 0) {
 			UTextBlock* KillLogText1 = Cast<UTextBlock>(NewEntryWidget1->KillLogText);
+
 			if (KillLogText1)
 			{
 

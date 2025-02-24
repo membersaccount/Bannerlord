@@ -237,7 +237,7 @@ void AMBBattleGameMode::SearchCloseTarget(AMBAIBaseCharacter* InCharacter, int I
 				TargetData = Data->InfoSelfData->AIInfo;
 				MinDistance = Distance;
 				SetData = true;
-			}		
+			}
 		}
 
 		if (SetData)
@@ -516,7 +516,7 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 		DeadCharacters.pop();
 	}
 }
-
+#ifdef DebugMode
 void AMBBattleGameMode::ShowTeam()
 {
 	for (auto& Data : PlayerTroopTeam[0])
@@ -559,6 +559,9 @@ void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float
 		DrawDebug::DrawLine(GetWorld(), StartLine, EndLine, InColor);
 	}
 }
+
+#endif // DebugMode
+
 
 void AMBBattleGameMode::DefaultFormation(float InSpace)
 {
