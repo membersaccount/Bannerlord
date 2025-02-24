@@ -1,8 +1,8 @@
 #pragma once
 
-#define DebugMode
+//#define DebugMode
 //#define DebugModeBugFix_Action
-#define DebugModeBugFix_Move
+//#define DebugModeBugFix_Move
 
 namespace Data
 {

@@ -120,8 +120,8 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	if (0 < PlayerTeamCount && 0 < EnemyTeamCount)
 	{
 		UpdateAllCharacterInfo();
-		//UpdateTargets();
-		SearchTargets();
+		UpdateTargets();
+		//SearchTargets();
 		UpdateTroopTeamCenter();
 	}
 	else
@@ -517,6 +517,7 @@ void AMBBattleGameMode::SearchDeadCharacter(std::list<AIInfoData>& InData)
 	}
 }
 
+#ifdef DebugMode
 void AMBBattleGameMode::ShowTeam()
 {
 	for (auto& Data : PlayerTroopTeam[0])
@@ -559,6 +560,7 @@ void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float
 		DrawDebug::DrawLine(GetWorld(), StartLine, EndLine, InColor);
 	}
 }
+#endif // DebugMode
 
 void AMBBattleGameMode::DefaultFormation(float InSpace)
 {

@@ -396,7 +396,7 @@ void AMBAIBaseCharacter::SetActionAttackTimer(const float InAnimTime, const floa
 			if (IsPlayerTeam)
 				Debug::Print("EnableActionDelay = false");
 #endif // DebugModeBugFix_Action
-		}, 7.f, false);
+		}, 5.f, false);
 
 	CachedWorld->GetTimerManager().SetTimer(ActionEventTimer, [this]()
 		{
