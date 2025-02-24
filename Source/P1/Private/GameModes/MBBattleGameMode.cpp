@@ -122,7 +122,7 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 		UpdateAllCharacterInfo();
 		UpdateTargets();
 		//SearchTargets();
-		UpdateTroopTeamCenter();
+		//UpdateTroopTeamCenter();
 	}
 	else
 	{
