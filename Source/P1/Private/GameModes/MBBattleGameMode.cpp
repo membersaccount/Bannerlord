@@ -47,7 +47,7 @@ AMBBattleGameMode::AMBBattleGameMode()
 	check(SharedSpearmanAnimBlueprint);
 	check(SharedSpearMontageFullbody);
 	check(SharedSpearMontageUpperbody);
-	//»ç¿îµå Ãß°¡
+	//Â»Ã§Â¿Ã®ÂµÃ¥ ÃƒÃŸÂ°Â¡
 	BackgroundMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent1"));
 	EndMusicComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent2"));
 }
@@ -120,8 +120,8 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 	if (0 < PlayerTeamCount && 0 < EnemyTeamCount)
 	{
 		UpdateAllCharacterInfo();
-		//UpdateTargets();
-		SearchTargets();
+		UpdateTargets();
+		//SearchTargets();
 		UpdateTroopTeamCenter();
 	}
 	else
@@ -559,6 +559,7 @@ void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float
 		DrawDebug::DrawLine(GetWorld(), StartLine, EndLine, InColor);
 	}
 }
+#endif // DebugMode
 
 #endif // DebugMode
 
