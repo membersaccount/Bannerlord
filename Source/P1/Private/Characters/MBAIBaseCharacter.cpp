@@ -6,6 +6,8 @@
 #include "MBDebug.h"
 #include "MBSettings.h"
 #include <typeinfo>
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundAttenuation.h"
 
 AMBAIBaseCharacter::AMBAIBaseCharacter()
 {
@@ -17,6 +19,22 @@ AMBAIBaseCharacter::AMBAIBaseCharacter()
 	StaticMeshSpearComponent->SetupAttachment(SkeletalMeshComponent);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> deadSoundFinder(TEXT("/Script/Engine.SoundCue'/Game/LHW/mp3/dead_Cue.dead_Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> YYYsoundFinder(TEXT("/Script/Engine.SoundCue'/Game/LHW/mp3/SoundCue/hit_Cue.hit_Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> sowrd1SoundFinder(TEXT("/Script/Engine.SoundCue'/Game/LHW/mp3/Light_Sword_Slash_Wood__2__Cue.Light_Sword_Slash_Wood__2__Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> sowrd2SoundFinder(TEXT("/Script/Engine.SoundCue'/Game/LHW/mp3/Sword_Parry___Block__10__Cue.Sword_Parry___Block__10__Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> sowrd3SoundFinder(TEXT("/Script/Engine.SoundCue'/Game/LHW/mp3/yyyyyyyy_Cue.yyyyyyyy_Cue'"));
+	static ConstructorHelpers::FObjectFinder<USoundAttenuation> soundSettingFinder(TEXT("/Script/Engine.SoundAttenuation'/Game/LHW/mp3/SoundCue/AT.AT'"));
+	if (deadSoundFinder.Succeeded())
+	{
+		AttenuationSettings = soundSettingFinder.Object;
+		deadSound = deadSoundFinder.Object;
+		YYYSound = YYYsoundFinder.Object;
+		SpearSound = sowrd1SoundFinder.Object;
+		Spear1Sound = sowrd2SoundFinder.Object;
+		Spear2Sound = sowrd3SoundFinder.Object;
+	}
 }
 
 void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMesh* InSpearMesh, UAnimBlueprint* InAnimBlueprint, UAnimMontage* InMontageFullbody, UAnimMontage* InMontageUpperbody, AIInfoData* InSelfInfo, MBStateManager* InStateManager, bool InIsPlayerTeam)
@@ -56,7 +74,7 @@ void AMBAIBaseCharacter::InitCharacter(USkeletalMesh* InSkeletalMesh, UStaticMes
 
 	IsPlayerTeam = InIsPlayerTeam;
 }
- 
+
 void AMBAIBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -88,6 +106,7 @@ void AMBAIBaseCharacter::SetOrder(MBOrder* InOrder)
 {
 	AIState.OrderData = InOrder;
 	AIState.OrderData->InitOrder(AIInfo->InfoSelfData);
+
 }
 
 void AMBAIBaseCharacter::SetForceMoveLocation(const FVector& InForceMoveLocation)
@@ -123,11 +142,12 @@ int AMBAIBaseCharacter::OnHit(int InDamage, bool IsPlayer)
 	}
 	return 0;
 }
- 
+
 void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSpeed)
 {
 	FVector Direction = InLocation - AIInfo->InfoLocation;
 	FRotator TurnRotation = AIInfo->InfoRotation;
+	UGameplayStatics::PlaySoundAtLocation(this, YYYSound, GetActorLocation());
 
 	TurnRotation.Yaw = Direction.Rotation().Yaw;
 	SetActorRotation(TurnRotation);
@@ -137,6 +157,7 @@ void AMBAIBaseCharacter::MoveForward(const FVector& InLocation, const float InSp
 
 void AMBAIBaseCharacter::MoveControl(const FVector& InLocation, const float InSpeed)
 {
+
 	FVector Direction = InLocation - AIInfo->InfoLocation;
 	FRotator TurnRotation = AIInfo->InfoRotation;
 
@@ -161,6 +182,7 @@ void AMBAIBaseCharacter::MoveForceLocation(const float InSpeed)
 {
 	IsMovingbackwards = false;
 	MoveControl(ForceMoveLocation, InSpeed);
+
 }
 
 void AMBAIBaseCharacter::MoveTargetLocation(const float InSpeed)
@@ -216,7 +238,7 @@ void AMBAIBaseCharacter::MoveSideways(const float InSpeed)
 
 	int Tendency = FMath::RandRange(1, 100);
 	CalculateTeamCenterDistance();
-	
+
 	//if (10000.f < CalculatedTeamCenterDistance)
 	//{
 	//	FVector TeamCenterDirection = AIInfo->TeamCenter - AIInfo->InfoLocation;
@@ -458,6 +480,25 @@ void AMBAIBaseCharacter::SetDelayTimer(FTimerHandle* InTimer, const float InTime
 void AMBAIBaseCharacter::PlayMontageAttack(int InType)
 {
 	CachedAnimInstance->Montage_Play(MontageUpperbody);
+	randValue = FMath::RandRange(1, 5);
+	if (randValue == 1) {
+		UGameplayStatics::PlaySoundAtLocation(this, SpearSound, GetActorLocation(), 0.5f, 1, 0.0f, AttenuationSettings);
+	}
+	else if(randValue == 2){
+		UGameplayStatics::PlaySoundAtLocation(this, Spear1Sound, GetActorLocation(), 0.5f, 1, 0.0f, AttenuationSettings);
+	}
+	else if (randValue == 3) {
+		UGameplayStatics::PlaySoundAtLocation(this, YYYSound, GetActorLocation(), 0.5f, 1, 0.0f, AttenuationSettings);
+	}
+	else if (randValue == 4) {
+		int32 randValueIn = FMath::RandRange(1, 3);
+		if(randValueIn==3)
+			UGameplayStatics::PlaySoundAtLocation(this, Spear2Sound, GetActorLocation(), 0.5f, 1, 0.0f, AttenuationSettings);
+	}
+	else {
+		return;
+	}
+
 
 	switch (InType)
 	{
@@ -503,6 +544,8 @@ void AMBAIBaseCharacter::Dead()
 	ClearTimer(&AttackDelayTimer);
 	ClearTimer(&RandomLeadTimer);
 	ClearTimer(&DebugTimer);
+	UGameplayStatics::PlaySoundAtLocation(this, deadSound, GetActorLocation(), 0.5f, 1.0f, 0.0f, AttenuationSettings);
+
 
 	this->GetCapsuleComponent();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

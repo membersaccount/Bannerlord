@@ -122,7 +122,7 @@ void AMBBattleGameMode::Tick(float DeltaTime)
 		UpdateAllCharacterInfo();
 		UpdateTargets();
 		//SearchTargets();
-		UpdateTroopTeamCenter();
+		//UpdateTroopTeamCenter();
 	}
 	else
 	{
@@ -561,7 +561,6 @@ void AMBBattleGameMode::ShowTroopTeamRectangle(float InMaxX, float InMinX, float
 }
 #endif // DebugMode
 
-#endif // DebugMode
 
 
 void AMBBattleGameMode::DefaultFormation(float InSpace)

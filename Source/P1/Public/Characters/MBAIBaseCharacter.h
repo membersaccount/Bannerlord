@@ -5,6 +5,8 @@
 #include "MBSettings.h"
 #include "Datas/MBStructs.h"
 #include "Datas/MBEnums.h"
+#include "Sound/SoundCue.h"
+#include "Sound/SoundAttenuation.h"
 #include "MBAIBaseCharacter.generated.h"
 
 class MBStateManager;
@@ -102,6 +104,7 @@ public: // AI
 	bool IsDefending = false;	// 0.2 ~ 1.1 -> 1.5
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsMovingbackwards = false;
+	int32 randValue=0.0f;
 
 public: // Timer
 	FTimerHandle ActionAnimTimer;
@@ -113,6 +116,13 @@ public: // Timer
 	FTimerHandle FormationTimer;
 	FTimerHandle HitTimer;
 	FTimerHandle DebugTimer;
+	USoundCue* deadSound;
+	USoundCue* YYYSound;
+	USoundCue* SpearSound;
+	USoundCue* Spear1Sound;
+	USoundCue* Spear2Sound;
+	USoundAttenuation* AttenuationSettings;
+
 
 protected:
 	bool IsDead = false;
